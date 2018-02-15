@@ -1,0 +1,19 @@
+# Session keys file
+--------------------
+	- Signature = "SK1"	
+	- Keys count -> N
+	- [N]
+		- Session number
+		- Import time
+		- Values count
+		- Values offset	
+
+
+# Session Values file
+---------------------
+	- Signature = "SV1"
+	- [*] 
+		- Values count -> N
+		- [N]
+			- SpotValue ID
+	

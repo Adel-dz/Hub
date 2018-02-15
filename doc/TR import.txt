@@ -1,0 +1,6 @@
+#importation données TR
+-----------------------
+	- Le couple (SessionNber, ProductNber) unique dans le systeme
+	- Pour un ProductNber existant les infos LabelFr et LabelUS et SPT doivent etre identiquent aux valeurs existantes
+	- 
+	

@@ -1,0 +1,18 @@
+********* dans HUB ***************
+
+*******
+procedure d'application de la maj des donnees
+******
+
+# telecharger manifest.hub
+# si version actuelle des données >= Version des données dans manifest.hub
+## fin
+
+# telecharger manifest.data
+# pour toutes les tables listées dans manifest.data
+## //localiser la version de la maj de depart applicable a la table
+## CUR_VER <- la version courante de la table
+## pour I allant de 0 jusqu'a N_ENTRY - 1
+### si Pre-Version 
+## appliquer l'ensemble des maj incrementales a la table
+

@@ -1,0 +1,118 @@
+<Project>
+  <Name>HubCore</Name>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
+    <Name>Update</Name>
+    <Language>CSharp</Language>
+    <Entities>
+      <Entity type="Enum">
+        <Name>ActionCode_t</Name>
+        <Access>Public</Access>
+        <Location left="141" top="29" />
+        <Size width="163" height="146" />
+        <Collapsed>True</Collapsed>
+        <Value>None</Value>
+        <Value>ResetTable</Value>
+        <Value>DeleteRow</Value>
+        <Value>ReplaceRow</Value>
+        <Value>AddRow</Value>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IUpdateAction</Name>
+        <Access>Public</Access>
+        <Location left="595" top="29" />
+        <Size width="163" height="95" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">int Code { get; }</Member>
+        <Member type="Method">void Apply(uint tableID)</Member>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IResetTable</Name>
+        <Access>Public</Access>
+        <Location left="277" top="255" />
+        <Size width="163" height="61" />
+        <Collapsed>True</Collapsed>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IDeleteRow</Name>
+        <Access>Public</Access>
+        <Location left="482" top="255" />
+        <Size width="163" height="78" />
+        <Collapsed>True</Collapsed>
+        <Member type="Property">uint Rowid { get; }</Member>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IReplaceRow</Name>
+        <Access>Public</Access>
+        <Location left="679" top="255" />
+        <Size width="163" height="95" />
+        <Collapsed>True</Collapsed>
+        <Member type="Property">uint RowID { get; }</Member>
+        <Member type="Property">IDatum Datum { get; }</Member>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IAddRow</Name>
+        <Access>Public</Access>
+        <Location left="860" top="255" />
+        <Size width="163" height="78" />
+        <Collapsed>True</Collapsed>
+        <Member type="Property">IDatum Datum { get; }</Member>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IUpdateManager</Name>
+        <Access>Public</Access>
+        <Location left="217" top="389" />
+        <Size width="174" height="112" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">uint DataGeneration { get; }</Member>
+        <Member type="Property">uint HubGeneration { get; }</Member>
+        <Member type="Method">IEnumerable&lt;TableUpdate&gt; GetTableUpdates(uint tableID)</Member>
+      </Entity>
+      <Entity type="Class">
+        <Name>TableUpdate</Name>
+        <Access>Public</Access>
+        <Location left="725" top="366" />
+        <Size width="261" height="128" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">public uint PreGeneration { get; }</Member>
+        <Member type="Property">public uint PostGeneration { get; }</Member>
+        <Member type="Property">public IEnumerable&lt;IUpdateAction&gt; Actions { get; }</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+    </Entities>
+    <Relationships>
+      <Relationship type="Generalization" first="2" second="1">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+      </Relationship>
+      <Relationship type="Generalization" first="3" second="1">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+      </Relationship>
+      <Relationship type="Generalization" first="4" second="1">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+      </Relationship>
+      <Relationship type="Generalization" first="5" second="1">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+      </Relationship>
+    </Relationships>
+  </ProjectItem>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
+    <Name>IO</Name>
+    <Language>CSharp</Language>
+    <Entities>
+      <Entity type="Class">
+        <Name>IOManager</Name>
+        <Access>Public</Access>
+        <Location left="154" top="89" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">public string DownloadFile(string FileURL)</Member>
+        <Member type="Method">public void UploadFile(string filePath, string url)</Member>
+        <Modifier>Sealed</Modifier>
+      </Entity>
+    </Entities>
+    <Relationships />
+  </ProjectItem>
+</Project>
