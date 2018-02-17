@@ -51,27 +51,72 @@ namespace DGD.HubGovernor.Clients
             //      acvtiver le client en pause
             var curClient = GetProfileActiveClient(prf.ID) as HubClient;
 
-            if(curClient != null )
+            if (curClient != null)
             {
                 EventLogger.Info($"Le client actif {curClient.ContactName} inscrit le {curClient.CreationTime}.");
 
-                if(curClient.CreationTime <= client.CreationTime)
+                if (curClient.CreationTime <= client.CreationTime)
                 {
                     EventLogger.Info("Le client actif est plus ancien. Requête rejetée.");
                     return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , msg.Data);
                 }
-                else
-                {
-                    EventLogger.Info($"Le client demandeur est plus ancien. Bannissement du client {curClient.ContactName}...");
-                    var curClStatus = new ClientStatus(curClient.ID , ClientStatus_t.Banned);
-                    int ndxCurClient = m_ndxerClientsStatus.IndexOf(curClStatus.ID);
-                    m_ndxerClientsStatus.Source.Replace(ndxCurClient , curClStatus);
 
-                    //maj du fichier g
-                    string curClFilePath = App
-                    ClientDialog curClDlg = DialogEngin.ReadSrvDialog()
+
+                //bannissemnt du client actif
+                EventLogger.Info($"Le client demandeur est plus ancien. Bannissement du client actif ({curClient.ContactName})...");                
+
+                //maj de la table des statuts
+                var curClStatus = new ClientStatus(curClient.ID , ClientStatus_t.Banned);
+                int ndxCurClient = m_ndxerClientsStatus.IndexOf(curClStatus.ID);
+                m_ndxerClientsStatus.Source.Replace(ndxCurClient , curClStatus);
+
+                //maj du fichier g
+                string curClFilePath = AppPaths.GetLocalSrvDialogPath(curClient.ID);
+                try
+                {
+                    ClientDialog curClDlg = DialogEngin.ReadSrvDialog(curClFilePath);
+                    curClDlg.ClientStatus = ClientStatus_t.Banned;
+                    DialogEngin.WriteSrvDialog(curClFilePath , curClDlg);
                 }
+                catch (Exception ex)
+                {
+                    EventLogger.Error(ex.Message);
+
+                    var curClDlg = new ClientDialog(curClient.ID , ClientStatus_t.Banned , Enumerable.Empty<Message>());
+                    DialogEngin.WriteSrvDialog(curClFilePath , curClDlg);
+                }
+
+                AddUpload(Names.GetSrvDialogFile(curClient.ID));
             }
+
+
+            //activation du client demandeur            
+
+            //maj de la table des statuts
+            var clStatus = new ClientStatus(clID , ClientStatus_t.Enabled);
+            int ndxClient = m_ndxerClientsStatus.IndexOf(clID);
+            m_ndxerClientsStatus.Source.Replace(ndxClient , clStatus);
+
+            //maj du fichier g
+            string clFilePath = AppPaths.GetLocalSrvDialogPath(clID);
+
+            try
+            {
+                ClientDialog clDlg = DialogEngin.ReadSrvDialog(clFilePath);
+                clDlg.ClientStatus = ClientStatus_t.Enabled;
+                DialogEngin.WriteSrvDialog(clFilePath , clDlg);
+            }
+            catch (Exception ex)
+            {
+                EventLogger.Error(ex.Message);
+                var clDlg = new ClientDialog(clID , ClientStatus_t.Enabled , Enumerable.Empty<Message>());
+                DialogEngin.WriteSrvDialog(clFilePath , clDlg);
+            }
+
+            AddUpload(Names.GetSrvDialogFile(clID));
+
+            EventLogger.Info("Requête acceptée. :-)");
+            return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , msg.Data);
         }
 
 
