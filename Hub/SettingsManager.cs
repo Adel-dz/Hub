@@ -8,7 +8,6 @@ using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using static System.Diagnostics.Debug;
 
 
 namespace DGD.Hub
@@ -40,41 +39,12 @@ namespace DGD.Hub
                 }
             }
         }
-        
+
+        public string UserName => DecodeString(new byte[] { 169 , 158 , 147 , 154 , 138 , 141 });
+        public string Password => DecodeString(new byte[] { 137 , 158 , 147 , 154 , 138 , 141 });
         public bool IsMaximized { get; set; }
         public Rectangle FrameRectangle { get; set; }
         public MRUList<SubHeading> MRUSubHeading { get; private set; }
-        public string UserName => DecodeString(new byte[] { 169 , 158 , 147 , 154 , 138 , 141 });
-        public string Password => DecodeString(new byte[] { 137 , 158 , 147 , 154 , 138 , 141 });
-        public Uri ServerURI => new Uri("ftp://douane.gov.dz");
-        public Uri DataUpdateDirURI => Uris.GetUpdateDataDirUri(ServerURI);
-        public Uri ManifestURI => Uris.GetManifestURI(ServerURI);
-        public Uri DataManifestURI => Uris.GetDataMainfestURI(ServerURI);
-        public Uri ProfilesURI => Uris.GetProfilesURI(ServerURI);
-        public Uri ConnectionReqURI => Uris.GetConnectionReqUri(ServerURI);
-        public Uri ConnectionRespURI => Uris.GetConnectionRespUri(ServerURI);        
-        public string TablesFolder => Path.Combine(AppDataFolder , "Tbl");
-        public int DialogTimerInterval => 30 * 1000;
-        public int UpdateTimerInterval => 4 * 60 * 1000;
-        public int ConnectionTimerInterval => 30 * 1000;
-        public int MaxConnectAttemps => 10;
-
-        public uint DataGeneration
-        {
-            get { return m_dataGeneration; }
-
-            set
-            {
-                m_dataGeneration = value;
-                SaveAppSettings();
-            }
-        }
-
-        public static string AppDataFolder => Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) , APP_BASE_FOLDER);
-
-        public static string UserDataFolder => Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) , APP_BASE_FOLDER);
 
         public int MRUSubHeadingSize
         {
@@ -143,10 +113,45 @@ namespace DGD.Hub
             }
         }
 
-        public Uri GetClientDialogURI(uint clientID) => 
+        public uint DataGeneration
+        {
+            get { return m_dataGeneration; }
+
+            set
+            {
+                m_dataGeneration = value;
+                SaveAppSettings();
+            }
+        }
+
+        public static Uri ServerURI => new Uri("ftp://douane.gov.dz");
+        public static Uri DataUpdateDirURI => Uris.GetUpdateDataDirUri(ServerURI);
+        public static Uri ManifestURI => Uris.GetManifestURI(ServerURI);
+        public static Uri DataManifestURI => Uris.GetDataMainfestURI(ServerURI);
+        public static Uri ProfilesURI => Uris.GetProfilesURI(ServerURI);
+        public static Uri ConnectionReqURI => Uris.GetConnectionReqUri(ServerURI);
+        public static Uri ConnectionRespURI => Uris.GetConnectionRespUri(ServerURI);                
+        public static int DialogTimerInterval => 30 * 1000;
+        public static int UpdateTimerInterval => 1 * 60 * 1000;
+        public static int ConnectionTimerInterval => 30 * 1000;
+        public static int MaxConnectAttemps => 10;
+
+        public static string AppDataFolder => Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) , APP_BASE_FOLDER);
+
+        public static string UserDataFolder => Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) , APP_BASE_FOLDER);
+
+        public static string TablesFolder => Path.Combine(AppDataFolder , "Tbl");
+        public static string DialogFolder => Path.Combine(AppDataFolder , "Dlg");
+
+        public static string GetClientDialogFilePath(uint idClient) => 
+            Path.Combine(DialogFolder , Names.GetClientDialogFile(idClient));
+
+        public static Uri GetClientDialogURI(uint clientID) => 
             new Uri(Uris.GetDialogDirUri(ServerURI) , Names.GetClientDialogFile(clientID));
 
-        public Uri GetServerDialogURI(uint clientID) =>
+        public static Uri GetServerDialogURI(uint clientID) =>
           new Uri(Uris.GetDialogDirUri(ServerURI) , Names.GetSrvDialogFile(clientID));
 
         public void Dispose()

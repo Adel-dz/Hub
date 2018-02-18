@@ -14,6 +14,14 @@ namespace easyLib.Extensions
                 TaskScheduler.FromCurrentSynchronizationContext());
         }
 
+        public static Task OnError<T>(this Task<T> task , Action<Task<T>> action)
+        {
+            return task.ContinueWith(action ,
+                CancellationToken.None ,
+                TaskContinuationOptions.OnlyOnFaulted ,
+                TaskScheduler.FromCurrentSynchronizationContext());
+        }
+
         public static Task OnSuccess(this Task task , Action<Task> action)
         {
             return task.ContinueWith(action ,

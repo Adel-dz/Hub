@@ -1,5 +1,6 @@
 ﻿using DGD.Hub.DB;
 using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace DGD.Hub
@@ -25,6 +26,19 @@ namespace DGD.Hub
             using (m_tblManager = new TablesManager())
             using (m_dlgManager = new DLG.DialogManager())
             {
+                if (!Directory.Exists(SettingsManager.AppDataFolder))
+                    Directory.CreateDirectory(SettingsManager.AppDataFolder);
+
+                if (!Directory.Exists(SettingsManager.UserDataFolder))
+                    Directory.CreateDirectory(SettingsManager.UserDataFolder);
+
+                if (!Directory.Exists(SettingsManager.TablesFolder))
+                    Directory.CreateDirectory(SettingsManager.TablesFolder);
+
+                if (!Directory.Exists(SettingsManager.DialogFolder))
+                    Directory.CreateDirectory(SettingsManager.DialogFolder);
+
+
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 

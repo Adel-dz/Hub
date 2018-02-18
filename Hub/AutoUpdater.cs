@@ -34,7 +34,7 @@ namespace DGD.Hub
             using (new AutoReleaser(() => File.Delete(manifest)))
             {
                 var netEngin = new NetEngin(Program.Settings);
-                netEngin.Download(manifest , Program.Settings.ManifestURI);
+                netEngin.Download(manifest , SettingsManager.ManifestURI);
                 uint updateDataGen = UpdateEngin.ReadUpdateManifest(manifest).DataGeneration;
 
                 if (updateDataGen == Program.Settings.DataGeneration)
@@ -47,7 +47,7 @@ namespace DGD.Hub
                 using(Log.LogEngin.PushMessage("Installation des mises à jour..."))
                 using (new AutoReleaser(() => File.Delete(dataManifest)))
                 {
-                    netEngin.Download(dataManifest , Program.Settings.DataManifestURI);
+                    netEngin.Download(dataManifest , SettingsManager.DataManifestURI);
 
                     var uris = new List<UpdateURI>(UpdateEngin.ReadDataManifest(dataManifest , Program.Settings.DataGeneration));
 
@@ -58,7 +58,7 @@ namespace DGD.Hub
                             string updateFile = Path.GetTempFileName();
                             using (new AutoReleaser(() => File.Delete(updateFile)))
                             {                                
-                                netEngin.Download(updateFile , new Uri(Program.Settings.DataUpdateDirURI , uu.FileURI));                                
+                                netEngin.Download(updateFile , new Uri(SettingsManager.DataUpdateDirURI , uu.FileURI));                                
                                 ApplyUpdate(updateFile);
                                 Program.Settings.DataGeneration = uu.DataPostGeneration;
                             }                            

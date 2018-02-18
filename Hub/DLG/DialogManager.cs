@@ -1,4 +1,5 @@
 ﻿using DGD.Hub.Log;
+using DGD.HubCore.DB;
 using DGD.HubCore.DLG;
 using DGD.HubCore.Net;
 using easyLib;
@@ -23,6 +24,7 @@ namespace DGD.Hub.DLG
         ClientInfo m_clInfo;
         int m_dlgInterval;
         bool m_dlgTimerEnabled;
+        bool m_resumeMode;
         bool m_updateTimerEnabled;
 
 
@@ -30,7 +32,7 @@ namespace DGD.Hub.DLG
         {
             m_dialogTimer = new Timer(obj => ProcessDialogTimer() , null , Timeout.Infinite , Timeout.Infinite);
             m_updateTimer = new Timer(obj => ProcessUpdateTimer() , null , Timeout.Infinite , Timeout.Infinite);
-            m_dlgInterval = Program.Settings.DialogTimerInterval;
+            m_dlgInterval = SettingsManager.DialogTimerInterval;
         }
 
         public bool IsDisposed { get; private set; }
@@ -44,7 +46,7 @@ namespace DGD.Hub.DLG
                 using (new AutoReleaser(() => File.Delete(tmpFile)))
                 using (LogEngin.PushMessage("Récupération de la liste des profils à partir du serveur des douanes…"))
                 {
-                    new NetEngin(Program.Settings).Download(tmpFile , Program.Settings.ProfilesURI);
+                    new NetEngin(Program.Settings).Download(tmpFile , SettingsManager.ProfilesURI);
                     return DialogEngin.ReadProfiles(tmpFile);
                 }
             }
@@ -52,12 +54,82 @@ namespace DGD.Hub.DLG
 
         public void Start()
         {
+            //client enregistre?
             m_clInfo = Program.Settings.ClientInfo;
 
-            if (m_clInfo == null && !Program.DialogManager.RegisterClient())
-                return;
+            if (m_clInfo == null && Program.DialogManager.RegisterClient())
+            {
+                StartDialogTimer();
+                StartUpdateTimer(true);
 
-            StartDialogTimer(true);
+                return;
+            }
+
+
+            Func<string> download = () =>
+            {
+                //maj du fichier dialog
+                string dlgFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
+                string tmpFile = Path.GetTempFileName();
+                var netEngin = new NetEngin(Program.Settings);
+
+                netEngin.Download(dlgFilePath , SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , true);
+                netEngin.Download(tmpFile , SettingsManager.GetServerDialogURI(m_clInfo.ClientID) , true);
+
+                return tmpFile;
+            };
+
+            Action<Task<string>> onSuccess = t =>
+            {
+                ClientDialog clDlg = DialogEngin.ReadSrvDialog(t.Result);
+
+                if (clDlg.ClientStatus == ClientStatus_t.Enabled)
+                {
+                    StartDialogTimer();
+                    StartUpdateTimer(true);
+                }
+                else
+                    if (clDlg.ClientStatus == ClientStatus_t.Banned)
+                    foreach (IDBTable tbl in Program.TablesManager.CriticalTables)
+                        tbl.Clear();
+                else
+                {
+                    m_resumeMode = true;
+                    PostResumeReqAsync();
+                }
+
+                File.Delete(t.Result);
+            };
+
+            Action<Task<string>> onErr = t =>
+            {
+                System.Windows.Forms.MessageBox.Show(
+                    "Impossible de se connecter au serveur distant. Veuillez réessayer ultérieurement." ,
+                    null ,
+                    System.Windows.Forms.MessageBoxButtons.OK ,
+                    System.Windows.Forms.MessageBoxIcon.Error);
+
+                File.Delete(t.Result);
+                System.Windows.Forms.Application.Exit();
+            };
+
+            var task = new Task<string>(download , TaskCreationOptions.LongRunning);
+            task.OnSuccess(onSuccess);
+            task.OnError(onErr);
+
+            task.Start();
+        }
+
+
+
+        void PostResumeReqAsync()
+        {
+                                                            
+        }
+
+        void ProcessStatus(ClientDialog clDlg)
+        {
+
         }
 
         public void Stop()
@@ -144,7 +216,7 @@ namespace DGD.Hub.DLG
 
             Dbg.Log("Processing timer...");
 
-            Uri srvDlgURI = Program.Settings.GetServerDialogURI(m_clInfo.ClientID);
+            Uri srvDlgURI = SettingsManager.GetServerDialogURI(m_clInfo.ClientID);
             string tmpFile = Path.GetTempFileName();
 
             LogEngin.PushFlash("Interrogation du serveur...");
@@ -152,10 +224,10 @@ namespace DGD.Hub.DLG
             try
             {
                 new NetEngin(Program.Settings).Download(tmpFile , srvDlgURI);
-                m_dlgInterval = Program.Settings.DialogTimerInterval;
+                m_dlgInterval = SettingsManager.DialogTimerInterval;
             }
             catch (Exception ex)
-            {                
+            {
                 EventLogger.Error(ex.Message);
 
                 LogEngin.PushFlash(ex.Message);
@@ -164,8 +236,8 @@ namespace DGD.Hub.DLG
 
                 return;
             }
-           
-            
+
+
 
             try
             {
@@ -192,8 +264,8 @@ namespace DGD.Hub.DLG
 
                         foreach (HubCore.DB.IDBTable tbl in Program.TablesManager.Tables)
                             tbl.Clear();
-                    }                    
-                    
+                    }
+
 
                     break;
 
@@ -244,7 +316,7 @@ namespace DGD.Hub.DLG
 
         void StartDialogTimer(bool startNow = false)
         {
-            int interval = Program.Settings.DialogTimerInterval;
+            int interval = SettingsManager.DialogTimerInterval;
 
             lock (m_dialogTimer)
                 if (!m_dlgTimerEnabled)
@@ -266,7 +338,7 @@ namespace DGD.Hub.DLG
 
         void StartUpdateTimer(bool startNow = false)
         {
-            int interval = Program.Settings.UpdateTimerInterval;
+            int interval = SettingsManager.UpdateTimerInterval;
 
             lock (m_updateTimer)
                 if (!m_updateTimerEnabled)

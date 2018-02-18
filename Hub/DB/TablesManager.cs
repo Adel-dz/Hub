@@ -43,7 +43,7 @@ namespace DGD.Hub.DB
             m_tablesProxy = new TablesCollection(this);
             m_dataFactory = new DatumFactory();
 
-            var tablesFolder = Program.Settings.TablesFolder;
+            var tablesFolder = SettingsManager.TablesFolder;
             m_suppliers = new DataSuppliersTable(Path.Combine(tablesFolder , "splr"));
             m_units = new UnitsTable(Path.Combine(tablesFolder , "unit"));
             m_countries = new CountriesTable(Path.Combine(tablesFolder , "ctry"));
@@ -58,6 +58,14 @@ namespace DGD.Hub.DB
 
 
         public ITablesCollection Tables => m_tablesProxy;
+        public IEnumerable<IDBTable> CriticalTables
+        {
+            get
+            {
+                yield return ValuesContexts;
+                yield return SpotValues;
+            }
+        }
         public IDatumFactory DataFactory => m_dataFactory;
 
         public DataSuppliersTable DataSupliers => GetTable(TablesID.SUPPLIER , true) as DataSuppliersTable;
@@ -186,12 +194,7 @@ namespace DGD.Hub.DB
                         try
                         {
                             tbl.Connect();
-                        }
-                        catch (DirectoryNotFoundException)
-                        {
-                            Directory.CreateDirectory(Program.Settings.TablesFolder);
-                            return GetTable(tableID , connect);
-                        }
+                        }                      
                         catch (FileNotFoundException)
                         {
                             EventLogger.Warning($"Impossible d'ouvrir la table {tbl.Name}\nLancement de la procedure de création...");

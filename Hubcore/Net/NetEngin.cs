@@ -1,9 +1,12 @@
 ﻿using easyLib;
+using easyLib.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using static easyLib.DebugHelper;
 
 
@@ -11,6 +14,7 @@ namespace DGD.HubCore.Net
 {
     public class NetEngin
     {
+        static readonly int[] m_waitTimes = { 2 , 3 , 5 , 7 , 11 , 13 , 17 , 19 , 23 , 29 };
         readonly ICredential m_credential;
 
         public NetEngin(ICredential credential)
@@ -19,7 +23,7 @@ namespace DGD.HubCore.Net
         }
 
 
-        public void Upload(Uri destFileURI , string srcFilePath)
+        public void Upload(Uri destFileURI , string srcFilePath , bool retryOnErr = false)
         {
             using (var wClient = new WebClient())
             {
@@ -30,16 +34,40 @@ namespace DGD.HubCore.Net
 
                 string encFilePath;
                 using (FileLocker.Lock(srcFilePath))
-                    encFilePath = EncodeFile(srcFilePath);                
+                    encFilePath = EncodeFile(srcFilePath);
 
                 using (new AutoReleaser(() => File.Delete(encFilePath)))
-                    wClient.UploadFile(destFileURI , encFilePath);
+                    if (retryOnErr)
+                    {
+                        int ndxSleepTime = 0;
+
+                        while (true)
+                            try
+                            {
+                                wClient.UploadFile(destFileURI , encFilePath);
+                                break;
+                            }
+                            catch(Exception ex)
+                            {
+                                LogDbgInfo(ex.Message);
+
+                                if (ndxSleepTime == m_waitTimes.Length)
+                                    throw;
+
+                                LogDbgInfo($"Seleeping {m_waitTimes[ndxSleepTime]} seconds.");
+                                Thread.Sleep(m_waitTimes[ndxSleepTime++] * 1000);
+                                LogDbgInfo("Retrying...");
+                                continue;
+                            }
+                    }
+                    else
+                        wClient.UploadFile(destFileURI , encFilePath);
 
                 LogDbgInfo("Upload done.");
             }
         }
 
-        public void Upload(Uri destDirUri , IEnumerable<string> srcPaths)
+        public void Upload(Uri destDirUri , IEnumerable<string> srcPaths, bool retryOnErr = false)
         {
             using (var wClient = new WebClient())
             {
@@ -55,17 +83,41 @@ namespace DGD.HubCore.Net
                     string encFilePath;
 
                     using (FileLocker.Lock(srcFilePath))
-                        encFilePath = EncodeFile(srcFilePath);                    
+                        encFilePath = EncodeFile(srcFilePath);
 
-                    using (new AutoReleaser(() => File.Delete(encFilePath)))
-                        wClient.UploadFile(destFileUri , encFilePath);
+                    using (new AutoReleaser(() => File.Delete(encFilePath)))                    
+                        if (retryOnErr)
+                        {
+                            int ndxSleepTime = 0;
+
+                            while (true)
+                                try
+                                {
+                                    wClient.UploadFile(destFileUri , encFilePath);
+                                    break;
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogDbgInfo(ex.Message);
+
+                                    if (ndxSleepTime == m_waitTimes.Length)
+                                        throw;
+
+                                    LogDbgInfo($"Seleeping {m_waitTimes[ndxSleepTime]} seconds.");
+                                    Thread.Sleep(m_waitTimes[ndxSleepTime++] * 1000);
+                                    LogDbgInfo("Retrying...");
+                                    continue;
+                                }
+                        }
+                        else
+                            wClient.UploadFile(destFileUri , encFilePath);
 
                     LogDbgInfo("Upload done.");
                 }
             }
         }
 
-        public void Download(string destPath , Uri srcURI)
+        public void Download(string destPath , Uri srcURI, bool retryOnErr = false)
         {
             using (var wClient = new WebClient())
             {
@@ -75,7 +127,32 @@ namespace DGD.HubCore.Net
                 LogDbgInfo($"Downloading {srcURI} to {destPath}");
 
                 string tmpFile = Path.GetTempFileName();
-                wClient.DownloadFile(srcURI , tmpFile);
+
+                if (retryOnErr)
+                {
+                    int ndxSleepTime = 0;
+
+                    while (true)
+                        try
+                        {
+                            wClient.DownloadFile(srcURI , tmpFile);
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            LogDbgInfo(ex.Message);
+
+                            if (ndxSleepTime == m_waitTimes.Length)
+                                throw;
+
+                            LogDbgInfo($"Seleeping {m_waitTimes[ndxSleepTime]} seconds.");
+                            Thread.Sleep(m_waitTimes[ndxSleepTime++] * 1000);
+                            LogDbgInfo("Retrying...");
+                            continue;
+                        }
+                }
+                else
+                    wClient.DownloadFile(srcURI , tmpFile);
 
                 using (new AutoReleaser(() => File.Delete(tmpFile)))
                 {
@@ -94,7 +171,7 @@ namespace DGD.HubCore.Net
             }
         }
 
-        public void Download(string destFolder , IEnumerable<Uri> srcUris)
+        public void Download(string destFolder , IEnumerable<Uri> srcUris, bool retryOnErr = false)
         {
             using (var wClient = new WebClient())
             {
@@ -109,7 +186,32 @@ namespace DGD.HubCore.Net
                         string destPath = Path.Combine(destFolder , Path.GetFileName(srcUri.ToString()));
 
                         LogDbgInfo($"Downloading {srcUri} to {destPath}");
-                        wClient.DownloadFile(srcUri , tmpFile);
+
+                        if (retryOnErr)
+                        {
+                            int ndxSleepTime = 0;
+
+                            while (true)
+                                try
+                                {
+                                    wClient.DownloadFile(srcUri , tmpFile);
+                                    break;
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogDbgInfo(ex.Message);
+
+                                    if (ndxSleepTime == m_waitTimes.Length)
+                                        throw;
+
+                                    LogDbgInfo($"Seleeping {m_waitTimes[ndxSleepTime]} seconds.");
+                                    Thread.Sleep(m_waitTimes[ndxSleepTime++] * 1000);
+                                    LogDbgInfo("Retrying...");
+                                    continue;
+                                }
+                        }
+                        else
+                            wClient.DownloadFile(srcUri , tmpFile);
 
 
                         string decFilePath = DecodeFile(tmpFile);

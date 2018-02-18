@@ -31,7 +31,7 @@ namespace DGD.Hub.DLG
         {
             InitializeComponent();
 
-            m_timer.Interval = Program.Settings.ConnectionTimerInterval;
+            m_timer.Interval = SettingsManager.ConnectionTimerInterval;
             m_clInfo = clInfo;
         }
 
@@ -109,7 +109,7 @@ namespace DGD.Hub.DLG
         {
             Dbg.Log("Response exception.");
 
-            if (++m_attemptsCount >= Program.Settings.MaxConnectAttemps)
+            if (++m_attemptsCount >= SettingsManager.MaxConnectAttemps)
                 FatalExceptionHandler(ex);
             else
                 StartTimer();
@@ -119,7 +119,7 @@ namespace DGD.Hub.DLG
         void ReqExceptionHandler(Exception ex)
         {
             Dbg.Log("Request exception.");
-            if (++m_attemptsCount >= Program.Settings.MaxConnectAttemps)
+            if (++m_attemptsCount >= SettingsManager.MaxConnectAttemps)
                 FatalExceptionHandler(ex);
             else
             {
@@ -159,7 +159,7 @@ namespace DGD.Hub.DLG
             using (new AutoReleaser(() => File.Delete(tmpFile)))
             {
                 SetProgressMessage("Réception des données à partir du serveur...");
-                new NetEngin(Program.Settings).Download(tmpFile , Program.Settings.ConnectionRespURI);
+                new NetEngin(Program.Settings).Download(tmpFile , SettingsManager.ConnectionRespURI);
 
                 IEnumerable<HubCore.DLG.Message> messages = DialogEngin.ReadConnectionsResp(tmpFile);
                 HubCore.DLG.Message[] msgs = (from resp in messages
@@ -184,7 +184,7 @@ namespace DGD.Hub.DLG
                         clInfo.MachineName = m_clInfo.MachineName;
                         m_clInfo = clInfo;
 
-                        if (++m_attemptsCount >= Program.Settings.MaxConnectAttemps)
+                        if (++m_attemptsCount >= SettingsManager.MaxConnectAttemps)
                             if (ShowMessage(MAX_ATTEMPTS_ERROR , MessageBoxButtons.YesNo) != DialogResult.Yes)
                             {
                                 CloseDialog();
@@ -233,7 +233,7 @@ namespace DGD.Hub.DLG
                 {
                     Dbg.Log("Request message lost.");
 
-                    if (++m_attemptsCount >= Program.Settings.MaxConnectAttemps)
+                    if (++m_attemptsCount >= SettingsManager.MaxConnectAttemps)
                         if (ShowMessage(MAX_ATTEMPTS_ERROR , MessageBoxButtons.YesNo) != DialogResult.Yes)
                         {
                             CloseDialog();
@@ -244,7 +244,7 @@ namespace DGD.Hub.DLG
 
                     PostReq();
                 }
-                else if (++m_attemptsCount >= Program.Settings.MaxConnectAttemps)
+                else if (++m_attemptsCount >= SettingsManager.MaxConnectAttemps)
                 {
                     Dbg.Log("Timeout.");
 
@@ -279,7 +279,7 @@ namespace DGD.Hub.DLG
 
                 SetProgressMessage("Envoi des données au serveur...");
 
-                netEngin.Download(tmpFile , Program.Settings.ConnectionReqURI);
+                netEngin.Download(tmpFile , SettingsManager.ConnectionReqURI);
                 List<HubCore.DLG.Message> msgs = DialogEngin.ReadConnectionsReq(tmpFile).ToList();
                 m_msgID = msgs.Count == 0 ? 1 : msgs.Max(m => m.ID) + 1;
 
@@ -287,7 +287,7 @@ namespace DGD.Hub.DLG
                 msgs.Add(msg);
 
                 DialogEngin.WriteConnectionsReq(tmpFile , msgs);
-                netEngin.Upload(Program.Settings.ConnectionReqURI , tmpFile);
+                netEngin.Upload(SettingsManager.ConnectionReqURI , tmpFile);
                 StartTimer();
 
                 SetProgressMessage("Attente de la réponse du serveur...");
