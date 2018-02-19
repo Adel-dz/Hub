@@ -65,23 +65,23 @@ namespace DGD.Hub.DLG
                 return;
             }
 
+            string tmpFile = Path.GetTempFileName();
 
-            Func<string> download = () =>
+            Action download = () =>
             {
                 //maj du fichier dialog
                 string dlgFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
-                string tmpFile = Path.GetTempFileName();
+                
                 var netEngin = new NetEngin(Program.Settings);
 
                 netEngin.Download(dlgFilePath , SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , true);
                 netEngin.Download(tmpFile , SettingsManager.GetServerDialogURI(m_clInfo.ClientID) , true);
 
-                return tmpFile;
             };
 
-            Action<Task<string>> onSuccess = t =>
+            Action onSuccess = () =>
             {
-                ClientDialog clDlg = DialogEngin.ReadSrvDialog(t.Result);
+                ClientDialog clDlg = DialogEngin.ReadSrvDialog(tmpFile);
 
                 if (clDlg.ClientStatus == ClientStatus_t.Enabled)
                 {
@@ -98,10 +98,10 @@ namespace DGD.Hub.DLG
                     PostResumeReqAsync();
                 }
 
-                File.Delete(t.Result);
+                File.Delete(tmpFile);
             };
 
-            Action<Task<string>> onErr = t =>
+            Action onErr = () =>
             {
                 System.Windows.Forms.MessageBox.Show(
                     "Impossible de se connecter au serveur distant. Veuillez réessayer ultérieurement." ,
@@ -109,11 +109,11 @@ namespace DGD.Hub.DLG
                     System.Windows.Forms.MessageBoxButtons.OK ,
                     System.Windows.Forms.MessageBoxIcon.Error);
 
-                File.Delete(t.Result);
+                File.Delete(tmpFile);
                 System.Windows.Forms.Application.Exit();
             };
 
-            var task = new Task<string>(download , TaskCreationOptions.LongRunning);
+            var task = new Task(download , TaskCreationOptions.LongRunning);
             task.OnSuccess(onSuccess);
             task.OnError(onErr);
 
