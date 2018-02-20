@@ -63,7 +63,7 @@ namespace DGD.HubGovernor.Clients
 
 
                 //bannissemnt du client actif
-                EventLogger.Info($"Le client demandeur est plus ancien. Bannissement du client actif ({curClient.ContactName})...");                
+                EventLogger.Info($"Le client demandeur est plus ancien. Bannissement du client actif ({curClient.ContactName})...");
 
                 //maj de la table des statuts
                 var curClStatus = new ClientStatus(curClient.ID , ClientStatus_t.Banned);
@@ -134,7 +134,7 @@ namespace DGD.HubGovernor.Clients
             var profile = m_ndxerProfiles.Get(clInfo.ProfileID) as UserProfile;
 
             string reqLog = $"Demande d’inscription émanant  de {clInfo.ContactName}" +
-                $"(ID = {clInfo.ClientID}) pour " +
+                $"(ID = {ClientStrID(clInfo.ClientID)} pour " +
                 (profile == null ? "un profil inexistant." :
                             $"le profil {profile.Name}.");
 
@@ -192,7 +192,7 @@ namespace DGD.HubGovernor.Clients
             Dbg.Assert(msg.MessageCode == Message_t.UnknonwnMsg);
             Dbg.Log("Processing unknown message.");
 
-            EventLogger.Warning($"Reception d'un msg inconnu en provenance du client {clientID}.");
+            EventLogger.Warning($"Reception d'un msg inconnu en provenance du client {ClientStrID(clientID)}.");
 
             return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.UnknonwnMsg ,
                 BitConverter.GetBytes(clientID));

@@ -90,9 +90,7 @@ namespace DGD.HubGovernor.Clients
             string filePath = AppPaths.GetLocalSrvDialogPath(client.ID);
             ClientDialog clDlg = DialogEngin.ReadSrvDialog(filePath);
 
-            //desactiver l'eventuel client si status == Enabled
-            if (clDlg.ClientStatus != status)
-            {
+            //desactiver le client
                 HubClient oldClient = GetProfileActiveClient(client.ProfileID);
 
                 if (status == ClientStatus_t.Enabled && oldClient != null && oldClient.ID != client.ID)
@@ -125,8 +123,6 @@ namespace DGD.HubGovernor.Clients
                 clDlg.ClientStatus = status;
                 DialogEngin.WriteSrvDialog(filePath , clDlg);
                 AddUpload(Names.GetSrvDialogFile(client.ID));
-            }
-
         }
 
         public IEnumerable<HubClient> GetProfileClients(uint idProfile)
@@ -184,6 +180,8 @@ namespace DGD.HubGovernor.Clients
         }
 
         //private:        
+        static string ClientStrID(uint clID) => clID.ToString("X");
+
         void Initialize()
         {
             EventLogger.Info("Réinitialisation des fichiers sur le serveur...");

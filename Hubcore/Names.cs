@@ -8,7 +8,7 @@
         public static string ConnectionRespFile => "cxnresp.g";
         public static string ProfilesFile => "profiles.g";
 
-        public static string GetClientDialogFile(uint clientID) => clientID.ToString("x") + ".h";
-        public static string GetSrvDialogFile(uint clientID) => clientID.ToString("x") + ".g";
+        public static string GetClientDialogFile(uint clientID) => clientID.ToString("X") + ".h";
+        public static string GetSrvDialogFile(uint clientID) => clientID.ToString("X") + ".g";
     }
 }

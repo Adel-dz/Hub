@@ -92,7 +92,7 @@ namespace DGD.HubGovernor.Clients
                   {
                       var clients = from HubClient client in m_ndxerClients.Source.Enumerate()
                                     where client.ProfileID == prf.ID
-                                    select new TreeNode(client.ID.ToString())
+                                    select new TreeNode(client.ID.ToString("X"))
                                     {
                                         Tag = client ,
                                         SelectedImageIndex = NDX_IMG_CLIENT ,
@@ -188,9 +188,6 @@ namespace DGD.HubGovernor.Clients
                         MessageBoxIcon.Question) != DialogResult.Yes)
                     return;
             }
-
-            //mettre a jour la gestion du profil
-            AppContext.ClientsManager.SetProfileManagementMode(prf.ID , ManagementMode_t.Manual);
 
             //maj le status
             AppContext.ClientsManager.SetClientStatus(client , status);
