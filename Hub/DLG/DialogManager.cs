@@ -57,10 +57,13 @@ namespace DGD.Hub.DLG
             //client enregistre?
             m_clInfo = Program.Settings.ClientInfo;
 
-            if (m_clInfo == null && Program.DialogManager.RegisterClient())
+            if (m_clInfo == null )
             {
-                StartDialogTimer();
-                StartUpdateTimer(true);
+                if (Program.DialogManager.RegisterClient())
+                {
+                    StartDialogTimer();
+                    StartUpdateTimer(true);
+                }
 
                 return;
             }
