@@ -57,7 +57,7 @@ namespace DGD.Hub.DLG
             //client enregistre?
             m_clInfo = Program.Settings.ClientInfo;
 
-            if (m_clInfo == null )
+            if (m_clInfo == null)
             {
                 if (Program.DialogManager.RegisterClient())
                 {
@@ -74,7 +74,7 @@ namespace DGD.Hub.DLG
             {
                 //maj du fichier dialog
                 string dlgFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
-                
+
                 var netEngin = new NetEngin(Program.Settings);
 
                 netEngin.Download(dlgFilePath , SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , true);
@@ -98,7 +98,7 @@ namespace DGD.Hub.DLG
                 else
                 {
                     m_resumeMode = true;
-                    PostResumeReqAsync();
+                    new ResumeHandler(ResumeResp,m_clInfo.ClientID).Start();
                 }
 
                 File.Delete(tmpFile);
@@ -125,11 +125,35 @@ namespace DGD.Hub.DLG
             task.Start();
         }
 
-
-
-        void PostResumeReqAsync()
+        void ResumeResp(ResumeHandler.Result_t resp)
         {
-                                                            
+            switch (resp)
+            {
+                case ResumeHandler.Result_t.Error:
+                Dbg.Log("Error on resume req.");
+
+                System.Windows.Forms.MessageBox.Show(
+                    "Impossible de se connecter au serveur distant. Veuillez réessayer ultérieurement." ,
+                    null ,
+                    System.Windows.Forms.MessageBoxButtons.OK ,
+                    System.Windows.Forms.MessageBoxIcon.Error);
+
+                System.Windows.Forms.Application.Exit();
+                break;
+
+                case ResumeHandler.Result_t.Ok:
+                StartDialogTimer();
+                StartUpdateTimer(true);
+                break;
+
+                case ResumeHandler.Result_t.Rejected:
+                Dbg.Log("Resume req. rejected!");
+                break;
+
+                default:
+                Dbg.Assert(false);
+                break;
+            }
         }
 
         void ProcessStatus(ClientDialog clDlg)

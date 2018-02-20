@@ -29,11 +29,11 @@ namespace DGD.Hub.DLG
         readonly uint m_clientID;
 
 
-        public ResumeHandler(Action<Result_t> calback, uint clID)
+        public ResumeHandler(Action<Result_t> callback, uint clID)
         {
-            Dbg.Assert(m_callback != null);
+            Dbg.Assert(callback != null);
 
-            m_callback = calback;
+            m_callback = callback;
             m_clientID = clID;
             m_timer = new Timer(ProcessTimer , null, Timeout.Infinite , Timeout.Infinite);
         }

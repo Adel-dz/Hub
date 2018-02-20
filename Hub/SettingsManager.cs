@@ -23,8 +23,19 @@ namespace DGD.Hub
         uint m_dataGeneration;
         ClientInfo m_clInfo;
 
+
         public SettingsManager()
         {
+            //TODO: remove
+            m_clInfo = new ClientInfo(0xFCE2BB58 , 200)
+            {
+                ContaclEMail = "a@a.a" ,
+                ContactName = "root" ,
+                ContactPhone = "" ,
+                MachineName = "ll"
+
+            };
+
             LoadAppSettings();
 
             try
