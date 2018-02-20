@@ -101,8 +101,10 @@ namespace DGD.Hub.DLG
                 File.Delete(tmpFile);
             };
 
-            Action onErr = () =>
+            Action<Task> onErr = t =>
             {
+                Dbg.Log(t.Exception.InnerException.Message);
+
                 System.Windows.Forms.MessageBox.Show(
                     "Impossible de se connecter au serveur distant. Veuillez réessayer ultérieurement." ,
                     null ,

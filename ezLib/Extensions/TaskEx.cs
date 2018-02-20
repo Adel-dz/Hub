@@ -6,15 +6,15 @@ namespace easyLib.Extensions
 {
     public static class TaskEx
     {
-        public static Task OnError(this Task task , Action action)
+        public static Task OnError(this Task task , Action<Task> action)
         {
-            return task.ContinueWith(t => action() ,
+            return task.ContinueWith(action ,
                 CancellationToken.None ,
                 TaskContinuationOptions.OnlyOnFaulted ,
                 TaskScheduler.FromCurrentSynchronizationContext());
         }
 
-     
+
         public static Task OnSuccess(this Task task , Action<Task> action)
         {
             return task.ContinueWith(action ,
@@ -37,6 +37,6 @@ namespace easyLib.Extensions
                 CancellationToken.None ,
                 TaskContinuationOptions.OnlyOnRanToCompletion ,
                 TaskScheduler.FromCurrentSynchronizationContext());
-        }      
+        }
     }
 }

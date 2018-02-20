@@ -16,9 +16,8 @@ namespace DGD.Hub.DLG
         public enum Result_t
         {
             Error,
-            Enabled,
-            Disbaled,
-            Banned,
+            Ok,
+            Rejected
         }
 
         const int TIMER_INTERVALL = 10 * 1000;
@@ -43,14 +42,15 @@ namespace DGD.Hub.DLG
 
         public void Start()
         {
-            string m_cnxReqFile = Path.GetTempFileName();
+            m_cxnReqFile = Path.GetTempFileName();
 
+            //maj du ID req
             Action init = () =>
             {
                 var netEngin = new NetEngin(Program.Settings);
-                netEngin.Download(m_cnxReqFile , SettingsManager.ConnectionReqURI , true);
+                netEngin.Download(m_cxnReqFile , SettingsManager.ConnectionReqURI , true);
 
-                IEnumerable<Message> msgs = DialogEngin.ReadConnectionsReq(m_cnxReqFile);
+                IEnumerable<Message> msgs = DialogEngin.ReadConnectionsReq(m_cxnReqFile);
 
                 if (msgs.Count() > 0)
                     m_lastMsgID = msgs.Max(msg => msg.ID);
@@ -58,7 +58,7 @@ namespace DGD.Hub.DLG
 
             Action<Task> onErr = t =>
             {
-                File.Delete(m_cnxReqFile);
+                File.Delete(m_cxnReqFile);
 
                 Dbg.Log(t.Exception.InnerException.Message);
                 m_callback(Result_t.Error);
@@ -99,9 +99,50 @@ namespace DGD.Hub.DLG
             new Task(upload , TaskCreationOptions.LongRunning).Start();
         }
 
-        private void ProcessTimer(object state)
+        void ProcessTimer(object unused)
         {
-            throw new NotImplementedException();
+            m_timer.Change(Timeout.Infinite , Timeout.Infinite);
+
+            var netEngin = new NetEngin(Program.Settings);
+            Uri respFileURI = SettingsManager.ConnectionRespURI;
+            string tmpFile = Path.GetTempFileName();
+
+            netEngin.Download(tmpFile, respFileURI, true);
+
+            var seq = from msg in DialogEngin.ReadConnectionsResp(tmpFile)
+                      where msg.PrevMessageID >= m_lastMsgID
+                      select msg;
+
+            if(!seq.Any())
+                m_timer.Change(Timeout.Infinite , Timeout.Infinite);
+            else
+            {
+                Message resp = (from msg in seq
+                                where msg.PrevMessageID == m_lastMsgID
+                                select msg).SingleOrDefault();
+
+                if (resp == null)
+                    PostReqAsync();
+                else
+                {
+                    switch (resp.MessageCode)
+                    {
+                        case Message_t.Ok:
+                        m_callback(Result_t.Ok);
+                        break;
+
+                        case Message_t.InvalidID:
+                        case Message_t.Rejected:
+                        m_callback(Result_t.Rejected);
+                        break;
+                        
+                        default:
+                        Dbg.Assert(false);
+                        break;
+                    }
+                }
+                
+            }
         }
     }
 }
