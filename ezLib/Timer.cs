@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static System.Diagnostics.Debug;
 
 
@@ -39,10 +35,8 @@ namespace easyLib
             set
             {
                 lock (m_timer)
-                {
-                    m_interval = value;
-                    m_timer.Change(IsRunning ? value : System.Threading.Timeout.Infinite , value);
-                }
+                    if (m_timer.Change(IsRunning ? value : System.Threading.Timeout.Infinite , value))
+                        m_interval = value;
             }
         }
 
@@ -64,10 +58,10 @@ namespace easyLib
 
         public void Dispose()
         {
-            if(!IsDiposed)
-                lock(m_timer)
+            if (!IsDiposed)
+                lock (m_timer)
                 {
-                    if(!IsDiposed)
+                    if (!IsDiposed)
                     {
                         m_timer.Change(System.Threading.Timeout.Infinite , System.Threading.Timeout.Infinite);
                         m_timer.Dispose();

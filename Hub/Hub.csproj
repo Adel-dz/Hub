@@ -110,6 +110,7 @@
       <DependentUpon>ConnectionDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="DLG\DialogManager.cs" />
+    <Compile Include="DLG\DialogManager.MsgProcessImpl.cs" />
     <Compile Include="DLG\ProfileDialog.cs">
       <SubType>Form</SubType>
     </Compile>

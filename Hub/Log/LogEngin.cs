@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace DGD.Hub.Log
@@ -12,7 +11,7 @@ namespace DGD.Hub.Log
     {
         const int MESSAGE_DELAY = 5000;
 
-        static Timer m_timer;
+        static readonly Timer m_timer;
         static bool m_msgVisible;
 
         public static event Action<string> MessageReady;
@@ -21,40 +20,44 @@ namespace DGD.Hub.Log
 
         static LogEngin()
         {
-            m_timer = new Timer(ProcessTimer);
+            m_timer = new Timer(MESSAGE_DELAY);
+            m_timer.TimeElapsed += ProcessTimer;
         }
 
+        public static bool IsDisposed { get; private set; }
 
         public static void PushFlash(string msg)
         {
             lock (m_timer)
             {
-                m_timer.Change(MESSAGE_DELAY , Timeout.Infinite);
+                m_timer.Start();
                 m_msgVisible = true;
-            }
 
-            MessageReady?.Invoke(msg);
+                MessageReady?.Invoke(msg);
+            }
         }
 
         public static IDisposable PushMessage(string msg)
         {
             lock (m_timer)
+            {
                 if (m_msgVisible)
                     CloseMessage();
 
-            MessageReady?.Invoke(msg);
-            return new AutoReleaser(CloseMessage);
+                MessageReady?.Invoke(msg);
+                return new AutoReleaser(CloseMessage);
+            }
         }
 
         public static void Dispose()
         {
-            if(m_timer != null)
+            if(!IsDisposed)
             {
                 lock (m_timer)
-                    if (m_timer != null)
+                    if (!IsDisposed)
                     {
                         m_timer.Dispose();
-                        m_timer = null;
+                        IsDisposed = true;
                     }
             }
         }
@@ -62,11 +65,11 @@ namespace DGD.Hub.Log
         //private:
         static void CloseMessage()
         {
-            m_timer.Change(Timeout.Infinite , Timeout.Infinite);
+            m_timer.Stop();
             MessageTimeout?.Invoke();
         }
 
-        static void ProcessTimer(object notUsed)
+        static void ProcessTimer()
         {
             lock (m_timer)
             {

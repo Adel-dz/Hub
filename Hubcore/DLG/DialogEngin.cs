@@ -188,6 +188,18 @@ namespace DGD.HubCore.DLG
             }
         }
 
+        public static void AppendHubDialog(string filePath, uint clID, IEnumerable<Message> msgs)
+        {
+            Assert(msgs != null);
+
+            using (FileLocker.Lock(filePath))
+            {
+                IEnumerable<Message> prevMsgs = ReadHubDialog(filePath , clID);
+                WriteHubDialog(filePath , clID , prevMsgs.Concat(msgs));
+            }
+
+        }
+
         public static IEnumerable<Message> ReadHubDialog(string filePath, uint clID)
         {
             using (FileLocker.Lock(filePath))

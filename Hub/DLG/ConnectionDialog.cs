@@ -156,10 +156,12 @@ namespace DGD.Hub.DLG
 
             m_exHandler = RespExceptionHandler;
 
+            var netEngin = new NetEngin(Program.Settings);
+
             using (new AutoReleaser(() => File.Delete(tmpFile)))
             {
                 SetProgressMessage("Réception des données à partir du serveur...");
-                new NetEngin(Program.Settings).Download(tmpFile , SettingsManager.ConnectionRespURI);
+                netEngin.Download(tmpFile , SettingsManager.ConnectionRespURI);
 
                 IEnumerable<HubCore.DLG.Message> messages = DialogEngin.ReadConnectionsResp(tmpFile);
                 HubCore.DLG.Message[] msgs = (from resp in messages
@@ -202,6 +204,11 @@ namespace DGD.Hub.DLG
 
                         Program.Settings.ClientInfo = m_clInfo;
                         SetProgressMessage("Enregistrement terminé.");
+
+                        //maj du fichier h
+                        netEngin.Download(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) ,
+                            SettingsManager.GetClientDialogURI(m_clInfo.ClientID) ,
+                            true);
 
                         ShowMessage("Votre enregistrement est maintenant terminé. " + 
                             "Vous pouvez commencer à utiliser l’application.");

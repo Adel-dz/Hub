@@ -9,30 +9,34 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 
 
 namespace DGD.Hub.DLG
 {
-    sealed class DialogManager: IDisposable
+    sealed partial class DialogManager: IDisposable
     {
         readonly Timer m_dialogTimer;
-        Timer m_updateTimer;
+        readonly Timer m_updateTimer;
+        readonly Dictionary<Message_t , Func<Message , Message>> m_msgHandlersTable;
         ClientInfo m_clInfo;
-        int m_dlgInterval;
-        bool m_dlgTimerEnabled;
-        bool m_resumeMode;
-        bool m_updateTimerEnabled;
+        uint m_lastSrvMsgID;
+        bool m_needUpload;
 
 
         public DialogManager()
         {
-            m_dialogTimer = new Timer(obj => ProcessDialogTimer() , null , Timeout.Infinite , Timeout.Infinite);
-            m_updateTimer = new Timer(obj => ProcessUpdateTimer() , null , Timeout.Infinite , Timeout.Infinite);
-            m_dlgInterval = SettingsManager.DialogTimerInterval;
+            m_dialogTimer = new Timer(SettingsManager.DialogTimerInterval);
+            m_dialogTimer.TimeElapsed += ProcessDialogTimer;
+
+            m_updateTimer = new Timer(SettingsManager.UpdateTimerInterval);
+            m_updateTimer.TimeElapsed += ProcessUpdateTimer;
+
+            m_msgHandlersTable = new Dictionary<Message_t , Func<Message , Message>>
+            {
+                {Message_t.UnknonwnMsg, DefaultProcessing }
+            };
         }
 
         public bool IsDisposed { get; private set; }
@@ -59,10 +63,10 @@ namespace DGD.Hub.DLG
 
             if (m_clInfo == null)
             {
-                if (Program.DialogManager.RegisterClient())
+                if (RegisterClient())
                 {
-                    StartDialogTimer();
-                    StartUpdateTimer(true);
+                    m_dialogTimer.Start();
+                    m_updateTimer.Start(true);
                 }
 
                 return;
@@ -88,8 +92,8 @@ namespace DGD.Hub.DLG
 
                 if (clDlg.ClientStatus == ClientStatus_t.Enabled)
                 {
-                    StartDialogTimer();
-                    StartUpdateTimer(true);
+                    m_dialogTimer.Start();
+                    m_updateTimer.Start(true);
                 }
                 else
                     if (clDlg.ClientStatus == ClientStatus_t.Banned)
@@ -100,7 +104,7 @@ namespace DGD.Hub.DLG
                     }
                 else
                 {
-                    m_resumeMode = true;
+                    //m_resumeMode = true;
                     new ResumeHandler(ResumeResp , m_clInfo.ClientID).Start();
                 }
 
@@ -130,15 +134,15 @@ namespace DGD.Hub.DLG
 
         public void Stop()
         {
-            StopDialogTimer();
-            StopUpdateTimer();
+            m_updateTimer.Stop();
+            m_dialogTimer.Stop();
         }
 
         public void Dispose()
         {
             if (!IsDisposed)
             {
-                StopDialogTimer();
+                m_updateTimer.Dispose();
                 m_dialogTimer.Dispose();
             }
         }
@@ -162,8 +166,8 @@ namespace DGD.Hub.DLG
                 break;
 
                 case ResumeHandler.Result_t.Ok:
-                StartDialogTimer();
-                StartUpdateTimer(true);
+                m_dialogTimer.Start();
+                m_updateTimer.Start(true);
                 break;
 
                 case ResumeHandler.Result_t.Rejected:
@@ -239,7 +243,7 @@ namespace DGD.Hub.DLG
 
         void ProcessDialogTimer()
         {
-            StopDialogTimer();
+            m_dialogTimer.Stop();
 
             Dbg.Log("Processing timer...");
 
@@ -251,19 +255,16 @@ namespace DGD.Hub.DLG
             try
             {
                 new NetEngin(Program.Settings).Download(tmpFile , srvDlgURI , true);
-                m_dlgInterval = SettingsManager.DialogTimerInterval;
             }
             catch (Exception ex)
             {
                 EventLogger.Error(ex.Message);
 
                 LogEngin.PushFlash(ex.Message);
-                m_dlgInterval += 60 * 1000;
-                StartDialogTimer();
+                m_dialogTimer.Start();
 
                 return;
             }
-
 
 
             try
@@ -273,21 +274,56 @@ namespace DGD.Hub.DLG
                 switch (clDlg.ClientStatus)
                 {
                     case ClientStatus_t.Enabled:
-                    if (!m_updateTimerEnabled)
-                        StartUpdateTimer(true);
+                    if (!m_updateTimer.IsRunning)
+                        m_updateTimer.Start(true);
+
+                    var msgs = from msg in clDlg.Messages
+                               where msg.ID >= m_lastSrvMsgID
+                               select msg;
+
+                    var respList = new List<Message>();
+
+                    foreach (Message msg in msgs)
+                    {
+                        Func<Message , Message> msgHandler;
+
+                        if (!m_msgHandlersTable.TryGetValue(msg.MessageCode , out msgHandler))
+                            msgHandler = DefaultProcessing;
+
+                        Message resp = msgHandler(msg);
+
+                        if (resp != null)
+                            respList.Add(resp);
+
+                        m_lastSrvMsgID = Math.Max(m_lastSrvMsgID , msg.ID);
+                    }
+
+                    string clFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
+
+                    if (respList.Count > 0)
+                    {                        
+                        DialogEngin.AppendHubDialog(clFilePath , m_clInfo.ClientID , respList);
+                        m_needUpload = true;                        
+                    }
+
+                    if(m_needUpload)
+                    {
+                        new NetEngin(Program.Settings).Upload(SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , clFilePath , true);
+                        m_needUpload = false;
+                    }
 
                     break;
 
                     case ClientStatus_t.Disabled:
-                    if (m_updateTimerEnabled)
-                        StopUpdateTimer();
+                    if (m_updateTimer.IsRunning)
+                        m_updateTimer.Stop();
 
                     break;
 
                     case ClientStatus_t.Banned:
-                    if (m_updateTimerEnabled)
+                    if (m_updateTimer.IsRunning)
                     {
-                        StopUpdateTimer();
+                        m_updateTimer.Stop();
 
                         foreach (IDBTable tbl in Program.TablesManager.Tables)
                             tbl.Clear();
@@ -305,13 +341,13 @@ namespace DGD.Hub.DLG
             }
             finally
             {
-                StartDialogTimer();
+                m_dialogTimer.Start();
             }
         }
 
         void ProcessUpdateTimer()
         {
-            StopUpdateTimer();
+            m_updateTimer.Stop();
 
             try
             {
@@ -335,52 +371,8 @@ namespace DGD.Hub.DLG
             }
             finally
             {
-                StartUpdateTimer();
+                m_updateTimer.Start();
             }
-        }
-
-        void StartDialogTimer(bool startNow = false)
-        {
-            int interval = SettingsManager.DialogTimerInterval;
-
-            lock (m_dialogTimer)
-                if (!m_dlgTimerEnabled)
-                {
-                    m_dialogTimer.Change(startNow ? 0 : interval , interval);
-                    m_dlgTimerEnabled = true;
-                }
-        }
-
-        void StopDialogTimer()
-        {
-            lock (m_dialogTimer)
-                if (m_dlgTimerEnabled)
-                {
-                    m_dialogTimer.Change(Timeout.Infinite , Timeout.Infinite);
-                    m_dlgTimerEnabled = false;
-                }
-        }
-
-        void StartUpdateTimer(bool startNow = false)
-        {
-            int interval = SettingsManager.UpdateTimerInterval;
-
-            lock (m_updateTimer)
-                if (!m_updateTimerEnabled)
-                {
-                    m_updateTimer.Change(startNow ? 0 : interval , interval);
-                    m_updateTimerEnabled = true;
-                }
-        }
-
-        void StopUpdateTimer()
-        {
-            lock (m_updateTimer)
-                if (m_updateTimerEnabled)
-                {
-                    m_updateTimer.Change(Timeout.Infinite , Timeout.Infinite);
-                    m_updateTimerEnabled = false;
-                }
         }
     }
 }
