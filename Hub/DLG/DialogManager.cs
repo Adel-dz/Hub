@@ -94,11 +94,14 @@ namespace DGD.Hub.DLG
                 else
                     if (clDlg.ClientStatus == ClientStatus_t.Banned)
                     foreach (IDBTable tbl in Program.TablesManager.CriticalTables)
+                    {
                         tbl.Clear();
+                        Program.Settings.DataGeneration = 0;
+                    }
                 else
                 {
                     m_resumeMode = true;
-                    new ResumeHandler(ResumeResp,m_clInfo.ClientID).Start();
+                    new ResumeHandler(ResumeResp , m_clInfo.ClientID).Start();
                 }
 
                 File.Delete(tmpFile);
@@ -155,12 +158,7 @@ namespace DGD.Hub.DLG
                 break;
             }
         }
-
-        void ProcessStatus(ClientDialog clDlg)
-        {
-
-        }
-
+        
         public void Stop()
         {
             StopDialogTimer();

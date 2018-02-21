@@ -135,7 +135,7 @@ namespace DGD.HubCore.DB
             {
                 Version = 0;
                 FrameCount = 0;
-                FirstDeletedFrameIndex = -1;
+                FirstDeletedFrameIndex = NULL_INDEX;
                 CreationTime = LastWriteTime = DateTime.Now;
                 IsDirty = false;
             }

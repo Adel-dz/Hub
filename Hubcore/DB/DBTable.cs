@@ -434,6 +434,7 @@ namespace DGD.HubCore.DB
                 m_header.Reset();
 
                 var writer = new TableWriter(m_dataFile);
+                m_dataFile.Position = 0;
                 m_header.Store(writer);
 
                 SourceCleared?.Invoke();                
