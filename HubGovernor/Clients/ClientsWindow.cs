@@ -334,7 +334,7 @@ namespace DGD.HubGovernor.Clients
                     if ((row as HubClient).ProfileID == prf.ID)
                     {
                         var client = row as HubClient;
-                        var node = new TreeNode(row.ID.ToString())
+                        var node = new TreeNode(row.ID.ToString("X"))
                         {
                             Tag = client ,
                             ImageIndex = NDX_IMG_CLIENT ,

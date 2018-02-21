@@ -91,38 +91,39 @@ namespace DGD.HubGovernor.Clients
             ClientDialog clDlg = DialogEngin.ReadSrvDialog(filePath);
 
             //desactiver le client
-                HubClient oldClient = GetProfileActiveClient(client.ProfileID);
+            HubClient oldClient = GetProfileActiveClient(client.ProfileID);
 
-                if (status == ClientStatus_t.Enabled && oldClient != null && oldClient.ID != client.ID)
-                {
-                    EventLogger.Info($"Désactivation du client {oldClient.ContactName}...");
-                    //maj la table des status clients
-                    int ndx = m_ndxerClientsStatus.IndexOf(oldClient.ID);
+            if (status == ClientStatus_t.Enabled && oldClient != null && oldClient.ID != client.ID)
+            {
+                EventLogger.Info($"Désactivation du client {oldClient.ContactName}...");
+        
+                //maj la table des status clients
+                int ndx = m_ndxerClientsStatus.IndexOf(oldClient.ID);
 
-                    Dbg.Assert(ndx >= 0);
+                Dbg.Assert(ndx >= 0);
 
-                    string oldClFilePath = AppPaths.GetLocalSrvDialogPath(oldClient.ID);
-                    ClientDialog oldClDlg = DialogEngin.ReadSrvDialog(oldClFilePath);
+                string oldClFilePath = AppPaths.GetLocalSrvDialogPath(oldClient.ID);
+                ClientDialog oldClDlg = DialogEngin.ReadSrvDialog(oldClFilePath);
 
-                    var oldClStatus = new ClientStatus(oldClient.ID , ClientStatus_t.Disabled);
-                    m_ndxerClientsStatus.Source.Replace(ndx , oldClStatus);
+                var oldClStatus = new ClientStatus(oldClient.ID , ClientStatus_t.Disabled);
+                m_ndxerClientsStatus.Source.Replace(ndx , oldClStatus);
 
-                    oldClDlg.ClientStatus = ClientStatus_t.Disabled;
-                    DialogEngin.WriteSrvDialog(oldClFilePath , oldClDlg);
-                    AddUpload(Names.GetSrvDialogFile(oldClient.ID));
-                }
+                oldClDlg.ClientStatus = ClientStatus_t.Disabled;
+                DialogEngin.WriteSrvDialog(oldClFilePath , oldClDlg);
+                AddUpload(Names.GetSrvDialogFile(oldClient.ID));
+            }
 
 
-                //maj la table des statuts clients
-                int ndxStatus = m_ndxerClientsStatus.IndexOf(client.ID);
+            //maj la table des statuts clients
+            int ndxStatus = m_ndxerClientsStatus.IndexOf(client.ID);
 
-                Dbg.Assert(ndxStatus >= 0);
-                var clStatus = new ClientStatus(client.ID , status);
-                m_ndxerClientsStatus.Source.Replace(ndxStatus , clStatus);
+            Dbg.Assert(ndxStatus >= 0);
+            var clStatus = new ClientStatus(client.ID , status);
+            m_ndxerClientsStatus.Source.Replace(ndxStatus , clStatus);
 
-                clDlg.ClientStatus = status;
-                DialogEngin.WriteSrvDialog(filePath , clDlg);
-                AddUpload(Names.GetSrvDialogFile(client.ID));
+            clDlg.ClientStatus = status;
+            DialogEngin.WriteSrvDialog(filePath , clDlg);
+            AddUpload(Names.GetSrvDialogFile(client.ID));
         }
 
         public IEnumerable<HubClient> GetProfileClients(uint idProfile)
@@ -417,7 +418,7 @@ namespace DGD.HubGovernor.Clients
                 string filePath = AppPaths.GetLocalSrvDialogPath(oldClient.ID);
 
                 ClientDialog clDlg = DialogEngin.ReadSrvDialog(filePath);
-                clDlg.ClientStatus = ClientStatus_t.Enabled;
+                clDlg.ClientStatus = ClientStatus_t.Disabled;
                 DialogEngin.WriteSrvDialog(filePath , clDlg);
                 AddUpload(Names.GetSrvDialogFile(oldClient.ID));
             }
