@@ -16,6 +16,19 @@ namespace DGD.HubGovernor.Clients
 {
     sealed partial class ClientsManager: IDisposable
     {
+        const int LIVE_TIMEOUT = 10;
+        const int NEED_REFRESH_TIMEOUT = 5;
+
+
+        class ClientData
+        {
+            DateTime ConnectionTime { get; set; }
+            DateTime LastSeenTime { get; set; }
+            int LiveTimeout { get; set; }
+            uint LastHandledMessageID { get; set; }
+        }
+
+        readonly Dictionary<uint , ClientData> m_runningClients;
         readonly Timer m_netTimer;
         readonly KeyIndexer m_ndxerProfiles;
         readonly KeyIndexer m_ndxerClients;
@@ -45,6 +58,8 @@ namespace DGD.HubGovernor.Clients
             m_ndxerProfilesMgmnt = new KeyIndexer(AppContext.TableManager.ProfileManagementMode.DataProvider);
             m_ndxerProfilesMgmnt.Connect();
 
+            m_runningClients = new Dictionary<uint , ClientData>();
+
             m_cxnReqProcessors = new Dictionary<Message_t , Func<Message , Message>>
             {
                 {Message_t.NewConnection, ProcessNewConnectionReq },
@@ -59,19 +74,27 @@ namespace DGD.HubGovernor.Clients
 
         public bool IsDisposed { get; private set; }
 
-        public IEnumerable<HubClient> Clients
+        public IEnumerable<HubClient> EnabledClients
         {
-            get;
-        }
+            get
+            {
+                var clients = from ClientStatus clStatus in m_ndxerClientsStatus.Source.Enumerate()
+                              where clStatus.Status == ClientStatus_t.Enabled
+                              select m_ndxerClients.Get(clStatus.ClientID) as HubClient;
 
-        public IEnumerable<HubClient> ActiveClients
-        {
-            get;
+                return clients;
+            }
         }
 
         public IEnumerable<HubClient> RunningClients
         {
-            get;
+            get
+            {
+                var clients = from clID in m_runningClients.Keys
+                              select m_ndxerClients.Get(clID) as HubClient;
+
+                return clients;
+            }
         }
 
         public ClientStatus_t GetClientStatus(uint idClient)

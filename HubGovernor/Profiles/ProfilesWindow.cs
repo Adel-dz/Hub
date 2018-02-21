@@ -2,6 +2,7 @@
 using DGD.HubCore.DLG;
 using DGD.HubGovernor.Clients;
 using DGD.HubGovernor.Extensions;
+using DGD.HubGovernor.ListViewSorters;
 using easyLib.DB;
 using easyLib.Extensions;
 using easyLib.Log;
@@ -35,6 +36,7 @@ namespace DGD.HubGovernor.Profiles
         readonly IDatumProvider m_dpProfiles;
         readonly KeyIndexer m_ndxerProfiles;
         readonly KeyIndexer m_ndxerMgmntMode;
+        readonly Dictionary<ColumnDataType_t , Func<int , IColumnSorter>> m_colSorters;
 
 
         public ProfilesWindow()
@@ -44,6 +46,13 @@ namespace DGD.HubGovernor.Profiles
             m_dpProfiles = AppContext.TableManager.Profiles.DataProvider;
             m_ndxerProfiles = new KeyIndexer(m_dpProfiles);
             m_ndxerMgmntMode = new KeyIndexer(AppContext.TableManager.ProfileManagementMode.DataProvider);
+
+            m_colSorters = new Dictionary<ColumnDataType_t , Func<int , IColumnSorter>>
+            {
+                { ColumnDataType_t.Integer, ndxCol => new IntegerColumnSorter(ndxCol) },
+                { ColumnDataType_t.Text, ndxCol => new TextColumnSorter(ndxCol) },
+            };
+
         }
 
         //protected:
@@ -176,14 +185,14 @@ namespace DGD.HubGovernor.Profiles
 
             if (m_lvData.SelectedItems.Count == 1)
             {
-                m_tsbAutoManagement.Enabled = true;
+                m_tsbClients.Enabled = m_tsbAutoManagement.Enabled = true;
                 UserProfile prf = m_lvData.SelectedItems[0].Tag as UserProfile;
 
                 m_tsbAutoManagement.Checked =
                     AppContext.ClientsManager.GetProfileManagementMode(prf.ID) == ManagementMode_t.Auto;
             }
             else
-                m_tsbAutoManagement.Enabled = false;
+                m_tsbClients.Enabled = m_tsbAutoManagement.Enabled = false;
         }
 
         private void DeleteProfile_Click(object sender , EventArgs e)
@@ -360,5 +369,37 @@ namespace DGD.HubGovernor.Profiles
             prfMgmntMode.ManagementMode = mode;
             m_ndxerMgmntMode.Source.Replace(m_ndxerMgmntMode.IndexOf(prf.ID) , prfMgmntMode);
         }
+
+        private void Clients_Click(object sender , EventArgs e)
+        {
+            var prf = m_lvData.SelectedItems[0].Tag as UserProfile;
+
+            var clWind = new Clients.ClientsWindow(ndxerProfiles: m_ndxerProfiles , idProfile: prf.ID);
+            clWind.Show(Owner);
+        }
+
+        private void Data_ColumnClick(object sender , ColumnClickEventArgs e)
+        {
+            var sorter = m_lvData.ListViewItemSorter as IColumnSorter;
+
+            if (sorter == null || e.Column != sorter.ColumnIndex)
+            {
+                if (sorter != null)
+                    m_lvData.SetColumnHeaderSortIcon(sorter.ColumnIndex , SortOrder.None);
+
+                sorter = m_colSorters[(ColumnDataType_t)m_lvData.Columns[e.Column].Tag](e.Column);
+                m_lvData.ListViewItemSorter = sorter;
+                m_lvData.SetColumnHeaderSortIcon(e.Column , SortOrder.Ascending);
+            }
+            else
+            {
+                sorter.SortDescending = !sorter.SortDescending;
+                m_lvData.Sort();
+
+                m_lvData.SetColumnHeaderSortIcon(e.Column ,
+                    sorter.SortDescending ? SortOrder.Descending : SortOrder.Ascending);
+            }
+        }
+
     }
 }

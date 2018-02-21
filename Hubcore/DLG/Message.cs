@@ -16,6 +16,8 @@ namespace DGD.HubCore.DLG
         Rejected,   //data = ClientID        
         SendInfo,    //data = ClientID
         SetInfo,    //data = ClientInfo
+        Start,  //data = ClientID + start time 
+        Close,  //data = ClientID + close time
     }
 
 

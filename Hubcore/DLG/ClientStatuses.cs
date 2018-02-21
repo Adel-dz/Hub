@@ -17,7 +17,7 @@ namespace DGD.HubCore.DLG
         readonly static string[] m_statusNames =
         {
             "",
-            "Actif",
+            "Activé",
             "Désactivé" ,
             "Banni"
         };
