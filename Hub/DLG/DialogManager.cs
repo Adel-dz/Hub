@@ -128,6 +128,23 @@ namespace DGD.Hub.DLG
             task.Start();
         }
 
+        public void Stop()
+        {
+            StopDialogTimer();
+            StopUpdateTimer();
+        }
+
+        public void Dispose()
+        {
+            if (!IsDisposed)
+            {
+                StopDialogTimer();
+                m_dialogTimer.Dispose();
+            }
+        }
+
+
+        //private:
         void ResumeResp(ResumeHandler.Result_t resp)
         {
             switch (resp)
@@ -158,24 +175,7 @@ namespace DGD.Hub.DLG
                 break;
             }
         }
-        
-        public void Stop()
-        {
-            StopDialogTimer();
-            StopUpdateTimer();
-        }
 
-        public void Dispose()
-        {
-            if (!IsDisposed)
-            {
-                StopDialogTimer();
-                m_dialogTimer.Dispose();
-            }
-        }
-
-
-        //private:
         bool RegisterClient()
         {
             var busyDlg = new BusyDialog();
@@ -250,7 +250,7 @@ namespace DGD.Hub.DLG
 
             try
             {
-                new NetEngin(Program.Settings).Download(tmpFile , srvDlgURI);
+                new NetEngin(Program.Settings).Download(tmpFile , srvDlgURI , true);
                 m_dlgInterval = SettingsManager.DialogTimerInterval;
             }
             catch (Exception ex)
@@ -289,15 +289,13 @@ namespace DGD.Hub.DLG
                     {
                         StopUpdateTimer();
 
-                        foreach (HubCore.DB.IDBTable tbl in Program.TablesManager.Tables)
+                        foreach (IDBTable tbl in Program.TablesManager.Tables)
                             tbl.Clear();
                     }
-
-
                     break;
 
                     default:
-
+                    Dbg.Assert(false);
                     break;
                 }
             }

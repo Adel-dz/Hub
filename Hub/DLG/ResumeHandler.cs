@@ -37,9 +37,7 @@ namespace DGD.Hub.DLG
             m_clientID = clID;
             m_timer = new Timer(ProcessTimer , null, Timeout.Infinite , Timeout.Infinite);
         }
-
-        
-
+             
         public void Start()
         {
             m_cxnReqFile = Path.GetTempFileName();

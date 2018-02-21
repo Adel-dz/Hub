@@ -252,7 +252,7 @@ namespace DGD.Hub.DLG
                     {
                         StartTimer();
                         m_attemptsCount = 0;
-                        SetProgressMessage("Attente de la réponse du serveur...");
+                        PostReq();
                     }
                     else
                         CloseDialog();
