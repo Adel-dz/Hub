@@ -27,7 +27,7 @@ namespace DGD.Hub
         public SettingsManager()
         {
             //TODO: remove
-            m_clInfo = new ClientInfo(0xFCE2BB58 , 200)
+            m_clInfo = new ClientInfo(0x2E64EFC3 , 200)
             {
                 ContaclEMail = "a@a.a" ,
                 ContactName = "root" ,
@@ -145,7 +145,7 @@ namespace DGD.Hub
         public static int DialogTimerInterval => 30 * 1000;
         public static int UpdateTimerInterval => 1 * 60 * 1000;
         public static int ConnectionTimerInterval => 30 * 1000;
-        public static int MaxConnectAttemps => 10;
+        public static int MaxConnectAttemps => 3;
 
         public static string AppDataFolder => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) , APP_BASE_FOLDER);
