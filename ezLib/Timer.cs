@@ -45,15 +45,25 @@ namespace easyLib
             Assert(!IsRunning);
 
             lock (m_timer)
-                IsRunning = m_timer.Change(startNow ? 0 : System.Threading.Timeout.Infinite , m_interval);
+                IsRunning = m_timer.Change(startNow ? 0 : m_interval , m_interval);
         }
 
         public void Stop()
         {
-            Assert(IsRunning);
-
             lock (m_timer)
-                IsRunning = !m_timer.Change(System.Threading.Timeout.Infinite , System.Threading.Timeout.Infinite);
+                if (IsRunning)
+                    IsRunning = !m_timer.Change(System.Threading.Timeout.Infinite , System.Threading.Timeout.Infinite);
+        }
+
+        public void Restart(bool startNow = false)
+        {
+            lock (m_timer)
+            {
+                if(IsRunning)
+                    m_timer.Change(System.Threading.Timeout.Infinite , System.Threading.Timeout.Infinite);
+
+                IsRunning = m_timer.Change(startNow ? 0 : m_interval , m_interval);
+            }
         }
 
         public void Dispose()

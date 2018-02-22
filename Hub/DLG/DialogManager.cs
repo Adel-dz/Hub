@@ -72,16 +72,13 @@ namespace DGD.Hub.DLG
                 return;
             }
 
+            //process only status part of the g file
             string tmpFile = Path.GetTempFileName();
 
             Action download = () =>
             {
-                //maj du fichier dialog
-                string dlgFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
-
-                var netEngin = new NetEngin(Program.Settings);
-
-                netEngin.Download(dlgFilePath , SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , true);
+                //download g file
+                var netEngin = new NetEngin(Program.Settings);                 
                 netEngin.Download(tmpFile , SettingsManager.GetServerDialogURI(m_clInfo.ClientID) , true);
 
             };
@@ -103,10 +100,7 @@ namespace DGD.Hub.DLG
                         Program.Settings.DataGeneration = 0;
                     }
                 else
-                {
-                    //m_resumeMode = true;
                     new ResumeHandler(ResumeResp , m_clInfo.ClientID).Start();
-                }
 
                 File.Delete(tmpFile);
             };
@@ -312,6 +306,11 @@ namespace DGD.Hub.DLG
                         m_needUpload = false;
                     }
 
+                    //update g file
+                    string srvFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
+                    File.Delete(srvFilePath);
+                    File.Move(tmpFile , srvFilePath);
+                    m_dialogTimer.Start();
                     break;
 
                     case ClientStatus_t.Disabled:
@@ -338,9 +337,6 @@ namespace DGD.Hub.DLG
             catch (Exception ex)
             {
                 EventLogger.Error(ex.Message);
-            }
-            finally
-            {
                 m_dialogTimer.Start();
             }
         }
