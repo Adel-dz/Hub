@@ -5,6 +5,7 @@ using DGD.HubGovernor.Profiles;
 using easyLib;
 using easyLib.Log;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -113,13 +114,36 @@ namespace DGD.HubGovernor.Clients
                 DialogEngin.WriteSrvDialog(clFilePath , clDlg);
             }
 
-            AddUpload(Names.GetSrvDialogFile(clID));
+            //maj du fichier h + ajouter le client a la table des clients actifs
+            var clData = new ClientData(DateTime.Now);
+            string hubFilePath = AppPaths.GetLocalClientDilogPath(clID);
+
+            try
+            {
+                
+                new NetEngin(AppContext.Settings.AppSettings).Download(hubFilePath,                    
+                    AppPaths.GetRemoteClientDialogUri(clID) ,
+                    true);
+
+                IEnumerable<Message> msgs = DialogEngin.ReadHubDialog(hubFilePath , clID);
+
+                if (msgs.Any())
+                    clData.LastHandledMessageID = msgs.Max(m => m.ID);
+            }
+            catch(Exception ex)
+            {
+                DialogEngin.WriteHubDialog(hubFilePath , clID , Enumerable.Empty<Message>());
+                EventLogger.Error(ex.Message);
+            }
+
+            m_runningClients[clID] = clData;
+
+            AddUpload(Names.GetSrvDialogFile(clID));            
 
             EventLogger.Info("Requête acceptée. :-)");
             return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , msg.Data);
         }
-
-
+        
         Message ProcessNewConnectionReq(Message msg)
         {
             Dbg.Assert(msg.MessageCode == Message_t.NewConnection);
@@ -182,6 +206,10 @@ namespace DGD.HubGovernor.Clients
 
             //enregister le client 
             AddClient(clInfo);
+
+            //maj du dict des clients actifs
+            var clData = new ClientData(DateTime.Now);
+            m_runningClients[clInfo.ClientID] = clData;
 
             EventLogger.Info("Inscription réussie. :-)");
             return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , data);

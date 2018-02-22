@@ -22,10 +22,16 @@ namespace DGD.HubGovernor.Clients
 
         class ClientData
         {
-            DateTime ConnectionTime { get; set; }
-            DateTime LastSeenTime { get; set; }
-            int LiveTimeout { get; set; }
-            uint LastHandledMessageID { get; set; }
+            public ClientData(DateTime cxnTime)
+            {
+                ConnectionTime = LastSeenTime = cxnTime;
+                LiveTimeout = LIVE_TIMEOUT;
+            }
+
+            public DateTime ConnectionTime { get; set; }
+            public DateTime LastSeenTime { get; set; }
+            public int LiveTimeout { get; set; }
+            public uint LastHandledMessageID { get; set; }
         }
 
         readonly Dictionary<uint , ClientData> m_runningClients;
