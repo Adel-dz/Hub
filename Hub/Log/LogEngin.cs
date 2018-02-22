@@ -29,8 +29,8 @@ namespace DGD.Hub.Log
         public static void PushFlash(string msg)
         {
             lock (m_timer)
-            {
-                m_timer.Start();
+            {               
+                m_timer.Restart();
                 m_msgVisible = true;
 
                 MessageReady?.Invoke(msg);
@@ -44,6 +44,7 @@ namespace DGD.Hub.Log
                 if (m_msgVisible)
                     CloseMessage();
 
+                m_msgVisible = true;
                 MessageReady?.Invoke(msg);
                 return new AutoReleaser(CloseMessage);
             }

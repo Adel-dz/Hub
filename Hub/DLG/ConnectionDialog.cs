@@ -127,7 +127,7 @@ namespace DGD.Hub.DLG
                 PostReq();
             }
         }
-        
+
         void CloseDialog()
         {
             if (InvokeRequired)
@@ -205,12 +205,16 @@ namespace DGD.Hub.DLG
                         Program.Settings.ClientInfo = m_clInfo;
                         SetProgressMessage("Enregistrement terminé.");
 
-                        //maj du fichier h
-                        netEngin.Download(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) ,
-                            SettingsManager.GetClientDialogURI(m_clInfo.ClientID) ,
-                            true);
+                        //maj des fichiers h et g
+                        Uri[] uris =
+                            {
+                                SettingsManager.GetClientDialogURI(m_clInfo.ClientID) ,
+                                SettingsManager.GetServerDialogURI(m_clInfo.ClientID)
+                            };
 
-                        ShowMessage("Votre enregistrement est maintenant terminé. " + 
+                        netEngin.Download(SettingsManager.DialogFolder,uris, true);
+
+                        ShowMessage("Votre enregistrement est maintenant terminé. " +
                             "Vous pouvez commencer à utiliser l’application.");
 
                         IsRegistered = true;

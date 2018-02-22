@@ -162,6 +162,9 @@ namespace DGD.Hub
         public static Uri GetClientDialogURI(uint clientID) => 
             new Uri(Uris.GetDialogDirUri(ServerURI) , Names.GetClientDialogFile(clientID));
 
+        public static string GetSrvDialogFilePath(uint idClient) => 
+            Path.Combine(DialogFolder , Names.GetSrvDialogFile(idClient));
+
         public static Uri GetServerDialogURI(uint clientID) =>
           new Uri(Uris.GetDialogDirUri(ServerURI) , Names.GetSrvDialogFile(clientID));
 
