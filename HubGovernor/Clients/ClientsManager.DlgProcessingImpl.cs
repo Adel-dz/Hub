@@ -71,7 +71,7 @@ namespace DGD.HubGovernor.Clients
                 int ndxCurClient = m_ndxerClientsStatus.IndexOf(curClStatus.ID);
                 m_ndxerClientsStatus.Source.Replace(ndxCurClient , curClStatus);
 
-                //maj du fichier g
+                //maj du fichier distant g
                 string curClFilePath = AppPaths.GetLocalSrvDialogPath(curClient.ID);
                 try
                 {
@@ -114,17 +114,14 @@ namespace DGD.HubGovernor.Clients
                 DialogEngin.WriteSrvDialog(clFilePath , clDlg);
             }
 
-            //maj du fichier h + ajouter le client a la table des clients actifs
+            AddUpload(Names.GetSrvDialogFile(clID));
+
+            //maj du ditc des clients actifs
             var clData = new ClientData(DateTime.Now);
             string hubFilePath = AppPaths.GetLocalClientDilogPath(clID);
 
             try
-            {
-                
-                new NetEngin(AppContext.Settings.AppSettings).Download(hubFilePath,                    
-                    AppPaths.GetRemoteClientDialogUri(clID) ,
-                    true);
-
+            {               
                 IEnumerable<Message> msgs = DialogEngin.ReadHubDialog(hubFilePath , clID);
 
                 if (msgs.Any())
@@ -137,9 +134,7 @@ namespace DGD.HubGovernor.Clients
             }
 
             m_runningClients[clID] = clData;
-
-            AddUpload(Names.GetSrvDialogFile(clID));            
-
+            
             EventLogger.Info("Requête acceptée. :-)");
             return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , msg.Data);
         }
