@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 
@@ -23,6 +24,7 @@ namespace DGD.Hub.DLG
         ClientInfo m_clInfo;
         ClientStatus_t m_clStatus = ClientStatus_t.Unknown;
         uint m_lastSrvMsgID;
+        uint m_lastClientMsgID;
         bool m_needUpload;
 
 
@@ -74,15 +76,24 @@ namespace DGD.Hub.DLG
                 return;
             }
 
+            //update last client msg id
+            IEnumerable<Message> clMsgs = DialogEngin.ReadHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) , 
+                m_clInfo.ClientID);
+
+            if (clMsgs.Any())
+                m_lastClientMsgID = clMsgs.Max(m => m.ID);
+
             //process only status part of the g file
             string tmpFile = Path.GetTempFileName();
 
             Action download = () =>
             {
-                //download g file
+                //download gov file
                 var netEngin = new NetEngin(Program.Settings);
                 netEngin.Download(tmpFile , SettingsManager.GetServerDialogURI(m_clInfo.ClientID) , true);
 
+                PostStartMessage();
+                
             };
 
             Action onSuccess = () =>
@@ -381,6 +392,16 @@ namespace DGD.Hub.DLG
             {
                 m_updateTimer.Start();
             }
+        }
+
+        void PostStartMessage()
+        {
+            Dbg.Log("Posting start msg...");
+
+            var ms = new MemoryStream();
+            var writer = new RawDataWriter(ms , Encoding.UTF8);
+            writer.Write()
+            var msg = new Message(++m_lastClientMsgID , 0 , Message_t.Start);
         }
 
     }
