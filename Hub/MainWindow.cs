@@ -16,12 +16,15 @@ namespace DGD.Hub
 {
     sealed partial class MainWindow: Form
     {
+        Log.LogBox m_logBox;
         IView m_curView;
-        Log.FlashBox m_flashBox;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            m_logBox = new Log.LogBox();
+            Controls.Add(m_logBox);
 
             CurrentView = InitAboutView();
             InitSpotView();
@@ -54,27 +57,6 @@ namespace DGD.Hub
 
 
         //protected
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-        }
-
-        protected override void OnResize(EventArgs e)
-        {
-            if (m_flashBox != null)
-                m_flashBox.AutoMove();
-
-            base.OnResize(e);
-        }
-
-        protected override void OnMove(EventArgs e)
-        {
-            if (m_flashBox != null)
-                m_flashBox.AutoMove();
-
-            base.OnMove(e);
-        }
-
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
@@ -116,26 +98,23 @@ namespace DGD.Hub
 
                 m_curView = value;
                 m_curView.Activate(m_viewsPanel);
+
+                if (m_logBox.Visible)
+                    m_logBox.BringToFront();
             }
         }
 
-        void EndFlashBox()
+        void EndLoghBox()
         {
-            if (m_flashBox != null)
-            {
-                m_flashBox.Dispose();
-                m_flashBox = null;
-            }
+            m_logBox.Hide();
         }
 
-        void StartFlashBox(string msg)
+        void StartLogBox(string msg)
         {
-            if (m_flashBox != null)
-                EndFlashBox();
+            m_logBox.Show();         
+            m_logBox.Message = msg;            
+            m_logBox.BringToFront();            
 
-            m_flashBox = new Log.FlashBox(msg);
-            m_flashBox.Show(this);
-            //Activate();
         }
 
         SpotView.SpotView InitSpotView()
@@ -212,17 +191,17 @@ namespace DGD.Hub
         private void LogEngin_MessageTimeout()
         {
             if (InvokeRequired)
-                BeginInvoke(new MethodInvoker(EndFlashBox));
+                BeginInvoke(new MethodInvoker(EndLoghBox));
             else
-                EndFlashBox();
+                EndLoghBox();
         }
 
         private void LogEngin_MessageReady(string msg)
         {
             if (InvokeRequired)
-                BeginInvoke(new Action<string>(StartFlashBox) , msg);
+                BeginInvoke(new Action<string>(StartLogBox) , msg);
             else
-                StartFlashBox(msg);
+                StartLogBox(msg);
         }
 
         private void Quit_Click(object sender , EventArgs e)

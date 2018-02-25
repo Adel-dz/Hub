@@ -21,6 +21,7 @@ namespace DGD.Hub.DLG
         readonly Timer m_updateTimer;
         readonly Dictionary<Message_t , Func<Message , Message>> m_msgHandlersTable;
         ClientInfo m_clInfo;
+        ClientStatus_t m_clStatus = ClientStatus_t.Unknown;
         uint m_lastSrvMsgID;
         bool m_needUpload;
 
@@ -65,6 +66,7 @@ namespace DGD.Hub.DLG
             {
                 if (RegisterClient())
                 {
+                    m_clStatus = ClientStatus_t.Enabled;
                     m_dialogTimer.Start();
                     m_updateTimer.Start(true);
                 }
@@ -78,7 +80,7 @@ namespace DGD.Hub.DLG
             Action download = () =>
             {
                 //download g file
-                var netEngin = new NetEngin(Program.Settings);                 
+                var netEngin = new NetEngin(Program.Settings);
                 netEngin.Download(tmpFile , SettingsManager.GetServerDialogURI(m_clInfo.ClientID) , true);
 
             };
@@ -87,13 +89,15 @@ namespace DGD.Hub.DLG
             {
                 ClientDialog clDlg = DialogEngin.ReadSrvDialog(tmpFile);
 
-                if (clDlg.ClientStatus == ClientStatus_t.Enabled)
+                m_clStatus = clDlg.ClientStatus;
+
+                if (m_clStatus == ClientStatus_t.Enabled)
                 {
                     m_dialogTimer.Start();
                     m_updateTimer.Start(true);
                 }
                 else
-                    if (clDlg.ClientStatus == ClientStatus_t.Banned)
+                    if (m_clStatus == ClientStatus_t.Banned)
                     foreach (IDBTable tbl in Program.TablesManager.CriticalTables)
                     {
                         tbl.Clear();
@@ -239,7 +243,7 @@ namespace DGD.Hub.DLG
         {
             m_dialogTimer.Stop();
 
-            Dbg.Log("Processing timer...");
+            Dbg.Log("Processing dialog timer...");
 
             Uri srvDlgURI = SettingsManager.GetServerDialogURI(m_clInfo.ClientID);
             string tmpFile = Path.GetTempFileName();
@@ -265,74 +269,81 @@ namespace DGD.Hub.DLG
             {
                 ClientDialog clDlg = DialogEngin.ReadSrvDialog(tmpFile);
 
-                switch (clDlg.ClientStatus)
+                if (m_clStatus != clDlg.ClientStatus)
                 {
-                    case ClientStatus_t.Enabled:
-                    if (!m_updateTimer.IsRunning)
+                    switch (clDlg.ClientStatus)
+                    {
+                        case ClientStatus_t.Enabled:
                         m_updateTimer.Start(true);
+                        break;
 
-                    var msgs = from msg in clDlg.Messages
-                               where msg.ID >= m_lastSrvMsgID
-                               select msg;
+                        case ClientStatus_t.Disabled:
+                        if (m_clStatus == ClientStatus_t.Enabled)
+                            m_updateTimer.Stop();
+                        return;
 
-                    var respList = new List<Message>();
+                        case ClientStatus_t.Banned:
+                        if (m_updateTimer.IsRunning)
+                        {
+                            m_updateTimer.Stop();
 
-                    foreach (Message msg in msgs)
-                    {
-                        Func<Message , Message> msgHandler;
+                            foreach (IDBTable tbl in Program.TablesManager.Tables)
+                                tbl.Clear();
+                        }
+                        return;
 
-                        if (!m_msgHandlersTable.TryGetValue(msg.MessageCode , out msgHandler))
-                            msgHandler = DefaultProcessing;
-
-                        Message resp = msgHandler(msg);
-
-                        if (resp != null)
-                            respList.Add(resp);
-
-                        m_lastSrvMsgID = Math.Max(m_lastSrvMsgID , msg.ID);
+                        default:
+                        Dbg.Assert(false);
+                        break;
                     }
 
-                    string clFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
-
-                    if (respList.Count > 0)
-                    {                        
-                        DialogEngin.AppendHubDialog(clFilePath , m_clInfo.ClientID , respList);
-                        m_needUpload = true;                        
-                    }
-
-                    if(m_needUpload)
-                    {
-                        new NetEngin(Program.Settings).Upload(SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , clFilePath , true);
-                        m_needUpload = false;
-                    }
-
-                    //update g file
-                    string srvFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
-                    File.Delete(srvFilePath);
-                    File.Move(tmpFile , srvFilePath);
-                    m_dialogTimer.Start();
-                    break;
-
-                    case ClientStatus_t.Disabled:
-                    if (m_updateTimer.IsRunning)
-                        m_updateTimer.Stop();
-
-                    break;
-
-                    case ClientStatus_t.Banned:
-                    if (m_updateTimer.IsRunning)
-                    {
-                        m_updateTimer.Stop();
-
-                        foreach (IDBTable tbl in Program.TablesManager.Tables)
-                            tbl.Clear();
-                    }
-                    break;
-
-                    default:
-                    Dbg.Assert(false);
-                    break;
+                    m_clStatus = clDlg.ClientStatus;
                 }
+
+
+
+                Dbg.Assert(m_clStatus == ClientStatus_t.Enabled);
+
+                var msgs = from msg in clDlg.Messages
+                           where msg.ID >= m_lastSrvMsgID
+                           select msg;
+
+                var respList = new List<Message>();
+
+                foreach (Message msg in msgs)
+                {
+                    Func<Message , Message> msgHandler;
+
+                    if (!m_msgHandlersTable.TryGetValue(msg.MessageCode , out msgHandler))
+                        msgHandler = DefaultProcessing;
+
+                    Message resp = msgHandler(msg);
+
+                    if (resp != null)
+                        respList.Add(resp);
+
+                    m_lastSrvMsgID = Math.Max(m_lastSrvMsgID , msg.ID);
+                }
+
+                string clFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
+
+                if (respList.Count > 0)
+                {
+                    DialogEngin.AppendHubDialog(clFilePath , m_clInfo.ClientID , respList);
+                    m_needUpload = true;
+                }
+
+                if (m_needUpload)
+                {
+                    new NetEngin(Program.Settings).Upload(SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , clFilePath , true);
+                    m_needUpload = false;
+                }
+
+                //update g file
+                string srvFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
+                File.Delete(srvFilePath);
+                File.Move(tmpFile , srvFilePath);
+                m_dialogTimer.Start();
             }
             catch (Exception ex)
             {
@@ -344,6 +355,7 @@ namespace DGD.Hub.DLG
         void ProcessUpdateTimer()
         {
             m_updateTimer.Stop();
+            EventLogger.Debug("Processing update timer...");
 
             try
             {

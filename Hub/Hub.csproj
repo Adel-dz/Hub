@@ -125,11 +125,11 @@
       <DependentUpon>DummyView.cs</DependentUpon>
     </Compile>
     <Compile Include="Extensions.cs" />
-    <Compile Include="Log\FlashBox.cs">
-      <SubType>Form</SubType>
+    <Compile Include="Log\LogBox.cs">
+      <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Log\FlashBox.Designer.cs">
-      <DependentUpon>FlashBox.cs</DependentUpon>
+    <Compile Include="Log\LogBox.Designer.cs">
+      <DependentUpon>LogBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Log\LogEngin.cs" />
     <Compile Include="MainWindow.cs">
@@ -168,8 +168,8 @@
     <EmbeddedResource Include="DummyView\DummyView.resx">
       <DependentUpon>DummyView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Log\FlashBox.resx">
-      <DependentUpon>FlashBox.cs</DependentUpon>
+    <EmbeddedResource Include="Log\LogBox.resx">
+      <DependentUpon>LogBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>

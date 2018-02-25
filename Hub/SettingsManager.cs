@@ -77,14 +77,36 @@ namespace DGD.Hub
             {
                 if (m_clInfo == null)
                 {
-                    byte[] data = LoadCriticalDataFromFile();
+                    byte[] fileData = LoadCriticalDataFromFile();
+                    byte[] regData = LoadCriticalDataFromRegistry();
+                    byte[] data = regData;
 
-                    if (data == null || data.Length == 0)
+                    //sync file data and reg data
+                    if(fileData == null || fileData.Length == 0)
                     {
-                        data = LoadCriticalDataFromRegistry();
+                        if (regData != null && regData.Length > 0)
+                            SaveCriticalDataToFile(regData);
+                    }
+                    else if(regData == null || regData.Length == 0)
+                    {
+                        SaveCriticalDataToRegistry(fileData);
+                        data = fileData;
+                    }
+                    else
+                    {
+                        bool same = fileData.Length == regData.Length;
 
-                        if (data != null && data.Length > 0)
-                            SaveCriticalDataToFile(data);
+                        if(same)
+                            for(int i = 0; i < regData.Length;++i)
+                                if(regData[i] != fileData[i])
+                                {
+                                    data = regData;
+                                    same = false;
+                                    break;
+                                }
+
+                        if (!same)
+                            SaveCriticalDataToFile(regData);
                     }
 
                     if (data != null && data.Length > 0)
@@ -103,24 +125,23 @@ namespace DGD.Hub
             {
                 m_clInfo = value;
 
-                //    byte[] data;
+                byte[] data;
 
-                //    if (value == null)
-                //    {
-                //        data = new byte[0];
-                //    }
-                //    else
-                //    {
-                //        var ms = new MemoryStream();
-                //        var writer = new RawDataWriter(ms , Encoding.UTF8);
-                //        value.Write(writer);
+                if (value == null)
+                {
+                    data = new byte[0];
+                }
+                else
+                {
+                    var ms = new MemoryStream();
+                    var writer = new RawDataWriter(ms , Encoding.UTF8);
+                    value.Write(writer);
 
-                //        data = ms.ToArray();
-                //    }
+                    data = ms.ToArray();
+                }
 
-                //    SaveCriticalDataToFile(data);
-                //    SaveCriticalDataToRegistry(data);
-                //}
+                SaveCriticalDataToFile(data);
+                SaveCriticalDataToRegistry(data);
             }
         }
 
@@ -141,7 +162,7 @@ namespace DGD.Hub
         public static Uri DataManifestURI => Uris.GetDataMainfestURI(ServerURI);
         public static Uri ProfilesURI => Uris.GetProfilesURI(ServerURI);
         public static Uri ConnectionReqURI => Uris.GetConnectionReqUri(ServerURI);
-        public static Uri ConnectionRespURI => Uris.GetConnectionRespUri(ServerURI);                
+        public static Uri ConnectionRespURI => Uris.GetConnectionRespUri(ServerURI);
         public static int DialogTimerInterval => 30 * 1000;
         public static int UpdateTimerInterval => 1 * 60 * 1000;
         public static int ConnectionTimerInterval => 30 * 1000;
@@ -156,13 +177,13 @@ namespace DGD.Hub
         public static string TablesFolder => Path.Combine(AppDataFolder , "Tbl");
         public static string DialogFolder => Path.Combine(AppDataFolder , "Dlg");
 
-        public static string GetClientDialogFilePath(uint idClient) => 
+        public static string GetClientDialogFilePath(uint idClient) =>
             Path.Combine(DialogFolder , Names.GetClientDialogFile(idClient));
 
-        public static Uri GetClientDialogURI(uint clientID) => 
+        public static Uri GetClientDialogURI(uint clientID) =>
             new Uri(Uris.GetDialogDirUri(ServerURI) , Names.GetClientDialogFile(clientID));
 
-        public static string GetSrvDialogFilePath(uint idClient) => 
+        public static string GetSrvDialogFilePath(uint idClient) =>
             Path.Combine(DialogFolder , Names.GetSrvDialogFile(idClient));
 
         public static Uri GetServerDialogURI(uint clientID) =>
@@ -301,7 +322,7 @@ namespace DGD.Hub
             try
             {
                 byte[] data = File.ReadAllBytes(CriticalDataFilePath);
-                return Encode(data);                
+                return Encode(data);
             }
             catch
             {
@@ -313,7 +334,7 @@ namespace DGD.Hub
         {
             data = Encode(data);
 
-            using (RegistryKey appKey = Registry.LocalMachine.OpenSubKey(APP_REGISTRY_KEY , true))
+            using (RegistryKey appKey = Registry.CurrentUser.CreateSubKey(APP_REGISTRY_KEY))
                 appKey.SetValue(null , data , RegistryValueKind.Binary);
         }
 
@@ -321,7 +342,7 @@ namespace DGD.Hub
         {
             byte[] data = null;
 
-            using (RegistryKey appKey = Registry.LocalMachine.OpenSubKey(APP_REGISTRY_KEY))
+            using (RegistryKey appKey = Registry.CurrentUser.OpenSubKey(APP_REGISTRY_KEY))
                 if (appKey != null)
                     data = appKey.GetValue(null) as byte[];
 
