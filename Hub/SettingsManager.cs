@@ -26,15 +26,15 @@ namespace DGD.Hub
 
         public SettingsManager()
         {
-            //TODO: remove
-            m_clInfo = new ClientInfo(0x2E64EFC3 , 200)
-            {
-                ContaclEMail = "a@a.a" ,
-                ContactName = "root" ,
-                ContactPhone = "" ,
-                MachineName = "ll"
+            ////TODO: remove
+            //m_clInfo = new ClientInfo(0x2E64EFC3 , 200)
+            //{
+            //    ContaclEMail = "a@a.a" ,
+            //    ContactName = "root" ,
+            //    ContactPhone = "" ,
+            //    MachineName = "ll"
 
-            };
+            //};
 
             LoadAppSettings();
 

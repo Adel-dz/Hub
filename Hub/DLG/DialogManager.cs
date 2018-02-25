@@ -370,5 +370,6 @@ namespace DGD.Hub.DLG
                 m_updateTimer.Start();
             }
         }
+
     }
 }
