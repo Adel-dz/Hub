@@ -58,25 +58,7 @@ namespace DGD.HubCore.DLG
                 return prInfos;
             }
         }
-
-        public static void WriteConnectionsReq(string filePath , IEnumerable<Message> messages)
-        {
-            Assert(messages != null);
-
-            using (FileLocker.Lock(filePath))
-            using (FileStream fs = File.Create(filePath))
-            {
-                var writer = new RawDataWriter(fs , Encoding.UTF8);
-
-                writer.Write(HubCxnSignature);
-
-                writer.Write(messages.Count());
-
-                foreach (Message msg in messages)
-                    msg.Write(writer);
-            }
-        }
-
+        
         public static IEnumerable<Message> ReadConnectionsReq(string filePath)
         {
             byte[] sign = HubCxnSignature;
@@ -99,10 +81,53 @@ namespace DGD.HubCore.DLG
                 return cxns;
             }
         }
+        
+        public static void WriteConnectionsReq(string filePath , IEnumerable<Message> messages)
+        {
+            Assert(messages != null);
 
-        public static void AppendConnectionReq()
+            using (FileLocker.Lock(filePath))
+            using (FileStream fs = File.Create(filePath))
+            {
+                var writer = new RawDataWriter(fs , Encoding.UTF8);
 
-        public static void AppendConnectionResp(string filePath , IEnumerable<Message> messages)
+                writer.Write(HubCxnSignature);
+
+                writer.Write(messages.Count());
+
+                foreach (Message msg in messages)
+                    msg.Write(writer);
+            }
+        }
+
+        public static void AppendConnectionsReq(string filePath , IEnumerable<Message> messages)
+        {
+            Assert(messages != null);
+
+            using (FileLocker.Lock(filePath))
+            using (FileStream fs = File.Open(filePath , FileMode.Open , FileAccess.ReadWrite))
+            {
+                var reader = new RawDataReader(fs , Encoding.UTF8);
+                int countPos = HubCxnSignature.Length; ;
+                fs.Position = countPos;
+
+                int msgCount = reader.ReadInt();
+
+                var writer = new RawDataWriter(fs , Encoding.UTF8);
+                fs.Seek(0 , SeekOrigin.End);
+
+                foreach (Message msg in messages)
+                {
+                    msg.Write(writer);
+                    ++msgCount;
+                }
+
+                fs.Position = countPos;
+                writer.Write(msgCount);
+            }
+        }
+
+        public static void AppendConnectionsResp(string filePath , IEnumerable<Message> messages)
         {
             Assert(messages != null);
 
@@ -153,7 +178,7 @@ namespace DGD.HubCore.DLG
             }
         }
 
-        public static void WriteConnectionResp(string filePath , IEnumerable<Message> messages)
+        public static void WriteConnectionsResp(string filePath , IEnumerable<Message> messages)
         {
             Assert(messages != null);
 

@@ -77,7 +77,7 @@ namespace DGD.Hub.DLG
             }
 
             //update last client msg id
-            IEnumerable<Message> clMsgs = DialogEngin.ReadHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) , 
+            IEnumerable<Message> clMsgs = DialogEngin.ReadHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) ,
                 m_clInfo.ClientID);
 
             if (clMsgs.Any())
@@ -86,14 +86,14 @@ namespace DGD.Hub.DLG
             //process only status part of the g file
             string tmpFile = Path.GetTempFileName();
 
-            Action download = () =>
+            Action start = () =>
             {
                 //download gov file
                 var netEngin = new NetEngin(Program.Settings);
                 netEngin.Download(tmpFile , SettingsManager.GetServerDialogURI(m_clInfo.ClientID) , true);
 
                 PostStartMessage();
-                
+
             };
 
             Action onSuccess = () =>
@@ -134,7 +134,7 @@ namespace DGD.Hub.DLG
                 System.Windows.Forms.Application.Exit();
             };
 
-            var task = new Task(download , TaskCreationOptions.LongRunning);
+            var task = new Task(start , TaskCreationOptions.LongRunning);
             task.OnSuccess(onSuccess);
             task.OnError(onErr);
 
@@ -403,10 +403,31 @@ namespace DGD.Hub.DLG
             var writer = new RawDataWriter(ms , Encoding.UTF8);
             writer.Write(m_clInfo.ClientID);
             writer.Write(DateTime.Now);
+            byte[] msgData = ms.ToArray();
 
-            var msg = new Message(++m_clientLastMsgID , 0 , Message_t.Start , ms.ToArray());
+            string tmpFile = Path.GetTempFileName();
+            var netEngin = new NetEngin(Program.Settings);
+            string dlgFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
+            Message[] msg = { new Message(++m_clientLastMsgID , 0 , Message_t.Start , msgData) };
 
-            DialogEngin.Ap
+            DialogEngin.AppendHubDialog(dlgFilePath , m_clInfo.ClientID , msg);
+
+            using (new AutoReleaser(() => File.Delete(tmpFile)))
+            {
+                netEngin.Download(tmpFile , SettingsManager.ConnectionReqURI , true);
+                uint reqID = 0;
+
+                IEnumerable<Message> msgsCnx = DialogEngin.ReadConnectionsReq(tmpFile);
+
+                if (msgsCnx.Any())
+                    reqID = msgsCnx.Max(m => m.ID);
+
+                Message req = new Message(++reqID , 0 , Message_t.Start , msgData);
+                DialogEngin.WriteConnectionsReq(tmpFile , msgsCnx.Add(req));
+                netEngin.Upload(SettingsManager.DialogDirUri , new string[] { dlgFilePath , tmpFile }, true);
+            }
+
+            Dbg.Log("Posting start msg done.");
         }
 
     }

@@ -176,6 +176,8 @@ namespace DGD.Hub
 
         public static string TablesFolder => Path.Combine(AppDataFolder , "Tbl");
         public static string DialogFolder => Path.Combine(AppDataFolder , "Dlg");
+        public static Uri DialogDirUri => Uris.GetDialogDirUri(ServerURI);
+
 
         public static string GetClientDialogFilePath(uint idClient) =>
             Path.Combine(DialogFolder , Names.GetClientDialogFile(idClient));

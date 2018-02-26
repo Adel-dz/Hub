@@ -220,7 +220,7 @@ namespace DGD.HubGovernor.Clients
             DialogEngin.WriteConnectionsReq(reqFilePath , Enumerable.Empty<Message>());
 
             string respFilePath = AppPaths.LocalConnectionRespPath;
-            DialogEngin.WriteConnectionResp(respFilePath , Enumerable.Empty<Message>());
+            DialogEngin.WriteConnectionsResp(respFilePath , Enumerable.Empty<Message>());
 
 
             try
@@ -308,7 +308,7 @@ namespace DGD.HubGovernor.Clients
             }
 
             string respFile = AppPaths.LocalConnectionRespPath;
-            DialogEngin.AppendConnectionResp(respFile , lst);
+            DialogEngin.AppendConnectionsResp(respFile , lst);
             AddUpload(respFile);
         }
 
