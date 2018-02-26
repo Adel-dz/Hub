@@ -100,6 +100,8 @@ namespace DGD.HubCore.DLG
             }
         }
 
+        public static void AppendConnectionReq()
+
         public static void AppendConnectionResp(string filePath , IEnumerable<Message> messages)
         {
             Assert(messages != null);

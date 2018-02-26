@@ -23,8 +23,8 @@ namespace DGD.Hub.DLG
         readonly Dictionary<Message_t , Func<Message , Message>> m_msgHandlersTable;
         ClientInfo m_clInfo;
         ClientStatus_t m_clStatus = ClientStatus_t.Unknown;
-        uint m_lastSrvMsgID;
-        uint m_lastClientMsgID;
+        uint m_srvLastMsgID;
+        uint m_clientLastMsgID;
         bool m_needUpload;
 
 
@@ -81,7 +81,7 @@ namespace DGD.Hub.DLG
                 m_clInfo.ClientID);
 
             if (clMsgs.Any())
-                m_lastClientMsgID = clMsgs.Max(m => m.ID);
+                m_clientLastMsgID = clMsgs.Max(m => m.ID);
 
             //process only status part of the g file
             string tmpFile = Path.GetTempFileName();
@@ -316,7 +316,7 @@ namespace DGD.Hub.DLG
                 Dbg.Assert(m_clStatus == ClientStatus_t.Enabled);
 
                 var msgs = from msg in clDlg.Messages
-                           where msg.ID >= m_lastSrvMsgID
+                           where msg.ID >= m_srvLastMsgID
                            select msg;
 
                 var respList = new List<Message>();
@@ -333,7 +333,7 @@ namespace DGD.Hub.DLG
                     if (resp != null)
                         respList.Add(resp);
 
-                    m_lastSrvMsgID = Math.Max(m_lastSrvMsgID , msg.ID);
+                    m_srvLastMsgID = Math.Max(m_srvLastMsgID , msg.ID);
                 }
 
                 string clFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
@@ -398,10 +398,15 @@ namespace DGD.Hub.DLG
         {
             Dbg.Log("Posting start msg...");
 
+            //posting to cnx file
             var ms = new MemoryStream();
             var writer = new RawDataWriter(ms , Encoding.UTF8);
-            writer.Write()
-            var msg = new Message(++m_lastClientMsgID , 0 , Message_t.Start);
+            writer.Write(m_clInfo.ClientID);
+            writer.Write(DateTime.Now);
+
+            var msg = new Message(++m_clientLastMsgID , 0 , Message_t.Start , ms.ToArray());
+
+            DialogEngin.Ap
         }
 
     }

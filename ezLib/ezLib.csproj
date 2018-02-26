@@ -65,7 +65,6 @@
     <Compile Include="DSV\DSVReader.cs" />
     <Compile Include="DSV\DSVReader.impl.cs" />
     <Compile Include="DSV\DSVWriter.cs" />
-    <Compile Include="Endianness.cs" />
     <Compile Include="Extensions\EnumerableEx.cs" />
     <Compile Include="Extensions\ReaderWriterLockSlimEx.cs" />
     <Compile Include="Extensions\TaskEx.cs" />
@@ -84,7 +83,6 @@
     <Compile Include="FastLock.cs" />
     <Compile Include="Storable.cs" />
     <Compile Include="Timer.cs" />
-    <Compile Include="ToBytesConverter.cs" />
     <Compile Include="Writer.cs" />
     <Compile Include="XorStream.cs" />
   </ItemGroup>
