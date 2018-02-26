@@ -213,6 +213,8 @@ namespace DGD.Hub.DLG
                             };
 
                         netEngin.Download(SettingsManager.DialogFolder,uris, true);
+                        //netEngin.Download(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) , SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , true);
+                        //netEngin.Download(SettingsManager.GetSrvDialogFilePath(m_clInfo.ClientID) , SettingsManager.GetServerDialogURI(m_clInfo.ClientID) , true);
 
                         ShowMessage("Votre enregistrement est maintenant terminé. " +
                             "Vous pouvez commencer à utiliser l’application.");

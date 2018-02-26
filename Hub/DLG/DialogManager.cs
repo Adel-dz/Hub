@@ -92,7 +92,7 @@ namespace DGD.Hub.DLG
                 var netEngin = new NetEngin(Program.Settings);
                 netEngin.Download(tmpFile , SettingsManager.GetServerDialogURI(m_clInfo.ClientID) , true);
 
-                PostStartMessage();
+                //PostStartMessage();
 
             };
 

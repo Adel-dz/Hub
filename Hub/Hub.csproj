@@ -118,6 +118,7 @@
       <DependentUpon>ProfileDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="DLG\ResumeHandler.cs" />
+    <Compile Include="DLG\StartHandler.cs" />
     <Compile Include="DummyView\DummyView.cs">
       <SubType>UserControl</SubType>
     </Compile>
