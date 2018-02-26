@@ -8,16 +8,16 @@ namespace DGD.HubCore.DLG
     public enum Message_t : byte
     {
         UnknonwnMsg = 0,
-        NewConnection,  //data = ClientInfo
-        Resume, //data = ClientID
+        NewConnection,  //data = ClientInfo, resp = {ok, rejected, InvalidID}
+        Resume, //data = ClientID, resp = {OK, Rejected}
         Ok, //data = ClientID
         InvalidID,  //data = ClientID                
         InvalidProfile, //data = ClientID
         Rejected,   //data = ClientID        
         SendInfo,    //data = ClientID
         SetInfo,    //data = ClientInfo
-        Start,  //data = ClientID + start time 
-        Close,  //data = ClientID + close time
+        Start,  //data = ClientID + start time , resp = ok
+        Close,  //data = ClientID + close time, resp = ok
     }
 
 

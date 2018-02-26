@@ -15,6 +15,12 @@ namespace DGD.HubGovernor.Clients
 {
     partial class ClientsManager
     {
+        //Message ProcessStartMessage(Message msg)
+        //{
+        //    Dbg.Assert(msg.MessageCode == Message_t.Start);
+
+        //}
+
         Message ProcessResumeConnectionReq(Message msg)
         {
             Dbg.Assert(msg.MessageCode == Message_t.Resume);
