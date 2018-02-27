@@ -276,6 +276,7 @@ namespace DGD.Hub.SpotView
 
                 m_tsbSearch.Enabled = true;
                 releaser.Dispose();
+                Log.LogEngin.PushFlash($"{t.Result.Length} élément(s) trouvé(s).");
             };
 
             Action<Task> onErr = (t) =>
@@ -394,7 +395,7 @@ namespace DGD.Hub.SpotView
         private void Origin_SelectedIndexChanged(object sender , EventArgs e)
         {
             int ndx = m_cbOrigin.SelectedIndex;
-            m_lblCountryInfo.Text = ndx == 0 ? "" : $"({(m_cbOrigin.SelectedItem as Country).InternalCode.ToString()})";
+            m_lblCountryInfo.Text = ndx == 0 ? "" : $"( Code pays: {(m_cbOrigin.SelectedItem as Country).InternalCode.ToString()} )";
         }
 
         private void ToggleView_Click(object sender , EventArgs e)
