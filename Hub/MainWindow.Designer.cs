@@ -54,7 +54,6 @@
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             m_mainMenu.SuspendLayout();
             this.m_mainToolStrip.SuspendLayout();
-            this.m_viewsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // m_mainMenu
@@ -245,7 +244,6 @@
             m_mainMenu.PerformLayout();
             this.m_mainToolStrip.ResumeLayout(false);
             this.m_mainToolStrip.PerformLayout();
-            this.m_viewsPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

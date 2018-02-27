@@ -25,6 +25,7 @@ namespace DGD.Hub
 
             m_logBox = new Log.LogBox();
             Controls.Add(m_logBox);
+            m_logBox.Visible = false;
 
             CurrentView = InitAboutView();
             InitSpotView();
