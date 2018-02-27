@@ -351,7 +351,7 @@ namespace DGD.Hub.DLG
                 }
 
                 //update g file
-                string srvFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
+                string srvFilePath = SettingsManager.GetSrvDialogFilePath(m_clInfo.ClientID);
                 File.Delete(srvFilePath);
                 File.Move(tmpFile , srvFilePath);
                 m_dialogTimer.Start();

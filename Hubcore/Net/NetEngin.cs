@@ -47,7 +47,7 @@ namespace DGD.HubCore.Net
                                 wClient.UploadFile(destFileURI , encFilePath);
                                 break;
                             }
-                            catch(Exception ex)
+                            catch (Exception ex)
                             {
                                 LogDbgInfo(ex.Message);
 
@@ -67,7 +67,7 @@ namespace DGD.HubCore.Net
             }
         }
 
-        public void Upload(Uri destDirUri , IEnumerable<string> srcPaths, bool retryOnErr = false)
+        public void Upload(Uri destDirUri , IEnumerable<string> srcPaths , bool retryOnErr = false)
         {
             using (var wClient = new WebClient())
             {
@@ -85,7 +85,7 @@ namespace DGD.HubCore.Net
                     using (FileLocker.Lock(srcFilePath))
                         encFilePath = EncodeFile(srcFilePath);
 
-                    using (new AutoReleaser(() => File.Delete(encFilePath)))                    
+                    using (new AutoReleaser(() => File.Delete(encFilePath)))
                         if (retryOnErr)
                         {
                             int ndxSleepTime = 0;
@@ -117,7 +117,7 @@ namespace DGD.HubCore.Net
             }
         }
 
-        public void Download(string destPath , Uri srcURI, bool retryOnErr = false)
+        public void Download(string destPath , Uri srcURI , bool retryOnErr = false)
         {
             using (var wClient = new WebClient())
             {
@@ -171,7 +171,7 @@ namespace DGD.HubCore.Net
             }
         }
 
-        public void Download(string destFolder , IEnumerable<Uri> srcUris, bool retryOnErr = false)
+        public void Download(string destFolder , IEnumerable<Uri> srcUris , bool retryOnErr = false)
         {
             using (var wClient = new WebClient())
             {
