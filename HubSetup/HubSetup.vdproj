@@ -192,7 +192,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ezLib, Version=1.0.6631.25040, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:ezLib, Version=1.0.6632.36725, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_5781F25EF1B66EAA4D9F94988808EDD9"
@@ -223,7 +223,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Hubcore, Version=1.0.6632.18892, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Hubcore, Version=1.0.6632.36725, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_C4BDCFAC3E22D0FC95F8FB69DFC80F4B"
@@ -337,8 +337,8 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Hub de la Valeur en Douane"
-        "ProductCode" = "8:{D27BBABC-B573-4366-90C8-F3C7DA44C144}"
-        "PackageCode" = "8:{13090C05-FD41-41EB-AA21-C19AA0AB1C7E}"
+        "ProductCode" = "8:{91D8809B-E847-489B-AAD7-8222A47E6C33}"
+        "PackageCode" = "8:{E4254BFB-5E92-4676-A63C-35C4E4CE2A37}"
         "UpgradeCode" = "8:{61171DE4-DA6E-4B01-8D18-90570011D7F1}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
