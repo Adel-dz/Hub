@@ -52,13 +52,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_52759EF04210EFBF501E85F5D257A622"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_8A2C307A7A3BBD1A3C9AD6FFAF63581C"
+        "OwnerKey" = "8:_12A385F176924169AF11A04552D9193A"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -70,7 +64,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_12A385F176924169AF11A04552D9193A"
+        "OwnerKey" = "8:_8A2C307A7A3BBD1A3C9AD6FFAF63581C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_52759EF04210EFBF501E85F5D257A622"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -175,6 +175,11 @@
             "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
                 "ScatterAssemblies"
                 {
+                    "_52759EF04210EFBF501E85F5D257A622"
+                    {
+                    "Name" = "8:System.Net.Http.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:System.Net.Http.dll"
             "TargetName" = "8:"
@@ -198,9 +203,14 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Hubcore, Version=1.0.6590.21579, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Hubcore, Version=1.0.6632.24021, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_57A91C797C1E724315872BFA9BC01CAE"
+                    {
+                    "Name" = "8:Hubcore.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:Hubcore.dll"
             "TargetName" = "8:"
@@ -224,9 +234,14 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ezLib, Version=1.0.6590.21579, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:ezLib, Version=1.0.6632.24021, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_8A2C307A7A3BBD1A3C9AD6FFAF63581C"
+                    {
+                    "Name" = "8:ezLib.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:ezLib.dll"
             "TargetName" = "8:"
@@ -322,15 +337,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Hub Governor"
-        "ProductCode" = "8:{61F2E029-5494-4956-BDE8-4EB4DC4ADD6F}"
-        "PackageCode" = "8:{D8DD4C62-11AE-4B62-8B46-86FE68E38309}"
+        "ProductCode" = "8:{2BBE64ED-146B-4415-8EB4-A4C517266CFE}"
+        "PackageCode" = "8:{B604B6EC-24BB-4DEB-897B-D8D84D03FE89}"
         "UpgradeCode" = "8:{F7238AC8-9F6B-4EC6-A258-8A9B2252BA30}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.0.6617"
+        "ProductVersion" = "8:0.1.6632"
         "Manufacturer" = "8:Douane Algérienne"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

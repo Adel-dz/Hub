@@ -48,7 +48,7 @@ namespace easyLib.DB
 
                 Monitor.Enter(m_srcIndices);
                 int n = m_srcIndices.Count;
-                Monitor.Enter(m_srcIndices);
+                Monitor.Exit(m_srcIndices);
 
                 return n;
             }
