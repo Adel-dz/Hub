@@ -15,6 +15,44 @@ namespace DGD.HubGovernor.Clients
 {
     partial class ClientsManager
     {
+        Message ProcessCloseMessage(Message msg)
+        {
+            EventLogger.Info("Réception d'une notification de fermeture.");
+
+            Dbg.Assert(msg.MessageCode == Message_t.Close);
+
+            m_lastCxnReqMsgID = msg.ID;
+
+            var reader = new RawDataReader(new MemoryStream(msg.Data) , Encoding.UTF8);
+            uint clID = reader.ReadUInt();
+
+            var client = m_ndxerClients.Get(clID) as HubClient;
+            
+            if (client == null)
+            {
+                EventLogger.Warning("Réception d’une notification de démarrage " +
+                    $"de la part d’un client inexistant ({clID}).");
+
+                return null;
+            }
+
+            EventLogger.Info($"Réception d’une notification de fermeture de la part du client {client.ContactName}");
+
+            //maj du dic des clients actifs
+            DateTime dt = reader.ReadTime();
+
+            EventLogger.Info($"client arrêté le {dt.ToShortDateString()} à {dt.ToLongTimeString()}");
+            
+
+            var clData = new ClientData(dt);
+            string hubFilePath = AppPaths.GetLocalClientDilogPath(clID);
+
+            //TODO: traiter le cas ou un client de meme ID est en execution
+            m_runningClients.Remove(clID);
+
+            return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , BitConverter.GetBytes(clID));
+        }
+
         Message ProcessStartMessage(Message msg)
         {
             EventLogger.Info("Réception d'une notification de démarrage.");
@@ -28,7 +66,7 @@ namespace DGD.HubGovernor.Clients
 
             var client = m_ndxerClients.Get(clID) as HubClient;
 
-            if(client == null)
+            if (client == null)
             {
                 EventLogger.Warning("Réception d’une notification de démarrage " +
                     $"de la part d’un client inexistant ({clID}). Bannissement du client.");
@@ -45,12 +83,12 @@ namespace DGD.HubGovernor.Clients
             }
 
             EventLogger.Info("Réception d’une notification de démarrage " +
-                    $"de la part d’un client {client.ContactName}");
+                    $"de la part du client {client.ContactName}");
 
             //maj du dic des clients actifs
             DateTime dt = reader.ReadTime();
 
-            EventLogger.Info($"Client démarré à {dt}");
+            EventLogger.Info($"Client démarré le {dt.Date.ToShortDateString()} à {dt.ToLongTimeString()}");
 
             var clData = new ClientData(dt);
             string hubFilePath = AppPaths.GetLocalClientDilogPath(clID);
@@ -89,7 +127,7 @@ namespace DGD.HubGovernor.Clients
             if (client == null)
             {
                 EventLogger.Info("Réception d’une requête de reprise émanant d’un client non enregistré. Requête rejetée.");
-                return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , msg.Data);
+                return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , BitConverter.GetBytes(clID));
             }
 
             var prf = m_ndxerProfiles.Get(client.ProfileID) as UserProfile;
@@ -180,24 +218,24 @@ namespace DGD.HubGovernor.Clients
             string hubFilePath = AppPaths.GetLocalClientDilogPath(clID);
 
             try
-            {               
+            {
                 IEnumerable<Message> msgs = DialogEngin.ReadHubDialog(hubFilePath , clID);
 
                 if (msgs.Any())
                     clData.LastHandledMessageID = msgs.Max(m => m.ID);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 DialogEngin.WriteHubDialog(hubFilePath , clID , Enumerable.Empty<Message>());
                 EventLogger.Error(ex.Message);
             }
 
             m_runningClients[clID] = clData;
-            
+
             EventLogger.Info("Requête acceptée. :-)");
             return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , msg.Data);
         }
-        
+
         Message ProcessNewConnectionReq(Message msg)
         {
             Dbg.Assert(msg.MessageCode == Message_t.NewConnection);
@@ -212,7 +250,7 @@ namespace DGD.HubGovernor.Clients
             var profile = m_ndxerProfiles.Get(clInfo.ProfileID) as UserProfile;
 
             string reqLog = $"Demande d’inscription émanant  de {clInfo.ContactName}" +
-                $"(ID = {ClientStrID(clInfo.ClientID)} pour " +
+                $"(ID = {ClientStrID(clInfo.ClientID)}) pour " +
                 (profile == null ? "un profil inexistant." :
                             $"le profil {profile.Name}.");
 
@@ -270,6 +308,7 @@ namespace DGD.HubGovernor.Clients
         }
 
         Message ProcessUnknownMsg(Message msg , uint clientID)
+
         {
             Dbg.Assert(msg.MessageCode == Message_t.UnknonwnMsg);
             Dbg.Log("Processing unknown message.");

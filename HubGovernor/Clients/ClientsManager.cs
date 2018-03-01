@@ -68,9 +68,10 @@ namespace DGD.HubGovernor.Clients
 
             m_cxnReqProcessors = new Dictionary<Message_t , Func<Message , Message>>
             {
-                {Message_t.NewConnection, ProcessNewConnectionReq },
-                {Message_t.Resume, ProcessResumeConnectionReq },
-                {Message_t.Start, ProcessStartMessage }
+                { Message_t.NewConnection, ProcessNewConnectionReq },
+                { Message_t.Resume, ProcessResumeConnectionReq },
+                { Message_t.Start, ProcessStartMessage },
+                { Message_t.Close, ProcessCloseMessage }
             };
 
             RegisterHandlers();
@@ -126,7 +127,7 @@ namespace DGD.HubGovernor.Clients
             if (status == ClientStatus_t.Enabled && oldClient != null && oldClient.ID != client.ID)
             {
                 EventLogger.Info($"Désactivation du client {oldClient.ContactName}...");
-        
+
                 //maj la table des status clients
                 int ndx = m_ndxerClientsStatus.IndexOf(oldClient.ID);
 
@@ -155,7 +156,7 @@ namespace DGD.HubGovernor.Clients
             DialogEngin.WriteSrvDialog(filePath , clDlg);
             AddUpload(Names.GetSrvDialogFile(client.ID));
         }
-        
+
         public IEnumerable<HubClient> GetProfileClients(uint idProfile)
         {
             return (from id in m_ndxerClients.Keys
@@ -422,12 +423,26 @@ namespace DGD.HubGovernor.Clients
             if (m_initializationDone)
             {
                 ProcessDownloads();
+                ProcessRunningClients();
                 ProcessUploads();
             }
             else
                 Initialize();
 
             StartTimer();
+        }
+
+        void ProcessRunningClients()
+        {
+            //foreach(uint clID in m_runningClients.Keys)
+            //{
+            //    if(--m_runningClients[clID].LiveTimeout <= 0)
+            //    {
+            //        string srvDlgFile = AppPaths.GetLocalSrvDialogPath(clID);
+            //        uint reqID = DialogEngin.ReadSrvDialog(clID).
+            //    }
+
+            //}
         }
 
         void AddClient(ClientInfo clInfo)

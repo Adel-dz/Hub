@@ -37,9 +37,11 @@
             System.Windows.Forms.ColumnHeader m_colCreationTime;
             System.Windows.Forms.ColumnHeader m_colDeployTime;
             System.Windows.Forms.ColumnHeader m_colIncID;
+            System.Windows.Forms.StatusStrip m_statusStrip;
             this.m_tsbBuildUpdate = new System.Windows.Forms.ToolStripButton();
             this.m_tsbUpload = new System.Windows.Forms.ToolStripButton();
             this.m_lvUpdates = new System.Windows.Forms.ListView();
+            this.m_sslUpdateKey = new System.Windows.Forms.ToolStripStatusLabel();
             m_toolStrip = new System.Windows.Forms.ToolStrip();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             m_tsbOptions = new System.Windows.Forms.ToolStripButton();
@@ -48,7 +50,9 @@
             m_colCreationTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             m_colDeployTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             m_colIncID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            m_statusStrip = new System.Windows.Forms.StatusStrip();
             m_toolStrip.SuspendLayout();
+            m_statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // m_toolStrip
@@ -140,11 +144,25 @@
             this.m_lvUpdates.Location = new System.Drawing.Point(0, 25);
             this.m_lvUpdates.MultiSelect = false;
             this.m_lvUpdates.Name = "m_lvUpdates";
-            this.m_lvUpdates.Size = new System.Drawing.Size(673, 284);
+            this.m_lvUpdates.Size = new System.Drawing.Size(673, 262);
             this.m_lvUpdates.TabIndex = 1;
             this.m_lvUpdates.UseCompatibleStateImageBehavior = false;
             this.m_lvUpdates.View = System.Windows.Forms.View.Details;
             this.m_lvUpdates.ItemActivate += new System.EventHandler(this.Updates_ItemActivate);
+            // 
+            // m_statusStrip
+            // 
+            m_statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.m_sslUpdateKey});
+            m_statusStrip.Location = new System.Drawing.Point(0, 287);
+            m_statusStrip.Name = "m_statusStrip";
+            m_statusStrip.Size = new System.Drawing.Size(673, 22);
+            m_statusStrip.TabIndex = 2;
+            // 
+            // m_sslUpdateKey
+            // 
+            this.m_sslUpdateKey.Name = "m_sslUpdateKey";
+            this.m_sslUpdateKey.Size = new System.Drawing.Size(0, 17);
             // 
             // UpdatesWindow
             // 
@@ -153,6 +171,7 @@
             this.BackColor = System.Drawing.SystemColors.Window;
             this.ClientSize = new System.Drawing.Size(673, 309);
             this.Controls.Add(this.m_lvUpdates);
+            this.Controls.Add(m_statusStrip);
             this.Controls.Add(m_toolStrip);
             this.ForeColor = System.Drawing.SystemColors.WindowText;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -161,6 +180,8 @@
             this.Text = "Gestionnaire des MAJ";
             m_toolStrip.ResumeLayout(false);
             m_toolStrip.PerformLayout();
+            m_statusStrip.ResumeLayout(false);
+            m_statusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -171,5 +192,6 @@
         private System.Windows.Forms.ToolStripButton m_tsbUpload;
         private System.Windows.Forms.ListView m_lvUpdates;
         private System.Windows.Forms.ToolStripButton m_tsbBuildUpdate;
+        private System.Windows.Forms.ToolStripStatusLabel m_sslUpdateKey;
     }
 }

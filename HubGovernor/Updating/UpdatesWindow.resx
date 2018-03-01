@@ -127,14 +127,14 @@
   <data name="m_tsbUpload.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAGsSURBVDhPtVG5TgJhEKaysjU2Nr6ChRg1mlDRS0cIvVl7
-        sTLhAeAt7GnB5eqW1cRgcAsIsgdIcGHZ5UiMMs7MHuFItGKSL3P8M98cf2gr4jjO/mw2O0Ock+2F/5fp
-        dBpGiNVqFWRZZui6vsBYYTKZHHk5J5y8LtgtSYXpdBqi0SikUncgCDdsEwzD+EKSByQAzL31ylzB4DEV
-        U2Kl4mrTHEKv+8F2sVhiNBoN9lut1ioJjZ1IJIDQNXqcZI3GDN/2i30EJHQkTdMWFFTelJUkH/V6PbAj
-        kUhgW5YFtPspjZ/NZrmTrhnu49IEoiiybjabTFCr1dgfDAZMcOHv/yQ/Y7fXDQL6DRq50+mwT4dUFMWd
-        gFYwTZMf/OJ19Pt9cJwJyDWZfWwq0f4I4CPi95TpgOVSJehK2vwcsm2PHRgNLbZpWpzgmuqIhAkwEFZV
-        9ccnocTOuwr5fIFtTdVZZzIZ6v4CADtcuCz4kESSbyKhZEEQWMeuYhCPxyGXy1FnBXHglWwKTYJ4pJ3p
-        cJIkQbvdpq4Gxu+x866X+rfYtr2HRReIy/l8fuiFtyGh0C/m1Oxz5xwhhQAAAABJRU5ErkJggg==
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAGsSURBVDhPtVE9T8JgEGZycjUuLv4FBzFqMGFil40QdlN3
+        cTLhB8C/cGcFy9fWVhODwQ4QpLUgwUJpCyRGOe+OtuEj0YlLntzHe/fcxxvaijiOsz+dTs8Q52R74f9l
+        MpmEEWKtVgNFURi6rs8xVnRd98jLOeHkdcFuKSrMZDIQi8Ugnb4FQbhmm2AYxheS3CMBYO6NV7YQDB5T
+        MSVWqwttmkPodT/YLpXKjEajwX6r1VolobGTySQQukaPk6zRmOHbfrGPgISOpGnanILqq7qS5KNerwd2
+        NBoNbMuygHY/pfFzuRx3eteNxePSBKIosm42m0wgyzL7g8GACSL+/o/KE3Z72SCg36CRO50O+3RIVVUX
+        E9AKpmnyg1+8jn6/D47jgiIr7GNTifZHAB8Rv6dCB6yUq0FX0ubnkG177MBoaLFN0+IEV1RHJEyAgTCO
+        9+OTUGLnTYNCoci2rr2zzmaz1P0ZAHa4cFnwIYUk30RCyYIgsI5fxiGRSEA+n6fOKuLAK9kUmgTxQDvT
+        4SRJgna7TV0NjN9h510v9W+xbXsPiyKIi9lsduiFtyGh0C/OcexnJu69fAAAAABJRU5ErkJggg==
 </value>
   </data>
   <metadata name="toolStripSeparator1.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -157,6 +157,12 @@
   </metadata>
   <metadata name="m_colIncID.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
+  </metadata>
+  <metadata name="m_statusStrip.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <metadata name="m_statusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>131, 17</value>
   </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>44</value>

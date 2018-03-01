@@ -62,11 +62,15 @@ namespace DGD.HubGovernor.Updating
             m_lvUpdates.Items.Clear();
 
             if (dp.Count > 0)
+            {
                 foreach (UpdateIncrement inc in dp.Enumerate())
                 {
                     var lvi = new ListViewItem(inc.Content) { Tag = inc };
                     m_lvUpdates.Items.Add(lvi);
                 }
+
+                m_sslUpdateKey.Text = $"Clé de mise à jour: {AppContext.Settings.AppSettings.UpdateKey}";
+            }
         }
 
       
