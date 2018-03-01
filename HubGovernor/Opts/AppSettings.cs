@@ -21,6 +21,7 @@ namespace DGD.HubGovernor.Opts
         public StringTransform_t ImportTransform { get; set; }
         public byte PriceDecimalPlaces { get; set; } = 4;
         public uint DataGeneration { get; set; }
+        public uint UpdateKey { get; set; }
         public uint HubAppGeneration { get; set; }
         public string ServerURL { get; set; }
         public string UserName { get; set; }
@@ -36,6 +37,7 @@ namespace DGD.HubGovernor.Opts
             writer.Write((int)ImportTransform);
             writer.Write(PriceDecimalPlaces);
             writer.Write(DataGeneration);
+            writer.Write(UpdateKey);
             writer.Write(HubAppGeneration);
             writer.Write(ServerURL ?? "");  //ftp://douane.gov.dz
             writer.Write(UserName ?? "");
@@ -54,6 +56,7 @@ namespace DGD.HubGovernor.Opts
 
             PriceDecimalPlaces = reader.ReadByte();
             DataGeneration = reader.ReadUInt32();
+            UpdateKey = reader.ReadUInt32();
             HubAppGeneration = reader.ReadUInt32();
             ServerURL = reader.ReadString();
             UserName = reader.ReadString();

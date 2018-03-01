@@ -69,7 +69,8 @@ namespace DGD.HubGovernor.Clients
             m_cxnReqProcessors = new Dictionary<Message_t , Func<Message , Message>>
             {
                 {Message_t.NewConnection, ProcessNewConnectionReq },
-                {Message_t.Resume, ProcessResumeConnectionReq }
+                {Message_t.Resume, ProcessResumeConnectionReq },
+                {Message_t.Start, ProcessStartMessage }
             };
 
             RegisterHandlers();
@@ -154,7 +155,7 @@ namespace DGD.HubGovernor.Clients
             DialogEngin.WriteSrvDialog(filePath , clDlg);
             AddUpload(Names.GetSrvDialogFile(client.ID));
         }
-
+        
         public IEnumerable<HubClient> GetProfileClients(uint idProfile)
         {
             return (from id in m_ndxerClients.Keys

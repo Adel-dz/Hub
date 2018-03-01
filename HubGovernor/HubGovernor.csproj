@@ -341,7 +341,6 @@
     <Compile Include="Updating\UpdateBuilder.cs" />
     <Compile Include="Updating\UpdateIncrement.cs" />
     <Compile Include="Updating\UpdateIncrementTable.cs" />
-    <Compile Include="Updating\UpdateManager.cs" />
     <Compile Include="Updating\UpdatesWindow.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -5,6 +5,7 @@ using DGD.HubGovernor.DB;
 using DGD.HubGovernor.Strings;
 using easyLib;
 using easyLib.DB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static System.Diagnostics.Debug;
@@ -96,11 +97,13 @@ namespace DGD.HubGovernor.Updating
             string dataMainfest = AppPaths.LocalDataManifestPath;
             UpdateEngin.UpdateDataManifest(dataMainfest , new UpdateURI(incFileName , opt.DataGeneration));
 
-            ++opt.DataGeneration;
+            if (opt.DataGeneration++ == 0)
+                opt.UpdateKey = (uint)DateTime.Now.Ticks;
+
             AppContext.Settings.Save();
 
             string manifest = AppPaths.LocalManifestPath;
-            UpdateEngin.WriteUpdateManifest(new UpdateManifest(opt.DataGeneration , 0) , manifest);                        
+            UpdateEngin.WriteUpdateManifest(new UpdateManifest(opt.UpdateKey, opt.DataGeneration , 0) , manifest);                        
         }
 
 

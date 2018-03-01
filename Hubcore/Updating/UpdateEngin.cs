@@ -25,6 +25,8 @@ namespace DGD.HubCore.Updating
             {
                 var bw = new BinaryWriter(fs);
                 bw.Write(Encoding.UTF8.GetBytes(GLOBAL_MANIFEST_SIGNATURE));
+
+                bw.Write(manifset.UpdateKey);
                 bw.Write(manifset.DataGeneration);
                 bw.Write(manifset.AppGeneration);
             }
@@ -42,7 +44,7 @@ namespace DGD.HubCore.Updating
                     if (b != br.ReadByte())
                         throw new CorruptedStreamException();
 
-                return new UpdateManifest(br.ReadUInt32() , br.ReadUInt32());
+                return new UpdateManifest(br.ReadUInt32(), br.ReadUInt32() , br.ReadUInt32());
             }
         }
 

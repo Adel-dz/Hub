@@ -15,11 +15,64 @@ namespace DGD.HubGovernor.Clients
 {
     partial class ClientsManager
     {
-        //Message ProcessStartMessage(Message msg)
-        //{
-        //    Dbg.Assert(msg.MessageCode == Message_t.Start);
+        Message ProcessStartMessage(Message msg)
+        {
+            EventLogger.Info("Réception d'une notification de démarrage.");
 
-        //}
+            Dbg.Assert(msg.MessageCode == Message_t.Start);
+
+            m_lastCxnReqMsgID = msg.ID;
+
+            var reader = new RawDataReader(new MemoryStream(msg.Data) , Encoding.UTF8);
+            uint clID = reader.ReadUInt();
+
+            var client = m_ndxerClients.Get(clID) as HubClient;
+
+            if(client == null)
+            {
+                EventLogger.Warning("Réception d’une notification de démarrage " +
+                    $"de la part d’un client inexistant ({clID}). Bannissement du client.");
+
+                //maj du fichier gov
+                string srvDlgFile = AppPaths.GetLocalSrvDialogPath(clID);
+
+                //le client n'existe pas => son fichier gov n'existe pas
+                var clDlg = new ClientDialog(clID , ClientStatus_t.Banned , Enumerable.Empty<Message>());
+                DialogEngin.WriteSrvDialog(srvDlgFile , clDlg);
+
+                AddUpload(srvDlgFile);
+                return null;
+            }
+
+            EventLogger.Info("Réception d’une notification de démarrage " +
+                    $"de la part d’un client {client.ContactName}");
+
+            //maj du dic des clients actifs
+            DateTime dt = reader.ReadTime();
+
+            EventLogger.Info($"Client démarré à {dt}");
+
+            var clData = new ClientData(dt);
+            string hubFilePath = AppPaths.GetLocalClientDilogPath(clID);
+
+            try
+            {
+                IEnumerable<Message> msgs = DialogEngin.ReadHubDialog(hubFilePath , clID);
+
+                if (msgs.Any())
+                    clData.LastHandledMessageID = msgs.Max(m => m.ID);
+            }
+            catch (Exception ex)
+            {
+                DialogEngin.WriteHubDialog(hubFilePath , clID , Enumerable.Empty<Message>());
+                EventLogger.Error(ex.Message);
+            }
+
+            //TODO: traiter le cas ou un client de meme ID est en execution
+            m_runningClients[clID] = clData;
+
+            return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , msg.Data);
+        }
 
         Message ProcessResumeConnectionReq(Message msg)
         {
@@ -122,7 +175,7 @@ namespace DGD.HubGovernor.Clients
 
             AddUpload(Names.GetSrvDialogFile(clID));
 
-            //maj du ditc des clients actifs
+            //maj du dic des clients actifs
             var clData = new ClientData(DateTime.Now);
             string hubFilePath = AppPaths.GetLocalClientDilogPath(clID);
 
