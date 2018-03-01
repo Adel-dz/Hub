@@ -165,10 +165,10 @@ namespace DGD.Hub.DLG
 
                 IEnumerable<HubCore.DLG.Message> messages = DialogEngin.ReadConnectionsResp(tmpFile);
                 HubCore.DLG.Message[] msgs = (from resp in messages
-                                              where resp.PrevMessageID >= m_msgID
+                                              where resp.ReqID >= m_msgID
                                               select resp).ToArray();
 
-                HubCore.DLG.Message msg = msgs.Where(m => m.PrevMessageID == m_msgID).SingleOrDefault();
+                HubCore.DLG.Message msg = msgs.Where(m => m.ReqID == m_msgID).SingleOrDefault();
 
                 uint clID = msg == null ? 0 : BitConverter.ToUInt32(msg.Data , 0);
 

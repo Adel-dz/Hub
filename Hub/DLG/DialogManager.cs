@@ -106,14 +106,22 @@ namespace DGD.Hub.DLG
                 {
                     m_dialogTimer.Start();
                     m_updateTimer.Start(true);
+
+                    new StartHandler(m_clInfo.ClientID).Start();
                 }
-                else
-                    if (m_clStatus == ClientStatus_t.Banned)
+                else if (m_clStatus == ClientStatus_t.Banned)
+                {
                     foreach (IDBTable tbl in Program.TablesManager.CriticalTables)
                     {
                         tbl.Clear();
                         Program.Settings.DataGeneration = 0;
                     }
+
+                    System.Windows.Forms.MessageBox.Show(AppText.ERR_BANNED , AppText.APP_NAME ,
+                           System.Windows.Forms.MessageBoxButtons.OK , System.Windows.Forms.MessageBoxIcon.Error);
+                    System.Windows.Forms.Application.Exit();
+                    return;
+                }
                 else
                     new ResumeHandler(ResumeResp , m_clInfo.ClientID).Start();
 
@@ -294,13 +302,14 @@ namespace DGD.Hub.DLG
                         return;
 
                         case ClientStatus_t.Banned:
-                        if (m_updateTimer.IsRunning)
-                        {
-                            m_updateTimer.Stop();
+                        m_updateTimer.Stop();
 
-                            foreach (IDBTable tbl in Program.TablesManager.Tables)
-                                tbl.Clear();
-                        }
+                        foreach (IDBTable tbl in Program.TablesManager.Tables)
+                            tbl.Clear();
+
+                        System.Windows.Forms.MessageBox.Show(AppText.ERR_BANNED , AppText.APP_NAME ,
+                            System.Windows.Forms.MessageBoxButtons.OK , System.Windows.Forms.MessageBoxIcon.Error);
+                        System.Windows.Forms.Application.Exit();
                         return;
 
                         default:
@@ -394,41 +403,41 @@ namespace DGD.Hub.DLG
             }
         }
 
-        void PostStartMessage()
-        {
-            Dbg.Log("Posting start msg...");
+        //void PostStartMessage()
+        //{
+        //    Dbg.Log("Posting start msg...");
 
-            //posting to cnx file
-            var ms = new MemoryStream();
-            var writer = new RawDataWriter(ms , Encoding.UTF8);
-            writer.Write(m_clInfo.ClientID);
-            writer.Write(DateTime.Now);
-            byte[] msgData = ms.ToArray();
+        //    //posting to cnx file
+        //    var ms = new MemoryStream();
+        //    var writer = new RawDataWriter(ms , Encoding.UTF8);
+        //    writer.Write(m_clInfo.ClientID);
+        //    writer.Write(DateTime.Now);
+        //    byte[] msgData = ms.ToArray();
 
-            string tmpFile = Path.GetTempFileName();
-            var netEngin = new NetEngin(Program.Settings);
-            string dlgFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
-            Message[] msg = { new Message(++m_clientLastMsgID , 0 , Message_t.Start , msgData) };
+        //    string tmpFile = Path.GetTempFileName();
+        //    var netEngin = new NetEngin(Program.Settings);
+        //    string dlgFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
+        //    Message[] msg = { new Message(++m_clientLastMsgID , 0 , Message_t.Start , msgData) };
 
-            DialogEngin.AppendHubDialog(dlgFilePath , m_clInfo.ClientID , msg);
+        //    DialogEngin.AppendHubDialog(dlgFilePath , m_clInfo.ClientID , msg);
 
-            using (new AutoReleaser(() => File.Delete(tmpFile)))
-            {
-                netEngin.Download(tmpFile , SettingsManager.ConnectionReqURI , true);
-                uint reqID = 0;
+        //    using (new AutoReleaser(() => File.Delete(tmpFile)))
+        //    {
+        //        netEngin.Download(tmpFile , SettingsManager.ConnectionReqURI , true);
+        //        uint reqID = 0;
 
-                IEnumerable<Message> msgsCnx = DialogEngin.ReadConnectionsReq(tmpFile);
+        //        IEnumerable<Message> msgsCnx = DialogEngin.ReadConnectionsReq(tmpFile);
 
-                if (msgsCnx.Any())
-                    reqID = msgsCnx.Max(m => m.ID);
+        //        if (msgsCnx.Any())
+        //            reqID = msgsCnx.Max(m => m.ID);
 
-                Message req = new Message(++reqID , 0 , Message_t.Start , msgData);
-                DialogEngin.WriteConnectionsReq(tmpFile , msgsCnx.Add(req));
-                netEngin.Upload(SettingsManager.DialogDirUri , new string[] { dlgFilePath , tmpFile }, true);
-            }
+        //        Message req = new Message(++reqID , 0 , Message_t.Start , msgData);
+        //        DialogEngin.WriteConnectionsReq(tmpFile , msgsCnx.Add(req));
+        //        netEngin.Upload(SettingsManager.DialogDirUri , new string[] { dlgFilePath , tmpFile } , true);
+        //    }
 
-            Dbg.Log("Posting start msg done.");
-        }
+        //    Dbg.Log("Posting start msg done.");
+        //}
 
     }
 }

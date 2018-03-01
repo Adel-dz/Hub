@@ -108,7 +108,7 @@ namespace DGD.Hub.DLG
             netEngin.Download(tmpFile, respFileURI, true);
 
             var seq = from msg in DialogEngin.ReadConnectionsResp(tmpFile)
-                      where msg.PrevMessageID >= m_lastMsgID
+                      where msg.ReqID >= m_lastMsgID
                       select msg;
 
             if(!seq.Any())
@@ -116,7 +116,7 @@ namespace DGD.Hub.DLG
             else
             {
                 Message resp = (from msg in seq
-                                where msg.PrevMessageID == m_lastMsgID
+                                where msg.ReqID == m_lastMsgID
                                 select msg).SingleOrDefault();
 
                 if (resp == null)

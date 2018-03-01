@@ -32,17 +32,17 @@ namespace DGD.HubCore.DLG
             this(msgId, prevMsgID, msg, data, DateTime.Now)
         { }
 
-        public Message(uint msgId, uint prevMsgID, Message_t msg, byte[] data, DateTime timestamp)
+        public Message(uint msgId, uint reqID, Message_t msg, byte[] data, DateTime timestamp)
         {
             ID = msgId;
-            PrevMessageID = prevMsgID;
+            ReqID = reqID;
             MessageCode = msg;
             Timestamp = timestamp;
             Data = data;
         }
 
         public uint ID { get; private set; }
-        public uint PrevMessageID { get; private set; }
+        public uint ReqID { get; private set; }
         public Message_t MessageCode { get; private set; }
         public DateTime Timestamp { get; private set; }
         public byte[] Data { get; private set; }
@@ -50,7 +50,7 @@ namespace DGD.HubCore.DLG
         public void Read(IReader reader)
         {
             ID = reader.ReadUInt();
-            PrevMessageID = reader.ReadUInt();
+            ReqID = reader.ReadUInt();
             byte msgCode = reader.ReadByte();            
 
             if (ID == 0 || msgCode == 0 || 
@@ -69,7 +69,7 @@ namespace DGD.HubCore.DLG
             Assert(MessageCode != Message_t.UnknonwnMsg);
 
             writer.Write(ID);
-            writer.Write(PrevMessageID);
+            writer.Write(ReqID);
             writer.Write((byte)MessageCode);
             writer.Write(Timestamp);           
 
