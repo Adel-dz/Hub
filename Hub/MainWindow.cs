@@ -62,6 +62,8 @@ namespace DGD.Hub
         {
             base.OnFormClosing(e);
 
+            Program.DialogManager.Stop();
+
             if (WindowState == FormWindowState.Maximized)
                 Program.Settings.IsMaximized = true;
             else
@@ -207,7 +209,7 @@ namespace DGD.Hub
 
         private void Quit_Click(object sender , EventArgs e)
         {
-            Application.Exit();
+            Program.DialogManager.Exit();
         }
     }
 }

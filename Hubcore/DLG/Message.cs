@@ -18,6 +18,8 @@ namespace DGD.HubCore.DLG
         SetInfo,    //data = ClientInfo
         Start,  //data = ClientID + start time , resp = ok
         Close,  //data = ClientID + close time, resp = ok
+        Refresh,    //data = clD, resp = running
+        Running,    // data = clID + current Time
     }
 
 

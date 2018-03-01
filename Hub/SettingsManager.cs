@@ -21,6 +21,7 @@ namespace DGD.Hub
         const int DEFAULT_MRU_SIZE = 100;
 
         uint m_dataGeneration;
+        uint m_updateKey;
         ClientInfo m_clInfo;
 
 
@@ -156,6 +157,17 @@ namespace DGD.Hub
             }
         }
 
+        public uint UpdateKey
+        {
+            get { return m_updateKey; }
+
+            set
+            {
+                m_updateKey = value;
+                SaveAppSettings();
+            }
+        }
+
         public static Uri ServerURI => new Uri("ftp://douane.gov.dz");
         public static Uri DataUpdateDirURI => Uris.GetUpdateDataDirUri(ServerURI);
         public static Uri ManifestURI => Uris.GetManifestURI(ServerURI);
@@ -228,6 +240,7 @@ namespace DGD.Hub
 
                 writer.Write(Encoding.UTF8.GetBytes(APP_SETTINGS_SIGNATURE));
                 writer.Write(m_dataGeneration);
+                writer.Write(m_updateKey);
             }
         }
 
@@ -309,6 +322,7 @@ namespace DGD.Hub
                         throw new CorruptedFileException(AppSettingsFilePath);
 
                 m_dataGeneration = reader.ReadUInt();
+                m_updateKey = reader.ReadUInt();
             }
 
         }

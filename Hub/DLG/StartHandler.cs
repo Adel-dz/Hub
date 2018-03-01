@@ -14,11 +14,13 @@ namespace DGD.Hub.DLG
     sealed class StartHandler
     {
         const int TIMER_INTERVAL = 30 * 1000;
+        const int MAX_ATTEMPTS = 10;
 
         readonly easyLib.Timer m_timer;
         readonly uint m_clID;
         byte[] m_msgData;
         uint m_reqID;
+        int m_cnxAttempts;
 
 
         public StartHandler(uint clID)
@@ -27,12 +29,7 @@ namespace DGD.Hub.DLG
             m_timer = new Timer(TIMER_INTERVAL);
             m_timer.TimeElapsed += ProcessResp;
         }
-
-        ~StartHandler()
-        {
-            Dbg.Log("StartHandler finalized.");
-        }
-
+            
 
         public void Start()
         {
@@ -68,7 +65,8 @@ namespace DGD.Hub.DLG
 
                 Message req = new Message(++m_reqID , 0 , Message_t.Start , m_msgData);
                 DialogEngin.WriteConnectionsReq(tmpFile , msgsCnx.Add(req));
-                netEngin.Upload(SettingsManager.DialogDirUri , tmpFile , true);
+                netEngin.Upload(SettingsManager.ConnectionReqURI, tmpFile , true);
+                m_cnxAttempts = 0;
                 Dbg.Log("Posting start msg done.");
             }
             catch (Exception ex)
@@ -94,10 +92,10 @@ namespace DGD.Hub.DLG
                 new NetEngin(Program.Settings).Download(tmpFile , SettingsManager.ConnectionRespURI , true);
 
                 IEnumerable<Message> resps = from msg in DialogEngin.ReadConnectionsResp(tmpFile)
-                                             where msg.MessageCode == Message_t.Start && msg.ReqID >= m_reqID
+                                             where msg.MessageCode == Message_t.Ok && msg.ReqID >= m_reqID
                                              select msg;
 
-                if (m_msgData.Any())
+                if (resps.Any())
                 {
                     Message resp = resps.SingleOrDefault(m => m.ReqID == m_reqID);
 
@@ -119,6 +117,13 @@ namespace DGD.Hub.DLG
                     Dbg.Log("Starting msg lost. Reposting...");
                     PostReq();
                 }
+                else if (++m_cnxAttempts >= MAX_ATTEMPTS)
+                {
+                    Dbg.Log("Starting msg lost. Reposting...");
+                    PostReq();
+                }
+                else
+                    m_timer.Start();
             }
             catch (Exception ex)
             {
