@@ -119,7 +119,7 @@ namespace DGD.Hub.DLG
 
                     System.Windows.Forms.MessageBox.Show(AppText.ERR_BANNED , AppText.APP_NAME ,
                            System.Windows.Forms.MessageBoxButtons.OK , System.Windows.Forms.MessageBoxIcon.Error);
-                    System.Windows.Forms.Application.Exit();
+                    Exit();
                     return;
                 }
                 else
@@ -139,7 +139,7 @@ namespace DGD.Hub.DLG
                     System.Windows.Forms.MessageBoxIcon.Error);
 
                 File.Delete(tmpFile);
-                System.Windows.Forms.Application.Exit();
+                Exit();
             };
 
             var task = new Task(start , TaskCreationOptions.LongRunning);
@@ -153,6 +153,15 @@ namespace DGD.Hub.DLG
         {
             m_updateTimer.Stop();
             m_dialogTimer.Stop();
+
+            if (m_clInfo != null)
+                new CloseHandler(m_clInfo.ClientID).Start();            
+        }
+
+        public void Exit()
+        {
+            Stop();
+            System.Windows.Forms.Application.Exit();
         }
 
         public void Dispose()
@@ -179,7 +188,7 @@ namespace DGD.Hub.DLG
                     System.Windows.Forms.MessageBoxButtons.OK ,
                     System.Windows.Forms.MessageBoxIcon.Error);
 
-                System.Windows.Forms.Application.Exit();
+                Exit();
                 break;
 
                 case ResumeHandler.Result_t.Ok:
@@ -221,9 +230,12 @@ namespace DGD.Hub.DLG
             task.Start();
             busyDlg.ShowDialog();
 
-            if (profiles == null)
+            if (profiles == null || !profiles.Any())
             {
-                System.Windows.Forms.Application.Exit();
+                System.Windows.Forms.MessageBox.Show("Aucune réponse du serveur. Veuillez réessayer ultérieurement." ,
+                    AppText.APP_NAME , System.Windows.Forms.MessageBoxButtons.OK , System.Windows.Forms.MessageBoxIcon.Error);
+
+                Exit();
                 return false;
             }
 
@@ -232,7 +244,7 @@ namespace DGD.Hub.DLG
             using (var dlg = new ProfileDialog(profiles))
             {
                 if (dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK)
-                    System.Windows.Forms.Application.Exit();
+                    Exit();
 
                 clInfo = ClientInfo.CreateClient(dlg.SelectedProfile.ProfileID);
                 clInfo.ContaclEMail = dlg.ContactEMail;
@@ -248,7 +260,7 @@ namespace DGD.Hub.DLG
 
                 if (!dlg.IsRegistered)
                 {
-                    System.Windows.Forms.Application.Exit();
+                    Exit();
                     return false;
                 }
 
@@ -309,7 +321,7 @@ namespace DGD.Hub.DLG
 
                         System.Windows.Forms.MessageBox.Show(AppText.ERR_BANNED , AppText.APP_NAME ,
                             System.Windows.Forms.MessageBoxButtons.OK , System.Windows.Forms.MessageBoxIcon.Error);
-                        System.Windows.Forms.Application.Exit();
+                        Exit();
                         return;
 
                         default:
@@ -383,8 +395,8 @@ namespace DGD.Hub.DLG
 
                 try
                 {
-                    AutoUpdater.UpdateData();
-                    LogEngin.PushFlash("Votre application est à jour.");
+                    if (AutoUpdater.UpdateData())
+                        LogEngin.PushFlash("Votre application est à jour.");
                 }
                 catch (Exception ex)
                 {
@@ -403,41 +415,7 @@ namespace DGD.Hub.DLG
             }
         }
 
-        //void PostStartMessage()
-        //{
-        //    Dbg.Log("Posting start msg...");
 
-        //    //posting to cnx file
-        //    var ms = new MemoryStream();
-        //    var writer = new RawDataWriter(ms , Encoding.UTF8);
-        //    writer.Write(m_clInfo.ClientID);
-        //    writer.Write(DateTime.Now);
-        //    byte[] msgData = ms.ToArray();
-
-        //    string tmpFile = Path.GetTempFileName();
-        //    var netEngin = new NetEngin(Program.Settings);
-        //    string dlgFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
-        //    Message[] msg = { new Message(++m_clientLastMsgID , 0 , Message_t.Start , msgData) };
-
-        //    DialogEngin.AppendHubDialog(dlgFilePath , m_clInfo.ClientID , msg);
-
-        //    using (new AutoReleaser(() => File.Delete(tmpFile)))
-        //    {
-        //        netEngin.Download(tmpFile , SettingsManager.ConnectionReqURI , true);
-        //        uint reqID = 0;
-
-        //        IEnumerable<Message> msgsCnx = DialogEngin.ReadConnectionsReq(tmpFile);
-
-        //        if (msgsCnx.Any())
-        //            reqID = msgsCnx.Max(m => m.ID);
-
-        //        Message req = new Message(++reqID , 0 , Message_t.Start , msgData);
-        //        DialogEngin.WriteConnectionsReq(tmpFile , msgsCnx.Add(req));
-        //        netEngin.Upload(SettingsManager.DialogDirUri , new string[] { dlgFilePath , tmpFile } , true);
-        //    }
-
-        //    Dbg.Log("Posting start msg done.");
-        //}
 
     }
 }

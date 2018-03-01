@@ -15,7 +15,7 @@ namespace DGD.Hub
         public static event Action<uint> BeginTableUpdate;
         public static event Action<uint> EndTableUpdate;
 
-        public static void UpdateData()
+        public static bool UpdateData()
         {
             /*
              * telecharger le fichier manifest
@@ -35,10 +35,24 @@ namespace DGD.Hub
             {
                 var netEngin = new NetEngin(Program.Settings);
                 netEngin.Download(manifest , SettingsManager.ManifestURI);
-                uint updateDataGen = UpdateEngin.ReadUpdateManifest(manifest).DataGeneration;
+                UpdateManifest updateManifest = UpdateEngin.ReadUpdateManifest(manifest);
 
-                if (updateDataGen == Program.Settings.DataGeneration)
-                    return;
+                if (updateManifest.DataGeneration == Program.Settings.DataGeneration)
+                    return true;
+
+                if(Program.Settings.UpdateKey != updateManifest.UpdateKey)
+                {
+                    if (Program.Settings.UpdateKey == 0)
+                        Program.Settings.UpdateKey = updateManifest.UpdateKey;
+                    else
+                    {
+                        Log.LogEngin.PushFlash(AppText.ERR_UPDATEKEY);
+                        Dbg.Log("Update key mismatch!");
+
+                        return false;
+                    }
+
+                }
 
                 //TODO: signaler l'erreur si DataGeneration < manifest.DataGeneration            
 
@@ -66,8 +80,10 @@ namespace DGD.Hub
                     }                   
                 }
 
-                Assert(Program.Settings.DataGeneration == updateDataGen);
+                Assert(Program.Settings.DataGeneration == updateManifest.DataGeneration);
             }
+
+            return true;
         }
 
 
