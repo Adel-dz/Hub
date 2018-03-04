@@ -104,7 +104,7 @@ namespace DGD.HubGovernor
 
         private void ClientWindow_Click(object sender , EventArgs e)
         {
-            var wind = new Clients.ClientsManagementWindow();
+            var wind = new Clients.ClientsManagmentWindow();
             wind.Show(this);
         }
     }

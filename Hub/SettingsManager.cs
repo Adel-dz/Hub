@@ -27,16 +27,6 @@ namespace DGD.Hub
 
         public SettingsManager()
         {
-            ////TODO: remove
-            //m_clInfo = new ClientInfo(0x2E64EFC3 , 200)
-            //{
-            //    ContaclEMail = "a@a.a" ,
-            //    ContactName = "root" ,
-            //    ContactPhone = "" ,
-            //    MachineName = "ll"
-
-            //};
-
             LoadAppSettings();
 
             try
@@ -126,23 +116,23 @@ namespace DGD.Hub
             {
                 m_clInfo = value;
 
-                byte[] data;
+                //byte[] data;
 
-                if (value == null)
-                {
-                    data = new byte[0];
-                }
-                else
-                {
-                    var ms = new MemoryStream();
-                    var writer = new RawDataWriter(ms , Encoding.UTF8);
-                    value.Write(writer);
+                //if (value == null)
+                //{
+                //    data = new byte[0];
+                //}
+                //else
+                //{
+                //    var ms = new MemoryStream();
+                //    var writer = new RawDataWriter(ms , Encoding.UTF8);
+                //    value.Write(writer);
 
-                    data = ms.ToArray();
-                }
+                //    data = ms.ToArray();
+                //}
 
-                SaveCriticalDataToFile(data);
-                SaveCriticalDataToRegistry(data);
+                //SaveCriticalDataToFile(data);
+                //SaveCriticalDataToRegistry(data);
             }
         }
 

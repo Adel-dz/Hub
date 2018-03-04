@@ -10,6 +10,7 @@ namespace DGD.HubCore.DB
     {
         uint ClientID { get; }
         ClientStatus_t Status { get; }
+        DateTime LastSeen { get; }
     }
 
     public class ClientStatusRow: DataRow, IClientStatusRow
@@ -17,14 +18,21 @@ namespace DGD.HubCore.DB
         public ClientStatusRow()
         { }
 
-        public ClientStatusRow(uint idClient, ClientStatus_t status):
+        public ClientStatusRow(uint idClient , ClientStatus_t status) :
+            this(idClient , status , DateTime.Now)
+        { }
+
+        public ClientStatusRow(uint idClient, ClientStatus_t status, DateTime seen):
             base(idClient)
         {
             Status = status;
+            LastSeen = seen;
         }
+
 
         public uint ClientID => ID;
         public ClientStatus_t Status { get; private set; }
+        public DateTime LastSeen { get; private set; }
 
 
         //protected:
@@ -37,6 +45,7 @@ namespace DGD.HubCore.DB
                 throw new CorruptedStreamException();
 
             Status = (ClientStatus_t)st;
+            LastSeen = reader.ReadTime();
         }
 
         protected override void DoWrite(IWriter writer)
@@ -44,6 +53,7 @@ namespace DGD.HubCore.DB
             Assert(Status != ClientStatus_t.Unknown);
 
             writer.Write((byte)Status);
+            writer.Write(LastSeen);
         }
 
         protected override string[] GetContent()
@@ -51,7 +61,8 @@ namespace DGD.HubCore.DB
             return new[]
             {
                 ID.ToString(),
-                ClientStatuses.GetStatusName(Status)
+                ClientStatuses.GetStatusName(Status),
+                LastSeen.ToString()
             };
         }
     }

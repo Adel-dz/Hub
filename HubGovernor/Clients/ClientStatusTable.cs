@@ -20,7 +20,8 @@ namespace DGD.HubGovernor.Clients
             return new IDataColumn[]
             {
                 new IntegerColumn("ID Client"),
-                new TextColumn("Status")
+                new TextColumn("Statut"),
+                new TimeColumn("Vu pour la dernière fois")
             };
         }
     }

@@ -5,7 +5,6 @@ using DGD.HubCore.Net;
 using DGD.HubGovernor.Profiles;
 using easyLib.Log;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -47,6 +46,10 @@ namespace DGD.HubGovernor.Clients
         uint m_lastCxnReqMsgID;
         uint m_lastCnxRespMsgID;
         bool m_initializationDone;
+
+        public event Action<uint> ClientStarted;
+        public event Action<uint> ClientClosed;
+
 
         public ClientsManager()
         {
@@ -104,6 +107,46 @@ namespace DGD.HubGovernor.Clients
                 return clients;
             }
         }
+
+        public IEnumerable<HubClient> BannedClients
+        {
+            get
+            {
+
+                var banneds = from cl in AllClients
+                              let status = m_ndxerClientsStatus.Get(cl.ID) as ClientStatus
+                              where status.Status == ClientStatus_t.Banned
+                              select cl;
+
+                return banneds;
+            }
+        }
+
+        public IEnumerable<HubClient> DiasbledClients
+        {
+            get
+            {
+                var disableds = from cl in AllClients
+                                let status = m_ndxerClientsStatus.Get(cl.ID) as ClientStatus
+                                where status.Status == ClientStatus_t.Disabled
+                                select cl;
+
+                return disableds;
+            }
+        }
+
+        public IEnumerable<HubClient> AllClients
+        {
+            get
+            {
+                var clients = from HubClient cl in m_ndxerClients.Source.Enumerate()
+                              select cl;
+
+                return clients;
+            }
+        }
+
+        public bool IsClientRunning(uint clID) => m_runningClients.Keys.Contains(clID);
 
         public ClientStatus_t GetClientStatus(uint idClient)
         {
@@ -211,8 +254,9 @@ namespace DGD.HubGovernor.Clients
             }
         }
 
-        //private:        
-        static string ClientStrID(uint clID) => clID.ToString("X");
+        public static string ClientStrID(uint clID) => clID.ToString("X");
+
+        //private:                
 
         void Initialize()
         {
@@ -445,56 +489,6 @@ namespace DGD.HubGovernor.Clients
             //}
         }
 
-        void AddClient(ClientInfo clInfo)
-        {
-            //desactiver l'ancien client actif si il existe
-            var oldClient = GetProfileActiveClient(clInfo.ProfileID);
-
-            if (oldClient != null)
-            {
-                EventLogger.Info($"Désactivation du client {oldClient.ContactName}...");
-
-                //maj la table des status clients                
-                var oldClStatus = new ClientStatus(oldClient.ID , ClientStatus_t.Disabled);
-                int ndx = m_ndxerClientsStatus.IndexOf(oldClStatus.ID);
-                m_ndxerClientsStatus.Source.Replace(ndx , oldClStatus);
-
-                //maj des fichiers de dialogue
-                string filePath = AppPaths.GetLocalSrvDialogPath(oldClient.ID);
-
-                ClientDialog clDlg = DialogEngin.ReadSrvDialog(filePath);
-                clDlg.ClientStatus = ClientStatus_t.Disabled;
-                DialogEngin.WriteSrvDialog(filePath , clDlg);
-                AddUpload(Names.GetSrvDialogFile(oldClient.ID));
-            }
-
-
-            //maj la table des clients
-            var hClient = new HubClient(clInfo.ClientID , clInfo.ProfileID)
-            {
-                ContaclEMail = clInfo.ContaclEMail ,
-                ContactName = clInfo.ContactName ,
-                ContactPhone = clInfo.ContactPhone ,
-                MachineName = clInfo.MachineName ,
-            };
-
-            m_ndxerClients.Source.Insert(hClient);
-
-            //maj du status client
-            var clStatus = new ClientStatus(clInfo.ClientID , ClientStatus_t.Enabled);
-            m_ndxerClientsStatus.Source.Insert(clStatus);
-
-            //creer les fichier de dialogue 
-            string srvDlgPath = AppPaths.GetLocalSrvDialogPath(clInfo.ClientID);
-            DialogEngin.WriteSrvDialog(srvDlgPath , new ClientDialog(clInfo.ClientID ,
-                 ClientStatus_t.Enabled , Enumerable.Empty<Message>()));
-
-            string hubDlgPath = AppPaths.GetLocalClientDilogPath(clInfo.ClientID);
-            DialogEngin.WriteHubDialog(hubDlgPath , clInfo.ClientID , Enumerable.Empty<Message>());
-
-            new NetEngin(AppContext.Settings.AppSettings).Upload(AppPaths.RemoteDialogDirUri ,
-                new string[] { srvDlgPath , hubDlgPath });
-        }
 
         //handelrs:
         private void Profiles_DatumDeleted(IDataRow row) => ProcessProfilesChange();

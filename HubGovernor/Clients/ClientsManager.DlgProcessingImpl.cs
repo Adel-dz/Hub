@@ -50,6 +50,8 @@ namespace DGD.HubGovernor.Clients
             //TODO: traiter le cas ou un client de meme ID est en execution
             m_runningClients.Remove(clID);
 
+            ClientClosed?.Invoke(clID);
+
             return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , BitConverter.GetBytes(clID));
         }
 
@@ -159,7 +161,6 @@ namespace DGD.HubGovernor.Clients
                     return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , msg.Data);
                 }
 
-
                 //bannissemnt du client actif
                 EventLogger.Info($"Le client demandeur est plus ancien. Bannissement du client actif ({curClient.ContactName})...");
 
@@ -232,6 +233,8 @@ namespace DGD.HubGovernor.Clients
 
             m_runningClients[clID] = clData;
 
+            ClientStarted?.Invoke(clID);
+
             EventLogger.Info("Requête acceptée. :-)");
             return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , msg.Data);
         }
@@ -292,16 +295,71 @@ namespace DGD.HubGovernor.Clients
 
 
             EventLogger.Info("Profil en gestion automatique.");
-
-
             EventLogger.Info("Enregistrement du client...");
 
-            //enregister le client 
-            AddClient(clInfo);
+            //desactiver l'ancien client actif si il existe
+            var oldClient = GetProfileActiveClient(clInfo.ProfileID);
+
+            if (oldClient != null)
+            {
+                if (IsClientRunning(oldClient.ID))
+                {
+                    //rejeter l'inscription
+                    EventLogger.Info($"Un client pour le profil {profile.Name} est déjà en cours d’exécution. " +
+                        "requête rejetée.");
+
+                    return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , data);
+                }
+
+
+                EventLogger.Info($"Désactivation du client {oldClient.ContactName}...");
+
+                //maj la table des status clients                
+                var oldClStatus = new ClientStatus(oldClient.ID , ClientStatus_t.Disabled);
+                int ndx = m_ndxerClientsStatus.IndexOf(oldClStatus.ID);
+                m_ndxerClientsStatus.Source.Replace(ndx , oldClStatus);
+
+                //maj des fichiers de dialogue
+                string filePath = AppPaths.GetLocalSrvDialogPath(oldClient.ID);
+
+                ClientDialog clDlg = DialogEngin.ReadSrvDialog(filePath);
+                clDlg.ClientStatus = ClientStatus_t.Disabled;
+                DialogEngin.WriteSrvDialog(filePath , clDlg);
+                AddUpload(Names.GetSrvDialogFile(oldClient.ID));
+            }
+
+
+            //maj la table des clients
+            var hClient = new HubClient(clInfo.ClientID , clInfo.ProfileID)
+            {
+                ContaclEMail = clInfo.ContaclEMail ,
+                ContactName = clInfo.ContactName ,
+                ContactPhone = clInfo.ContactPhone ,
+                MachineName = clInfo.MachineName ,
+            };
+
+            m_ndxerClients.Source.Insert(hClient);
+
+            //maj du status client
+            var clStatus = new ClientStatus(clInfo.ClientID , ClientStatus_t.Enabled);
+            m_ndxerClientsStatus.Source.Insert(clStatus);
+
+            //creer les fichier de dialogue 
+            string srvDlgPath = AppPaths.GetLocalSrvDialogPath(clInfo.ClientID);
+            DialogEngin.WriteSrvDialog(srvDlgPath , new ClientDialog(clInfo.ClientID ,
+                 ClientStatus_t.Enabled , Enumerable.Empty<Message>()));
+
+            string hubDlgPath = AppPaths.GetLocalClientDilogPath(clInfo.ClientID);
+            DialogEngin.WriteHubDialog(hubDlgPath , clInfo.ClientID , Enumerable.Empty<Message>());
+
+            new NetEngin(AppContext.Settings.AppSettings).Upload(AppPaths.RemoteDialogDirUri ,
+                new string[] { srvDlgPath , hubDlgPath });
 
             //maj du dict des clients actifs
             var clData = new ClientData(DateTime.Now);
             m_runningClients[clInfo.ClientID] = clData;
+
+            ClientStarted?.Invoke(clInfo.ClientID);
 
             EventLogger.Info("Inscription réussie. :-)");
             return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , data);

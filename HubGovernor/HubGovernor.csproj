@@ -60,11 +60,11 @@
     <Compile Include="Clients\ClientsManager.cs" />
     <Compile Include="Clients\ClientStatus.cs" />
     <Compile Include="Clients\ClientStatusTable.cs" />
-    <Compile Include="Clients\ClientsManagementWindow.cs">
+    <Compile Include="Clients\ClientsManagmentWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Clients\ClientsManagementWindow.Designer.cs">
-      <DependentUpon>ClientsManagementWindow.cs</DependentUpon>
+    <Compile Include="Clients\ClientsManagmentWindow.Designer.cs">
+      <DependentUpon>ClientsManagmentWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Clients\ClientsWindow.cs">
       <SubType>Form</SubType>
@@ -360,8 +360,8 @@
     <EmbeddedResource Include="Admin\IntegrityCheckerDialog.resx">
       <DependentUpon>IntegrityCheckerDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Clients\ClientsManagementWindow.resx">
-      <DependentUpon>ClientsManagementWindow.cs</DependentUpon>
+    <EmbeddedResource Include="Clients\ClientsManagmentWindow.resx">
+      <DependentUpon>ClientsManagmentWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Clients\ClientsWindow.resx">
       <DependentUpon>ClientsWindow.cs</DependentUpon>
