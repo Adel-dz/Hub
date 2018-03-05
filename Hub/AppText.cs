@@ -9,5 +9,7 @@
 
         public const string APP_NAME = "Hub de la valeur en douane";
         public const string UNSPECIFIED = "Non-spécifié";
+
+        public const string EXCP_BADTAG = "Le tatouage de la table {0} est invalide.";
     }
 }

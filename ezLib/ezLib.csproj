@@ -68,6 +68,7 @@
     <Compile Include="Extensions\EnumerableEx.cs" />
     <Compile Include="Extensions\ReaderWriterLockSlimEx.cs" />
     <Compile Include="Extensions\TaskEx.cs" />
+    <Compile Include="FilesBag.cs" />
     <Compile Include="Jobs\BackgroundJob.cs" />
     <Compile Include="Jobs\ForegroundJob.cs" />
     <Compile Include="Jobs\Job.cs" />

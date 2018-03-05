@@ -18,12 +18,13 @@ namespace DGD.HubCore.DB
             DateTime m_tmCreation;
             DateTime m_tmLastWrite;
             uint m_ver;
+            uint m_tag;
             
-            public Header(int szDatum = 0)
+            public Header(int szDatum = 0, uint tag = 0)
             {
                 CreationTime = LastWriteTime = DateTime.Now;
                 FrameSize = szDatum;
-
+                Tag = tag;
                 FirstDeletedFrameIndex = NULL_INDEX;
             }
 
@@ -82,6 +83,16 @@ namespace DGD.HubCore.DB
                 }
             }
 
+            public uint Tag
+            {
+                get { return m_tag; }
+                set
+                {
+                    m_tag = value;
+                    IsDirty = true;
+                }
+            }
+
             public void Load(ITableReader reader)
             {
                 Assert(reader != null);
@@ -94,6 +105,7 @@ namespace DGD.HubCore.DB
                         throw new CorruptedStreamException();
 
                 uint ver = reader.ReadUInt();
+                uint tag = reader.ReadUInt();
                 int nTotal = reader.ReadInt();
                 int ndxDeleted = reader.ReadInt();
                 int sz = reader.ReadInt();
@@ -105,6 +117,7 @@ namespace DGD.HubCore.DB
                 LastWriteTime = reader.ReadTime();
 
                 Version = ver;
+                Tag = tag;
                 FrameCount = nTotal;
                 FirstDeletedFrameIndex = ndxDeleted;
                 FrameSize = sz;
@@ -120,6 +133,7 @@ namespace DGD.HubCore.DB
 
                 writer.Write(Signature);
                 writer.Write(Version);
+                writer.Write(Tag);
                 writer.Write(FrameCount);
                 writer.Write(FirstDeletedFrameIndex);
                 writer.Write(FrameSize);
@@ -133,7 +147,7 @@ namespace DGD.HubCore.DB
 
             public void Reset()
             {
-                Version = 0;
+                Tag = Version = 0;
                 FrameCount = 0;
                 FirstDeletedFrameIndex = NULL_INDEX;
                 CreationTime = LastWriteTime = DateTime.Now;

@@ -16,7 +16,8 @@ namespace DGD.HubCore.DB
         bool IsConnected { get; }
         new IDBTableProvider DataProvider { get; }
         new uint Version { get; set; }
-        void Create(int szDatum);
+        uint Tag { get; }
+        void Create(int szDatum, uint tag);
         void Clear();
         void Flush();
         void Connect();
@@ -120,6 +121,20 @@ namespace DGD.HubCore.DB
             }
         }
 
+        public uint Tag
+        {
+            get
+            {
+                Assert(IsConnected);
+
+                Monitor.Enter(m_rwLock);
+                uint tag = m_header.Tag;
+                Monitor.Exit(m_rwLock); ;
+
+                return tag;
+            }
+        }
+
         public bool IsConnected
         {
             get
@@ -146,7 +161,7 @@ namespace DGD.HubCore.DB
             }
         }
 
-        public void Create(int szDatum)
+        public void Create(int szDatum, uint tag)
         {
             Assert(!IsConnected);
             Assert(szDatum > 0);
@@ -167,7 +182,7 @@ namespace DGD.HubCore.DB
                     FileOptions.RandomAccess);
 
 
-                m_header = new Header(szDatum);
+                m_header = new Header(szDatum, tag);
                 var writer = new TableWriter(m_dataFile);
                 m_header.Store(writer);
                 m_buffer = new byte[szDatum];

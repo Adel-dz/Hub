@@ -608,6 +608,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Governor_app_ico.ico" />
+    <None Include="Resources\upload_16.png" />
     <None Include="Resources\add_app_16.png" />
     <None Include="Resources\banned_client_16.png" />
     <None Include="Resources\disabled_client_16.png" />

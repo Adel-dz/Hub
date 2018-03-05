@@ -79,6 +79,7 @@
       <DependentUpon>BusyDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Dbg.cs" />
+    <Compile Include="DB\BadTagException.cs" />
     <Compile Include="DB\CountriesTable.cs" />
     <Compile Include="DB\Country.cs" />
     <Compile Include="DB\CurrenciesTable.cs" />

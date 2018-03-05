@@ -111,11 +111,12 @@ namespace DGD.Hub.DB
                             using (new AutoReleaser(() => EndTableProcessing?.Invoke(tableID)))
                             {
                                 uint ver = tbl.Version;
+                                uint tag = tbl.Tag;
 
                                 dp.Disconnect();
                                 tbl.Disconnect();
                                 File.Delete(tbl.FilePath);
-                                tbl.Create(szDatum);
+                                tbl.Create(szDatum , tag);
                                 dp.Connect();
 
                                 fs.Position = 0;
@@ -149,7 +150,7 @@ namespace DGD.Hub.DB
         }
 
 
-        public IDBColumnIndexer<SubHeading> GetSubHeadingIndexer(uint tableID, ColumnID_t columnID)
+        public IDBColumnIndexer<SubHeading> GetSubHeadingIndexer(uint tableID , ColumnID_t columnID)
         {
             lock (m_lock)
                 return m_accessPath.GetSubHeadingIndxer(tableID , columnID);
@@ -189,28 +190,33 @@ namespace DGD.Hub.DB
         {
             IDBTable tbl = AllTables.FirstOrDefault(t => t.ID == tableID);
 
+            Dbg.Assert(Program.Settings.ClientInfo != null);
+
             if (tbl != null)
-                    if (connect && !tbl.IsConnected)
+                if (connect && !tbl.IsConnected)
+                    try
+                    {
+                        tbl.Connect();
+
+                        if (tbl.Tag != Program.Settings.ClientInfo.ClientID)
+                            throw new BadTagException(tbl.Name);
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        EventLogger.Warning($"Impossible d'ouvrir la table {tbl.Name}\nLancement de la procedure de création...");
+
                         try
                         {
-                            tbl.Connect();
-                        }                      
-                        catch (FileNotFoundException)
-                        {
-                            EventLogger.Warning($"Impossible d'ouvrir la table {tbl.Name}\nLancement de la procedure de création...");
-
-                            try
-                            {
-                                tbl.Create(1);
-                            }
-                            catch (Exception ex)
-                            {
-                                EventLogger.Error($"Erreur lors de la création du fichier!\n Exception: {ex.Message}");
-                                throw;
-                            }
-
-                            EventLogger.Info("Création ok");
+                            tbl.Create(1 , Program.Settings.ClientInfo.ClientID);
                         }
+                        catch (Exception ex)
+                        {
+                            EventLogger.Error($"Erreur lors de la création du fichier!\n Exception: {ex.Message}");
+                            throw;
+                        }
+
+                        EventLogger.Info("Création ok");
+                    }
 
             return tbl;
         }
