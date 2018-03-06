@@ -31,6 +31,8 @@
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ToolStrip m_toolStripData;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+            System.Windows.Forms.ToolStripButton m_tsbDataUpdateOptions;
+            System.Windows.Forms.ToolStripButton m_tsbDataUpdateHelp;
             System.Windows.Forms.ColumnHeader m_colDataGeneration;
             System.Windows.Forms.ColumnHeader m_colCreationTime;
             System.Windows.Forms.ColumnHeader m_colDeployTime;
@@ -39,26 +41,27 @@
             System.Windows.Forms.TabControl m_tabControl;
             System.Windows.Forms.TabPage m_datapPage;
             System.Windows.Forms.TabPage m_hubPage;
+            System.Windows.Forms.ColumnHeader m_colVer;
+            System.Windows.Forms.ColumnHeader m_colCreationDate;
+            System.Windows.Forms.ColumnHeader m_colPublishDate;
+            System.Windows.Forms.ColumnHeader m_colSystem;
             System.Windows.Forms.ToolStrip m_toolStripHub;
-            System.Windows.Forms.ImageList m_ilSmall;
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UpdatesWindow));
-            System.Windows.Forms.ToolStripButton m_tsbDataUpdateOptions;
-            System.Windows.Forms.ToolStripButton m_tsbDataUpdateHelp;
             System.Windows.Forms.ToolStripButton m_tsbAddApp;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
             System.Windows.Forms.ToolStripButton m_tsbAppUpdateOption;
             System.Windows.Forms.ToolStripButton m_tsbAppUpdateHelp;
-            System.Windows.Forms.ColumnHeader m_colVer;
-            System.Windows.Forms.ColumnHeader m_colCreationDate;
-            System.Windows.Forms.ColumnHeader m_colPublishDate;
-            this.m_sslUpdateKey = new System.Windows.Forms.ToolStripStatusLabel();
-            this.m_lvUpdates = new System.Windows.Forms.ListView();
+            System.Windows.Forms.ImageList m_ilSmall;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UpdatesWindow));
             this.m_tsbBuildUpdate = new System.Windows.Forms.ToolStripButton();
             this.m_tsbUpload = new System.Windows.Forms.ToolStripButton();
-            this.m_tsbPublish = new System.Windows.Forms.ToolStripButton();
+            this.m_sslUpdateKey = new System.Windows.Forms.ToolStripStatusLabel();
+            this.m_lvUpdates = new System.Windows.Forms.ListView();
             this.listView1 = new System.Windows.Forms.ListView();
+            this.m_tsbPublish = new System.Windows.Forms.ToolStripButton();
             m_toolStripData = new System.Windows.Forms.ToolStrip();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            m_tsbDataUpdateOptions = new System.Windows.Forms.ToolStripButton();
+            m_tsbDataUpdateHelp = new System.Windows.Forms.ToolStripButton();
             m_colDataGeneration = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             m_colCreationTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             m_colDeployTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -67,17 +70,16 @@
             m_tabControl = new System.Windows.Forms.TabControl();
             m_datapPage = new System.Windows.Forms.TabPage();
             m_hubPage = new System.Windows.Forms.TabPage();
+            m_colVer = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            m_colCreationDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            m_colPublishDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            m_colSystem = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             m_toolStripHub = new System.Windows.Forms.ToolStrip();
-            m_ilSmall = new System.Windows.Forms.ImageList(this.components);
-            m_tsbDataUpdateOptions = new System.Windows.Forms.ToolStripButton();
-            m_tsbDataUpdateHelp = new System.Windows.Forms.ToolStripButton();
             m_tsbAddApp = new System.Windows.Forms.ToolStripButton();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             m_tsbAppUpdateOption = new System.Windows.Forms.ToolStripButton();
             m_tsbAppUpdateHelp = new System.Windows.Forms.ToolStripButton();
-            m_colVer = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            m_colCreationDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            m_colPublishDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            m_ilSmall = new System.Windows.Forms.ImageList(this.components);
             m_toolStripData.SuspendLayout();
             m_statusStrip.SuspendLayout();
             m_tabControl.SuspendLayout();
@@ -99,10 +101,50 @@
             m_toolStripData.Size = new System.Drawing.Size(659, 25);
             m_toolStripData.TabIndex = 0;
             // 
+            // m_tsbBuildUpdate
+            // 
+            this.m_tsbBuildUpdate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.m_tsbBuildUpdate.Enabled = false;
+            this.m_tsbBuildUpdate.Image = global::DGD.HubGovernor.Properties.Resources.build_update_16;
+            this.m_tsbBuildUpdate.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.m_tsbBuildUpdate.Name = "m_tsbBuildUpdate";
+            this.m_tsbBuildUpdate.Size = new System.Drawing.Size(23, 22);
+            this.m_tsbBuildUpdate.Text = "Construire la MAJ";
+            this.m_tsbBuildUpdate.Click += new System.EventHandler(this.BuildUpdate_Click);
+            // 
+            // m_tsbUpload
+            // 
+            this.m_tsbUpload.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.m_tsbUpload.Image = global::DGD.HubGovernor.Properties.Resources.upload_16;
+            this.m_tsbUpload.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.m_tsbUpload.Name = "m_tsbUpload";
+            this.m_tsbUpload.Size = new System.Drawing.Size(23, 22);
+            this.m_tsbUpload.Text = "Publier la MAJ";
+            this.m_tsbUpload.Click += new System.EventHandler(this.Upload_Click);
+            // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // m_tsbDataUpdateOptions
+            // 
+            m_tsbDataUpdateOptions.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbDataUpdateOptions.Image = global::DGD.HubGovernor.Properties.Resources.option_16;
+            m_tsbDataUpdateOptions.ImageTransparentColor = System.Drawing.Color.Magenta;
+            m_tsbDataUpdateOptions.Name = "m_tsbDataUpdateOptions";
+            m_tsbDataUpdateOptions.Size = new System.Drawing.Size(23, 22);
+            m_tsbDataUpdateOptions.Text = "Options";
+            // 
+            // m_tsbDataUpdateHelp
+            // 
+            m_tsbDataUpdateHelp.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            m_tsbDataUpdateHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbDataUpdateHelp.Image = global::DGD.HubGovernor.Properties.Resources.help_16;
+            m_tsbDataUpdateHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
+            m_tsbDataUpdateHelp.Name = "m_tsbDataUpdateHelp";
+            m_tsbDataUpdateHelp.Size = new System.Drawing.Size(23, 22);
+            m_tsbDataUpdateHelp.Text = "Aide";
             // 
             // m_colDataGeneration
             // 
@@ -194,6 +236,41 @@
             m_hubPage.Text = "Hub";
             m_hubPage.UseVisualStyleBackColor = true;
             // 
+            // listView1
+            // 
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            m_colVer,
+            m_colCreationDate,
+            m_colPublishDate,
+            m_colSystem});
+            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listView1.Location = new System.Drawing.Point(3, 28);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(659, 226);
+            this.listView1.TabIndex = 1;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            // 
+            // m_colVer
+            // 
+            m_colVer.Text = "Version";
+            m_colVer.Width = 91;
+            // 
+            // m_colCreationDate
+            // 
+            m_colCreationDate.Text = "Crée le";
+            m_colCreationDate.Width = 159;
+            // 
+            // m_colPublishDate
+            // 
+            m_colPublishDate.Text = "Publié le";
+            m_colPublishDate.Width = 200;
+            // 
+            // m_colSystem
+            // 
+            m_colSystem.Text = "Système requis";
+            m_colSystem.Width = 152;
+            // 
             // m_toolStripHub
             // 
             m_toolStripHub.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -207,53 +284,6 @@
             m_toolStripHub.Size = new System.Drawing.Size(659, 25);
             m_toolStripHub.TabIndex = 0;
             // 
-            // m_ilSmall
-            // 
-            m_ilSmall.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("m_ilSmall.ImageStream")));
-            m_ilSmall.TransparentColor = System.Drawing.Color.Transparent;
-            m_ilSmall.Images.SetKeyName(0, "hub_app_16.png");
-            m_ilSmall.Images.SetKeyName(1, "database_16.png");
-            // 
-            // m_tsbBuildUpdate
-            // 
-            this.m_tsbBuildUpdate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.m_tsbBuildUpdate.Enabled = false;
-            this.m_tsbBuildUpdate.Image = global::DGD.HubGovernor.Properties.Resources.build_update_16;
-            this.m_tsbBuildUpdate.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.m_tsbBuildUpdate.Name = "m_tsbBuildUpdate";
-            this.m_tsbBuildUpdate.Size = new System.Drawing.Size(23, 22);
-            this.m_tsbBuildUpdate.Text = "Construire la MAJ";
-            this.m_tsbBuildUpdate.Click += new System.EventHandler(this.BuildUpdate_Click);
-            // 
-            // m_tsbUpload
-            // 
-            this.m_tsbUpload.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.m_tsbUpload.Image = global::DGD.HubGovernor.Properties.Resources.upload_16;
-            this.m_tsbUpload.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.m_tsbUpload.Name = "m_tsbUpload";
-            this.m_tsbUpload.Size = new System.Drawing.Size(23, 22);
-            this.m_tsbUpload.Text = "Publier la MAJ";
-            this.m_tsbUpload.Click += new System.EventHandler(this.Upload_Click);
-            // 
-            // m_tsbDataUpdateOptions
-            // 
-            m_tsbDataUpdateOptions.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            m_tsbDataUpdateOptions.Image = global::DGD.HubGovernor.Properties.Resources.option_16;
-            m_tsbDataUpdateOptions.ImageTransparentColor = System.Drawing.Color.Magenta;
-            m_tsbDataUpdateOptions.Name = "m_tsbDataUpdateOptions";
-            m_tsbDataUpdateOptions.Size = new System.Drawing.Size(23, 22);
-            m_tsbDataUpdateOptions.Text = "Options";
-            // 
-            // m_tsbDataUpdateHelp
-            // 
-            m_tsbDataUpdateHelp.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            m_tsbDataUpdateHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            m_tsbDataUpdateHelp.Image = global::DGD.HubGovernor.Properties.Resources.help_16;
-            m_tsbDataUpdateHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
-            m_tsbDataUpdateHelp.Name = "m_tsbDataUpdateHelp";
-            m_tsbDataUpdateHelp.Size = new System.Drawing.Size(23, 22);
-            m_tsbDataUpdateHelp.Text = "Aide";
-            // 
             // m_tsbAddApp
             // 
             m_tsbAddApp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -261,7 +291,8 @@
             m_tsbAddApp.ImageTransparentColor = System.Drawing.Color.Magenta;
             m_tsbAddApp.Name = "m_tsbAddApp";
             m_tsbAddApp.Size = new System.Drawing.Size(23, 22);
-            m_tsbAddApp.Text = "Ajouter...";
+            m_tsbAddApp.Text = "Ajouter une mise à jour...";
+            m_tsbAddApp.Click += new System.EventHandler(this.AddPackage_Click);
             // 
             // m_tsbPublish
             // 
@@ -296,33 +327,12 @@
             m_tsbAppUpdateHelp.Size = new System.Drawing.Size(23, 22);
             m_tsbAppUpdateHelp.Text = "Aide";
             // 
-            // listView1
+            // m_ilSmall
             // 
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            m_colVer,
-            m_colCreationDate,
-            m_colPublishDate});
-            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView1.Location = new System.Drawing.Point(3, 28);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(659, 226);
-            this.listView1.TabIndex = 1;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
-            // 
-            // m_colVer
-            // 
-            m_colVer.Text = "Version";
-            // 
-            // m_colCreationDate
-            // 
-            m_colCreationDate.Text = "Crée le";
-            m_colCreationDate.Width = 127;
-            // 
-            // m_colPublishDate
-            // 
-            m_colPublishDate.Text = "Publié le";
-            m_colPublishDate.Width = 200;
+            m_ilSmall.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("m_ilSmall.ImageStream")));
+            m_ilSmall.TransparentColor = System.Drawing.Color.Transparent;
+            m_ilSmall.Images.SetKeyName(0, "hub_app_16.png");
+            m_ilSmall.Images.SetKeyName(1, "database_16.png");
             // 
             // UpdatesWindow
             // 

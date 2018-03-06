@@ -174,5 +174,11 @@ namespace DGD.HubGovernor.Updating
             task.Start();
             dlg.ShowDialog(Parent);
         }
+        
+        private void AddPackage_Click(object sender , EventArgs e)
+        {
+            using (var dlg = new AppUpdateDialog())
+                dlg.ShowDialog(Owner);
+        }
     }
 }

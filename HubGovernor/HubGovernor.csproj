@@ -329,6 +329,12 @@
       <DependentUpon>UnitForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Units\UnitTable.cs" />
+    <Compile Include="Updating\AppUpdateDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Updating\AppUpdateDialog.Designer.cs">
+      <DependentUpon>AppUpdateDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Updating\TableUpdateViewer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -459,6 +465,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Units\UnitForm.resx">
       <DependentUpon>UnitForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Updating\AppUpdateDialog.resx">
+      <DependentUpon>AppUpdateDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Updating\TableUpdateViewer.resx">
       <DependentUpon>TableUpdateViewer.cs</DependentUpon>
@@ -608,6 +617,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Governor_app_ico.ico" />
+    <None Include="Resources\folder_Open_16.png" />
     <None Include="Resources\upload_16.png" />
     <None Include="Resources\add_app_16.png" />
     <None Include="Resources\banned_client_16.png" />
