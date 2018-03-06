@@ -57,6 +57,48 @@
             m_lblFiles.TabIndex = 7;
             m_lblFiles.Text = "Fichiers";
             // 
+            // m_colFileName
+            // 
+            m_colFileName.Text = "Fichier";
+            m_colFileName.Width = 131;
+            // 
+            // m_colDestFolder
+            // 
+            m_colDestFolder.Text = "Sous-dossier de destination";
+            m_colDestFolder.Width = 235;
+            // 
+            // m_lblVersion
+            // 
+            m_lblVersion.AutoSize = true;
+            m_lblVersion.Location = new System.Drawing.Point(13, 293);
+            m_lblVersion.Name = "m_lblVersion";
+            m_lblVersion.Size = new System.Drawing.Size(45, 13);
+            m_lblVersion.TabIndex = 8;
+            m_lblVersion.Text = "Version:";
+            // 
+            // m_lblSystem
+            // 
+            m_lblSystem.AutoSize = true;
+            m_lblSystem.Location = new System.Drawing.Point(13, 328);
+            m_lblSystem.Name = "m_lblSystem";
+            m_lblSystem.Size = new System.Drawing.Size(50, 13);
+            m_lblSystem.TabIndex = 9;
+            m_lblSystem.Text = "Système:";
+            // 
+            // m_btnInsert
+            // 
+            m_btnInsert.Image = global::DGD.HubGovernor.Properties.Resources.folder_Open_16;
+            m_btnInsert.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            m_btnInsert.Location = new System.Drawing.Point(398, 63);
+            m_btnInsert.Name = "m_btnInsert";
+            m_btnInsert.Size = new System.Drawing.Size(87, 23);
+            m_btnInsert.TabIndex = 0;
+            m_btnInsert.Text = "   Insérer...";
+            m_btnInsert.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            m_btnInsert.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            m_btnInsert.UseVisualStyleBackColor = true;
+            m_btnInsert.Click += new System.EventHandler(this.Insert_Click);
+            // 
             // m_lvFiles
             // 
             this.m_lvFiles.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -71,16 +113,6 @@
             this.m_lvFiles.TabIndex = 6;
             this.m_lvFiles.UseCompatibleStateImageBehavior = false;
             this.m_lvFiles.View = System.Windows.Forms.View.Details;
-            // 
-            // m_colFileName
-            // 
-            m_colFileName.Text = "Fichier";
-            m_colFileName.Width = 131;
-            // 
-            // m_colDestFolder
-            // 
-            m_colDestFolder.Text = "Sous-dossier de destination";
-            m_colDestFolder.Width = 235;
             // 
             // m_btnDelete
             // 
@@ -113,15 +145,6 @@
             this.m_btnCancel.Text = "Annuler";
             this.m_btnCancel.UseVisualStyleBackColor = true;
             // 
-            // m_lblVersion
-            // 
-            m_lblVersion.AutoSize = true;
-            m_lblVersion.Location = new System.Drawing.Point(13, 293);
-            m_lblVersion.Name = "m_lblVersion";
-            m_lblVersion.Size = new System.Drawing.Size(45, 13);
-            m_lblVersion.TabIndex = 8;
-            m_lblVersion.Text = "Version:";
-            // 
             // m_tbVersion
             // 
             this.m_tbVersion.Location = new System.Drawing.Point(65, 289);
@@ -129,15 +152,6 @@
             this.m_tbVersion.Size = new System.Drawing.Size(177, 20);
             this.m_tbVersion.TabIndex = 2;
             this.m_tbVersion.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // m_lblSystem
-            // 
-            m_lblSystem.AutoSize = true;
-            m_lblSystem.Location = new System.Drawing.Point(13, 328);
-            m_lblSystem.Name = "m_lblSystem";
-            m_lblSystem.Size = new System.Drawing.Size(50, 13);
-            m_lblSystem.TabIndex = 9;
-            m_lblSystem.Text = "Système:";
             // 
             // m_cmbSystem
             // 
@@ -149,19 +163,6 @@
             this.m_cmbSystem.Name = "m_cmbSystem";
             this.m_cmbSystem.Size = new System.Drawing.Size(177, 21);
             this.m_cmbSystem.TabIndex = 3;
-            // 
-            // m_btnInsert
-            // 
-            m_btnInsert.Image = global::DGD.HubGovernor.Properties.Resources.folder_Open_16;
-            m_btnInsert.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            m_btnInsert.Location = new System.Drawing.Point(398, 63);
-            m_btnInsert.Name = "m_btnInsert";
-            m_btnInsert.Size = new System.Drawing.Size(87, 23);
-            m_btnInsert.TabIndex = 0;
-            m_btnInsert.Text = "   Insérer...";
-            m_btnInsert.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            m_btnInsert.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            m_btnInsert.UseVisualStyleBackColor = true;
             // 
             // AppUpdateDialog
             // 

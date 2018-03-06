@@ -65,6 +65,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ProcessingDialog";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Patientez svp";
             ((System.ComponentModel.ISupportInitialize)(m_pbWorking)).EndInit();
             this.ResumeLayout(false);
