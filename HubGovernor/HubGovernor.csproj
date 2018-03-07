@@ -329,12 +329,14 @@
       <DependentUpon>UnitForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Units\UnitTable.cs" />
+    <Compile Include="Updating\AppUpdate.cs" />
     <Compile Include="Updating\AppUpdateDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Updating\AppUpdateDialog.Designer.cs">
       <DependentUpon>AppUpdateDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Updating\AppUpdateTable.cs" />
     <Compile Include="Updating\TableUpdateViewer.cs">
       <SubType>Form</SubType>
     </Compile>

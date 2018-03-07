@@ -29,6 +29,7 @@ namespace DGD.HubGovernor.DB
         readonly Clients.HubClientTable m_clients;
         readonly Clients.ClientStatusTable m_clientsStatus;
         readonly Profiles.ProfileManagementModeTable m_profilesMgmnt;
+        readonly Updating.AppUpdateTable m_appUpdates;
 
 
 
@@ -54,8 +55,8 @@ namespace DGD.HubGovernor.DB
             m_profiles = new Profiles.UserProfileTable(Path.Combine(AppPaths.TablesFolder , "profiles.dt"));
             m_clients = new Clients.HubClientTable(Path.Combine(AppPaths.TablesFolder , "clients.dt"));
             m_clientsStatus = new Clients.ClientStatusTable(Path.Combine(AppPaths.TablesFolder , "clstatus.dt"));
-            m_profilesMgmnt = new HubGovernor.Profiles.ProfileManagementModeTable(
-                Path.Combine(AppPaths.TablesFolder , "prfmgmnt.dt"));
+            m_profilesMgmnt = new Profiles.ProfileManagementModeTable(Path.Combine(AppPaths.TablesFolder , "prfmgmnt.dt"));
+            m_appUpdates = new Updating.AppUpdateTable(Path.Combine(AppPaths.TablesFolder , "clupdate.dt"));
         }
         
 
@@ -100,6 +101,7 @@ namespace DGD.HubGovernor.DB
         public Clients.HubClientTable HubClients => m_clients;
         public Clients.ClientStatusTable ClientsStatus => m_clientsStatus;
         public Profiles.ProfileManagementModeTable ProfileManagementMode => m_profilesMgmnt;
+        public Updating.AppUpdateTable AppUpdates => m_appUpdates;
 
 
         public void Dispose()
@@ -183,6 +185,7 @@ namespace DGD.HubGovernor.DB
                 yield return m_clients;
                 yield return m_clientsStatus;
                 yield return m_profilesMgmnt;
+                yield return m_appUpdates;
             }
         }
     }

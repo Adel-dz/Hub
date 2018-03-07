@@ -5,7 +5,8 @@
         Text,
         Integer,
         Float,
-        Time
+        Time,
+        Version
     }
 
 
@@ -70,5 +71,18 @@
 
         public string Caption { get; private set; }
         public ColumnDataType_t DataType { get; private set; }
+    }
+
+    public class VersionColumn: IDataColumn
+    {
+        public VersionColumn(string caption)
+        {
+            Caption = caption;
+            DataType = ColumnDataType_t.Version;
+        }
+
+        public string Caption { get; private set; }
+        public ColumnDataType_t DataType { get; private set; }
+
     }
 }

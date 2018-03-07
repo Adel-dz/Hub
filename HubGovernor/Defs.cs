@@ -15,6 +15,7 @@ namespace DGD.HubGovernor
         public const uint HUB_CLIENT = 2000;
         public const uint CLIENT_STATUS = 2100;
         public const uint PROFILE_MGMNT_MODE = 2200;
+        public const uint APP_UPDATE = 2300;
     }
 
 

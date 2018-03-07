@@ -20,4 +20,9 @@
         public const int COR_E_FILENOTFOUND = unchecked((int)0x80070003);
         public const int ERROR_FILE_NOT_FOUND = unchecked((int)0x02);
     }
+
+    public enum ClientApplication_t : byte
+    {
+        Hub,
+    }
 }

@@ -203,7 +203,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Hubcore, Version=1.0.6632.24021, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Hubcore, Version=1.0.6640.20818, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_57A91C797C1E724315872BFA9BC01CAE"
@@ -234,7 +234,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ezLib, Version=1.0.6632.24021, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:ezLib, Version=1.0.6640.20818, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_8A2C307A7A3BBD1A3C9AD6FFAF63581C"
@@ -337,15 +337,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Hub Governor"
-        "ProductCode" = "8:{2BBE64ED-146B-4415-8EB4-A4C517266CFE}"
-        "PackageCode" = "8:{B604B6EC-24BB-4DEB-897B-D8D84D03FE89}"
+        "ProductCode" = "8:{73E04852-8F73-4E72-B076-45D09AC8A09E}"
+        "PackageCode" = "8:{FCE66877-A3E1-4A77-BC8E-B31AD1035197}"
         "UpgradeCode" = "8:{F7238AC8-9F6B-4EC6-A258-8A9B2252BA30}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.1.6632"
+        "ProductVersion" = "8:0.1.6640"
         "Manufacturer" = "8:Douane Algérienne"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

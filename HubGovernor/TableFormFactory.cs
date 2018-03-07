@@ -102,6 +102,10 @@ namespace DGD.HubGovernor
             m_addFlags[InternalTablesID.PROFILE_MGMNT_MODE] = false;
             m_deleteFlags[InternalTablesID.PROFILE_MGMNT_MODE] = false;
             m_editFlags[InternalTablesID.PROFILE_MGMNT_MODE] = false;
+
+            m_addFlags[InternalTablesID.APP_UPDATE] = false;
+            m_deleteFlags[InternalTablesID.APP_UPDATE] = false;
+            m_editFlags[InternalTablesID.APP_UPDATE] = false;
         }
 
 

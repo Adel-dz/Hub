@@ -24,14 +24,35 @@ namespace DGD.HubGovernor.Updating
 
         public string RootFolder { get; set; }
 
+        public IEnumerable<string> Files
+        {
+            get
+            {
+                foreach (ListViewItem lvi in m_lvFiles.Items)
+                    yield return lvi.Tag as string;
+            }
+        }
+
+        public string Version
+        {
+            get { return m_tbVersion.Text; }
+            set { m_tbVersion.Text = value; }
+        }
+
         //private:
-        static void PopulateList(List<string> files , string path, Jobs.ProcessingDialog dlg)
+        void UpdateUI()
+        {
+            m_btnDelete.Enabled = m_lvFiles.SelectedIndices.Count > 0;
+            m_btnOK.Enabled = m_lvFiles.Items.Count > 0 && m_tbVersion.Text.Trim().Length > 0;
+        }
+
+        static void PopulateList(List<string> files , string path , Jobs.ProcessingDialog dlg)
         {
             dlg.Message = $"Traitement du dossier {path}...";
             files.AddRange(Directory.EnumerateFiles(path));
 
             foreach (string dir in Directory.EnumerateDirectories(path))
-                PopulateList(files , dir, dlg);
+                PopulateList(files , dir , dlg);
         }
 
         //handlers:
@@ -50,12 +71,12 @@ namespace DGD.HubGovernor.Updating
                     RootFolder = dlg.SelectedPath;
 
                     var files = new List<string>();
-                    
+
                     var busyDlg = new Jobs.ProcessingDialog();
 
                     Func<ListViewItem[]> enumFiles = () =>
                     {
-                        PopulateList(files , RootFolder, busyDlg);
+                        PopulateList(files , RootFolder , busyDlg);
 
                         files.Sort();
                         IEnumerable<string> seq = files.Distinct();
@@ -94,13 +115,23 @@ namespace DGD.HubGovernor.Updating
                     task.OnSuccess(onSuccess);
                     task.OnError(onErr);
                     task.Start();
-                    
+
                     busyDlg.ShowDialog(this);
                 }
             }
         }
 
+        private void Delete_Click(object sender , EventArgs e)
+        {
+            var selItems = new ListViewItem[m_lvFiles.SelectedItems.Count];
+            m_lvFiles.SelectedItems.CopyTo(selItems , 0);
 
+            for (int i = 0; i < selItems.Length; ++i)
+                m_lvFiles.Items.Remove(selItems[i]);
+        }
 
+        private void Files_SelectedIndexChanged(object sender , EventArgs e) => UpdateUI();
+
+        private void Version_TextChanged(object sender , EventArgs e) => UpdateUI();
     }
 }

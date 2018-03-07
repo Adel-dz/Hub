@@ -113,6 +113,7 @@
             this.m_lvFiles.TabIndex = 6;
             this.m_lvFiles.UseCompatibleStateImageBehavior = false;
             this.m_lvFiles.View = System.Windows.Forms.View.Details;
+            this.m_lvFiles.SelectedIndexChanged += new System.EventHandler(this.Files_SelectedIndexChanged);
             // 
             // m_btnDelete
             // 
@@ -123,6 +124,7 @@
             this.m_btnDelete.TabIndex = 1;
             this.m_btnDelete.Text = "Retirer";
             this.m_btnDelete.UseVisualStyleBackColor = true;
+            this.m_btnDelete.Click += new System.EventHandler(this.Delete_Click);
             // 
             // m_btnOK
             // 
@@ -152,6 +154,7 @@
             this.m_tbVersion.Size = new System.Drawing.Size(177, 20);
             this.m_tbVersion.TabIndex = 2;
             this.m_tbVersion.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.m_tbVersion.TextChanged += new System.EventHandler(this.Version_TextChanged);
             // 
             // m_cmbSystem
             // 
@@ -169,7 +172,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(497, 368);
-            this.ControlBox = false;
             this.Controls.Add(this.m_cmbSystem);
             this.Controls.Add(m_lblSystem);
             this.Controls.Add(this.m_tbVersion);
@@ -185,7 +187,7 @@
             this.MinimizeBox = false;
             this.Name = "AppUpdateDialog";
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "MAJ d\'application";
             this.ResumeLayout(false);
             this.PerformLayout();
