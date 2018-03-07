@@ -9,6 +9,10 @@ using easyLib.Extensions;
 using static System.Diagnostics.Debug;
 using DGD.HubCore.DB;
 using DGD.HubCore.Net;
+using easyLib.DB;
+using DGD.HubCore.Updating;
+using System.IO;
+using easyLib.Log;
 
 namespace DGD.HubGovernor.Updating
 {
@@ -72,8 +76,7 @@ namespace DGD.HubGovernor.Updating
                 m_sslUpdateKey.Text = $"Clé de mise à jour: {AppContext.Settings.AppSettings.UpdateKey}";
             }
         }
-
-      
+                      
         //handlers
         private void BuildUpdate_Click(object sender , EventArgs e)
         {
@@ -137,7 +140,7 @@ namespace DGD.HubGovernor.Updating
                 foreach (var id in ids)
                 {
                     string fileName = id.ToString("X");
-                    string src = System.IO.Path.Combine(AppPaths.DeployCacheFolder , fileName);
+                    string src = System.IO.Path.Combine(AppPaths.DataUpdateFolder , fileName);
                     Uri dst = new Uri(AppPaths.RemoteDataDirUri , fileName);
                     netEngin.Upload(dst , src);
                 }
@@ -178,7 +181,42 @@ namespace DGD.HubGovernor.Updating
         private void AddPackage_Click(object sender , EventArgs e)
         {
             using (var dlg = new AppUpdateDialog())
-                dlg.ShowDialog(this);
+                if(dlg.ShowDialog(this) == DialogResult.OK)
+                {
+                    IDatumProvider dp = null;
+
+                    try
+                    {
+                        var bag = new FilesBag();
+
+                        foreach(string file in dlg.Files)
+                        {
+                            string relDir = Path.GetDirectoryName(file.Remove(0 , dlg.RootFolder.Length + 1));
+
+                            if (relDir.Length > 0)
+                                bag.Add(file , relDir);
+                            else
+                                bag.Add(file);
+                        }
+
+                        dp = AppContext.TableManager.AppUpdates.DataProvider;
+                        dp.Connect();
+                        var update = new AppUpdate(AppContext.TableManager.AppUpdates.CreateUniqID() , dlg.Version);
+
+                        bag.Compress(Path.Combine(AppPaths.AppDataFolder , update.ID.ToString()));
+
+                        dp.Insert(update);
+                    }                    
+                    catch(Exception ex)
+                    {
+                        EventLogger.Error(ex.Message);
+                        this.ShowError(ex.Message);
+                    }
+                    finally
+                    {
+                        dp?.Dispose();
+                    }
+                }
         }
     }
 }

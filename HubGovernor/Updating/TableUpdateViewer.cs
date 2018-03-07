@@ -47,7 +47,7 @@ namespace DGD.HubGovernor.Updating
         {
             InitializeComponent();
 
-            string filePath = System.IO.Path.Combine(AppPaths.DeployCacheFolder , updateID.ToString("X"));
+            string filePath = System.IO.Path.Combine(AppPaths.DataUpdateFolder , updateID.ToString("X"));
             IEnumerable<TableUpdate> updates = UpdateEngin.LoadTablesUpdate(filePath,AppContext.DatumFactory);
             m_lbTables.Items.AddRange(updates.Select(update => new ListBoxData(update)).ToArray());
 

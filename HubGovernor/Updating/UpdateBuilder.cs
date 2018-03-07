@@ -85,7 +85,7 @@ namespace DGD.HubGovernor.Updating
                 opt.DataGeneration);
 
             string incFileName = inc.ID.ToString("X");
-            string incFilePath = System.IO.Path.Combine(AppPaths.DeployCacheFolder , incFileName);
+            string incFilePath = System.IO.Path.Combine(AppPaths.DataUpdateFolder , incFileName);
             UpdateEngin.SaveTablesUpdate(tablesUpdate, incFilePath);
             AppContext.AccessPath.GetDataProvider(InternalTablesID.INCREMENT).Insert(inc);
 

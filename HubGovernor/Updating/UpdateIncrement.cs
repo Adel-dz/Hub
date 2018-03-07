@@ -42,7 +42,7 @@ namespace DGD.HubGovernor.Updating
             get
             {
                 Assert(ID > 0);
-                string filePath = System.IO.Path.Combine(AppPaths.DeployCacheFolder , ID.ToString("X"));
+                string filePath = System.IO.Path.Combine(AppPaths.DataUpdateFolder , ID.ToString("X"));
                 return UpdateEngin.LoadTablesUpdate(filePath, AppContext.DatumFactory);
             }
         }

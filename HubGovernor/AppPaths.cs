@@ -10,7 +10,8 @@ namespace DGD.HubGovernor
     sealed class AppPaths
     {
         const string APP_BASE_DIR = "DGD.Governor";
-        const string DEPLOY_CACHE_DIR = "Dep\\";
+        const string DATA_UPDATE_DIR = "Dep\\";
+        const string APP_UPDATE_DIR = "AppDep\\";
         const string TABLES_DIR = "DB\\";
         const string CACHE_DIR = "Cache\\";
         const string DLG_DIR = "Dlg\\";
@@ -22,10 +23,11 @@ namespace DGD.HubGovernor
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) , APP_BASE_DIR);
 
         public static string TablesFolder => Path.Combine(AppDataFolder , TABLES_DIR);
-        public static string DeployCacheFolder => Path.Combine(AppDataFolder , DEPLOY_CACHE_DIR);
-        public static string LocalManifestPath => Path.Combine(DeployCacheFolder , Names.ManifestFile);
+        public static string DataUpdateFolder => Path.Combine(AppDataFolder , DATA_UPDATE_DIR);
+        public static string AppUpdateFolder => Path.Combine(AppDataFolder , APP_UPDATE_DIR);
+        public static string LocalManifestPath => Path.Combine(DataUpdateFolder , Names.ManifestFile);
         public static Uri RemoteManifestURI => Uris.GetManifestURI(RemoteBaseURI);
-        public static string LocalDataManifestPath => Path.Combine(DeployCacheFolder , Names.DataManifestFile);
+        public static string LocalDataManifestPath => Path.Combine(DataUpdateFolder , Names.DataManifestFile);
         public static Uri RemoteDataMainfestURI => Uris.GetDataMainfestURI(RemoteBaseURI);
         public static Uri RemoteDataDirUri => Uris.GetUpdateDataDirUri(RemoteBaseURI);
         public static string LocalDialogFolderPath => Path.Combine(AppDataFolder , DLG_DIR);
@@ -60,8 +62,8 @@ namespace DGD.HubGovernor
             if (!Directory.Exists(TablesFolder))
                 Directory.CreateDirectory(TablesFolder);
 
-            if (!Directory.Exists(DeployCacheFolder))
-                Directory.CreateDirectory(DeployCacheFolder);
+            if (!Directory.Exists(DataUpdateFolder))
+                Directory.CreateDirectory(DataUpdateFolder);
 
             if (!Directory.Exists(LocalDialogFolderPath))
                 Directory.CreateDirectory(LocalDialogFolderPath);

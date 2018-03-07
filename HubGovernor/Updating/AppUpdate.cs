@@ -24,6 +24,29 @@ namespace DGD.HubGovernor.Updating
     {
         public static readonly DateTime NULL_TIME = default(DateTime);
 
+        public AppUpdate(uint id, string ver, TargetSystem_t targetSys, ClientApplication_t app, DateTime tmCreation):
+            base(id)
+        {
+            Dbg.Assert(!string.IsNullOrWhiteSpace(ver));
+
+            Version = ver;
+            TargetSystem = targetSys;
+            Application = app;
+            CreationTime = tmCreation;
+            DeployTime = NULL_TIME;
+        }
+
+        public AppUpdate(uint id, string ver, TargetSystem_t targetSys = TargetSystem_t.Win7SP1, 
+              ClientApplication_t app = ClientApplication_t.Hub) :
+            this(id, ver, targetSys, app, DateTime.Now)
+        { }
+
+        public AppUpdate()
+        {
+            DeployTime = NULL_TIME;
+            CreationTime = DateTime.Now;
+        }
+
         public ClientApplication_t Application { get; private set; }
         public DateTime CreationTime { get; private set; }
         public DateTime DeployTime { get; set; }
