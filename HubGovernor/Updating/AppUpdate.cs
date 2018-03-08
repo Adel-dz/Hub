@@ -13,9 +13,8 @@ namespace DGD.HubGovernor.Updating
 
     interface IAppUpdate: IDataRow
     {
-        ClientApplication_t Application { get; }
         string Version { get; }
-        TargetSystem_t TargetSystem { get; }
+        AppArchitecture_t AppArchitecture { get; }
         DateTime CreationTime { get; }
         DateTime DeployTime { get; set; }
     }
@@ -24,21 +23,19 @@ namespace DGD.HubGovernor.Updating
     {
         public static readonly DateTime NULL_TIME = default(DateTime);
 
-        public AppUpdate(uint id, string ver, TargetSystem_t targetSys, ClientApplication_t app, DateTime tmCreation):
+        public AppUpdate(uint id, string ver, AppArchitecture_t appArch, DateTime tmCreation):
             base(id)
         {
             Dbg.Assert(!string.IsNullOrWhiteSpace(ver));
 
             Version = ver;
-            TargetSystem = targetSys;
-            Application = app;
+            AppArchitecture = appArch;
             CreationTime = tmCreation;
             DeployTime = NULL_TIME;
         }
 
-        public AppUpdate(uint id, string ver, TargetSystem_t targetSys = TargetSystem_t.Win7SP1, 
-              ClientApplication_t app = ClientApplication_t.Hub) :
-            this(id, ver, targetSys, app, DateTime.Now)
+        public AppUpdate(uint id, string ver, AppArchitecture_t appArch = AppArchitecture_t.Win7SP1): 
+            this(id, ver, appArch, DateTime.Now)
         { }
 
         public AppUpdate()
@@ -47,33 +44,30 @@ namespace DGD.HubGovernor.Updating
             CreationTime = DateTime.Now;
         }
 
-        public ClientApplication_t Application { get; private set; }
         public DateTime CreationTime { get; private set; }
         public DateTime DeployTime { get; set; }
-        public TargetSystem_t TargetSystem { get; private set; }
+        public AppArchitecture_t AppArchitecture { get; private set; }
         public string Version { get; private set; }        
 
 
         //protected:
         protected override void DoRead(IReader reader)
         {
-            reader.ReadByte(); //Client Application ignored for now
-            byte targetSys = reader.ReadByte();
+            byte appArch = reader.ReadByte();
             string ver = reader.ReadString();
 
-            if (!Enum.IsDefined(typeof(TargetSystem_t) , targetSys) || string.IsNullOrWhiteSpace(ver))
+            if (!Enum.IsDefined(typeof(AppArchitecture_t) , appArch) || string.IsNullOrWhiteSpace(ver))
                 throw new CorruptedStreamException();
 
             CreationTime = reader.ReadTime();
             DeployTime = reader.ReadTime();
             Version = ver;
-            TargetSystem = (TargetSystem_t)targetSys;
+            AppArchitecture = (AppArchitecture_t)appArch;
         }
 
         protected override void DoWrite(IWriter writer)
         {
-            writer.Write((byte)ClientApplication_t.Hub);
-            writer.Write((byte)TargetSystem);
+            writer.Write((byte)AppArchitecture);
 
             Dbg.Assert(!string.IsNullOrEmpty(Version));
             writer.Write(Version);
@@ -88,7 +82,7 @@ namespace DGD.HubGovernor.Updating
             {
                 ID.ToString(),
                 Version,
-                TargetSystems.GetTargetName(TargetSystem),
+                HubCore.Updating.AppArchitectures.GetArchitectureName(AppArchitecture),
                 CreationTime.ToString(),
                 DeployTime == NULL_TIME? "" : DeployTime.ToString()
             };

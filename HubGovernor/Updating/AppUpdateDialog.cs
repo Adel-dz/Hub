@@ -33,17 +33,20 @@ namespace DGD.HubGovernor.Updating
             }
         }
 
-        public string Version
+        public Version Version
         {
-            get { return m_tbVersion.Text; }
-            set { m_tbVersion.Text = value; }
+            get { return new Version(m_tbVersion.Text); }
+            set { m_tbVersion.Text = value.ToString(); }
         }
 
         //private:
         void UpdateUI()
         {
             m_btnDelete.Enabled = m_lvFiles.SelectedIndices.Count > 0;
-            m_btnOK.Enabled = m_lvFiles.Items.Count > 0 && m_tbVersion.Text.Trim().Length > 0;
+
+            Version ver;
+            m_btnOK.Enabled = m_lvFiles.Items.Count > 0 && m_tbVersion.Text.Length > 0 &&
+                Version.TryParse(m_tbVersion.Text , out ver);
         }
 
         static void PopulateList(List<string> files , string path , Jobs.ProcessingDialog dlg)
@@ -105,7 +108,7 @@ namespace DGD.HubGovernor.Updating
                     };
 
                     Action<Task<ListViewItem[]>> onSuccess = t =>
-                    {                        
+                    {
                         m_lvFiles.Items.Clear();
                         m_lvFiles.Items.AddRange(t.Result);
 

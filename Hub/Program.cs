@@ -1,7 +1,11 @@
-﻿using DGD.Hub.DB;
+﻿#define WIN7SP1
+
+using DGD.Hub.DB;
+using DGD.HubCore.Updating;
 using System;
 using System.IO;
 using System.Windows.Forms;
+
 
 namespace DGD.Hub
 {
@@ -15,6 +19,14 @@ namespace DGD.Hub
         public static SettingsManager Settings => m_settings;
         public static DLG.DialogManager DialogManager => m_dlgManager;
 
+        public static AppArchitecture_t AppArchitecture =>
+#if WIN7SP1
+            AppArchitecture_t.Win7SP1;
+#elif WIN7SP1X64
+           TargetSystem_t.Win7SP1X64;
+#else
+            TargetSystem_t.WinXP;
+#endif
 
         //private:
 

@@ -56,7 +56,7 @@ namespace DGD.HubGovernor.DB
             m_clients = new Clients.HubClientTable(Path.Combine(AppPaths.TablesFolder , "clients.dt"));
             m_clientsStatus = new Clients.ClientStatusTable(Path.Combine(AppPaths.TablesFolder , "clstatus.dt"));
             m_profilesMgmnt = new Profiles.ProfileManagementModeTable(Path.Combine(AppPaths.TablesFolder , "prfmgmnt.dt"));
-            m_appUpdates = new Updating.AppUpdateTable(Path.Combine(AppPaths.TablesFolder , "clupdate.dt"));
+            m_appUpdates = new Updating.AppUpdateTable(Path.Combine(AppPaths.TablesFolder , "appupdate.dt"));
         }
         
 

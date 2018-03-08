@@ -1,5 +1,6 @@
 ﻿using DGD.HubCore.DB;
 using easyLib;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace DGD.HubCore.Updating
         const string DATA_MANIFEST_SIGNATURE = "HGDUM1";
 
 
-        public static void WriteUpdateManifest(UpdateManifest manifset,string filePath)
+        public static void WriteUpdateManifest(IUpdateManifest manifset , string filePath)
         {
             Assert(manifset != null);
 
@@ -28,11 +29,27 @@ namespace DGD.HubCore.Updating
 
                 bw.Write(manifset.UpdateKey);
                 bw.Write(manifset.DataGeneration);
-                bw.Write(manifset.AppGeneration);
+                IEnumerable<AppArchitecture_t> archs = AppArchitectures.Architectures;
+
+                bw.Write(archs.Count());
+
+                foreach (AppArchitecture_t arch in archs)
+                {
+                    Version ver = manifset.GetAppVersion(arch);
+
+                    if (ver != null)
+                    {
+                        bw.Write((byte)arch);
+                        bw.Write(ver.Major);
+                        bw.Write(ver.Minor);
+                        bw.Write(ver.Build);
+                        bw.Write(ver.Revision);
+                    }
+                }
             }
         }
 
-        public static UpdateManifest ReadUpdateManifest(string filePath)
+        public static IUpdateManifest ReadUpdateManifest(string filePath)
         {
             using (FileStream fs = File.OpenRead(filePath))
             {
@@ -44,16 +61,46 @@ namespace DGD.HubCore.Updating
                     if (b != br.ReadByte())
                         throw new CorruptedStreamException();
 
-                return new UpdateManifest(br.ReadUInt32(), br.ReadUInt32() , br.ReadUInt32());
+                uint updateKey = br.ReadUInt32();
+                uint dataGen = br.ReadUInt32();
+                int archCount = br.ReadInt32();
+
+                var dict = new Dictionary<AppArchitecture_t , Version>(archCount);
+
+                for(int i = 0;i < archCount; ++i)
+                {
+                    byte arch = br.ReadByte();
+
+                    if (!Enum.IsDefined(typeof(AppArchitecture_t) , arch))
+                        throw new CorruptedFileException(filePath);
+
+                    int maj = br.ReadInt32();
+                    int min = br.ReadInt32();
+                    int build = br.ReadInt32();
+                    int rev = br.ReadInt32();
+                                       
+                    Version ver;
+
+                    if (build == -1)
+                        ver = new Version(maj , min);
+                    else if (rev == -1)
+                        ver = new Version(maj , min , build);
+                    else
+                        ver = new Version(maj , min , build , rev);
+
+                    dict[(AppArchitecture_t)arch] = ver;
+                }
+
+                return new UpdateManifest(updateKey , dataGen , dict);
             }
         }
 
-        public static void UpdateDataManifest(string filePath, UpdateURI updateURI)
+        public static void UpdateDataManifest(string filePath , UpdateURI updateURI)
         {
             Assert(updateURI != null);
 
 
-            using (FileStream fs = File.Open(filePath , FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            using (FileStream fs = File.Open(filePath , FileMode.OpenOrCreate , FileAccess.ReadWrite))
             {
                 var writer = new RawDataWriter(fs , Encoding.UTF8);
                 byte[] sign = Encoding.UTF8.GetBytes(DATA_MANIFEST_SIGNATURE);
@@ -70,20 +117,20 @@ namespace DGD.HubCore.Updating
                     for (int i = 0; i < sign.Length; ++i)
                         if (reader.ReadByte() != sign[i])
                             throw new CorruptedFileException(filePath);
-                                        
+
                     int uriCount = reader.ReadInt();
                     fs.Position -= sizeof(int);
                     writer.Write(uriCount + 1);
                     fs.Seek(0 , SeekOrigin.End);
                 }
-                
+
                 writer.Write(updateURI.DataPreGeneration);
                 writer.Write(updateURI.DataPostGeneration);
                 writer.Write(updateURI.FileURI);
             }
         }
 
-        public static IEnumerable<UpdateURI> ReadDataManifest(string filePath, uint startGeneration = 0)
+        public static IEnumerable<UpdateURI> ReadDataManifest(string filePath , uint startGeneration = 0)
         {
             using (FileStream fs = File.OpenRead(filePath))
             {
@@ -98,14 +145,14 @@ namespace DGD.HubCore.Updating
                 int uriCount = reader.ReadInt();
                 var lst = new List<UpdateURI>();
 
-                for(int i = 0; i < uriCount; ++i)
+                for (int i = 0; i < uriCount; ++i)
                 {
                     uint preGen = reader.ReadUInt();
                     uint postGen = reader.ReadUInt();
                     string uri = reader.ReadString();
 
                     if (preGen >= startGeneration)
-                        lst.Add(new UpdateURI(uri , preGen, postGen));
+                        lst.Add(new UpdateURI(uri , preGen , postGen));
                 }
 
 
@@ -113,10 +160,10 @@ namespace DGD.HubCore.Updating
             }
         }
 
-        public static void SaveTablesUpdate(List<TableUpdate> updates, string filePath)
+        public static void SaveTablesUpdate(List<TableUpdate> updates , string filePath)
         {
             Assert(updates != null);
-            
+
 
             using (FileStream fs = File.Create(filePath))
             {
@@ -127,12 +174,12 @@ namespace DGD.HubCore.Updating
 
                 foreach (TableUpdate update in updates)
                 {
-                    PushTableUpdate(writer, update);
+                    PushTableUpdate(writer , update);
                 }
             }
         }
 
-        public static IEnumerable<TableUpdate> LoadTablesUpdate(string filePath, IDatumFactory dataFactory)
+        public static IEnumerable<TableUpdate> LoadTablesUpdate(string filePath , IDatumFactory dataFactory)
         {
 
             using (FileStream fs = File.OpenRead(filePath))
@@ -148,7 +195,7 @@ namespace DGD.HubCore.Updating
                 var lst = new List<TableUpdate>(tableCount);
 
                 for (int i = 0; i < tableCount; ++i)
-                    lst.Add(LoadTableUpdate(reader, dataFactory));
+                    lst.Add(LoadTableUpdate(reader , dataFactory));
 
                 return lst;
             }
@@ -156,7 +203,7 @@ namespace DGD.HubCore.Updating
 
 
         //private:
-        static TableUpdate LoadTableUpdate(IReader reader, IDatumFactory dataFactory)
+        static TableUpdate LoadTableUpdate(IReader reader , IDatumFactory dataFactory)
         {
             uint idTable = reader.ReadUInt();
             uint preGen = reader.ReadUInt();
@@ -206,10 +253,10 @@ namespace DGD.HubCore.Updating
                 }
             }
 
-            return new TableUpdate(idTable , lst , szDatum, preGen , postGen);
+            return new TableUpdate(idTable , lst , szDatum , preGen , postGen);
         }
 
-        static void PushTableUpdate(IWriter writer, TableUpdate update)
+        static void PushTableUpdate(IWriter writer , TableUpdate update)
         {
             writer.Write(update.TableID);
             writer.Write(update.PreGeneration);

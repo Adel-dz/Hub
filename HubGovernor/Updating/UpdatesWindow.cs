@@ -189,7 +189,7 @@ namespace DGD.HubGovernor.Updating
                     Action buildUpdate = () =>
                     {
                         var bag = new FilesBag();
-                        
+
                         foreach (string file in dlg.Files)
                         {
                             waitDlg.Message = $"Préparation de {file}";
@@ -204,9 +204,9 @@ namespace DGD.HubGovernor.Updating
                         waitDlg.Message = "Compression en cours...";
                         dp = AppContext.TableManager.AppUpdates.DataProvider;
                         dp.Connect();
-                        var update = new AppUpdate(AppContext.TableManager.AppUpdates.CreateUniqID() , dlg.Version);
+                        var update = new AppUpdate(AppContext.TableManager.AppUpdates.CreateUniqID() , dlg.Version.ToString());
 
-                        
+
                         bag.Compress(Path.Combine(AppPaths.AppUpdateFolder , update.ID.ToString()));
 
                         dp.Insert(update);
@@ -234,7 +234,7 @@ namespace DGD.HubGovernor.Updating
                     task.OnError(onErr);
                     task.Start();
 
-                    waitDlg.ShowDialog(this);                    
+                    waitDlg.ShowDialog(this);
                 }
         }
 

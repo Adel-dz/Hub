@@ -1,17 +1,36 @@
-﻿namespace DGD.HubCore.Updating
+﻿using System;
+using System.Collections.Generic;
+
+namespace DGD.HubCore.Updating
 {
-    public sealed class UpdateManifest
+
+    public interface IUpdateManifest
     {
-        public UpdateManifest(uint updateKey, uint dataGeneration, uint appGeneration)
+        uint UpdateKey { get; }
+        uint DataGeneration { get; }
+        Version GetAppVersion(AppArchitecture_t appArch);
+    }
+
+    public sealed class UpdateManifest: IUpdateManifest
+    {
+        readonly IDictionary<AppArchitecture_t , Version> m_appVersions;
+
+        public UpdateManifest(uint updateKey, uint dataGeneration, IDictionary<AppArchitecture_t, Version> appVersions)
         {
             UpdateKey = updateKey;
             DataGeneration = dataGeneration;
-            AppGeneration = appGeneration;
         }
 
 
         public uint UpdateKey { get; }
         public uint DataGeneration { get; }
-        public uint AppGeneration { get; }
+
+        public Version GetAppVersion(AppArchitecture_t appArch)
+        {
+            Version ver;
+
+            m_appVersions.TryGetValue(appArch , out ver);
+            return ver;
+        }
     }
 }
