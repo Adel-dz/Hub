@@ -1,10 +1,14 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace DGD.HubGovernor.Jobs
 {
     sealed partial class ProcessingDialog: Form
     {
+        string m_msg;
+        bool m_isDirty;
+
         public ProcessingDialog()
         {
             InitializeComponent();
@@ -15,17 +19,37 @@ namespace DGD.HubGovernor.Jobs
         {
             get { return m_lblMessage.Text; }
 
-            set { SetMessage(value); }
+            set
+            {
+                m_msg = value;            
+                m_isDirty = true;
+            }
         }
 
+        //protected:
+        protected override void OnLoad(EventArgs e)
+        {
+            m_timer.Start();
+
+            base.OnLoad(e);
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            m_timer.Stop();
+        }
 
         //private:
-        void SetMessage(string txt)
+
+        //handlers:
+        private void Timer_Tick(object sender , EventArgs e)
         {
-            if (InvokeRequired)
-                BeginInvoke(new Action<string>(SetMessage) , txt);
-            else
-                m_lblMessage.Text = txt;
+            if (m_isDirty)
+            {
+                m_lblMessage.Text = m_msg;
+                m_isDirty = false;
+            }
         }
     }
 }

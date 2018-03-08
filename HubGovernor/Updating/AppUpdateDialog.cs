@@ -78,6 +78,8 @@ namespace DGD.HubGovernor.Updating
                     {
                         PopulateList(files , RootFolder , busyDlg);
 
+                        busyDlg.Message = "Finalisation...";
+
                         files.Sort();
                         IEnumerable<string> seq = files.Distinct();
 
@@ -103,7 +105,7 @@ namespace DGD.HubGovernor.Updating
                     };
 
                     Action<Task<ListViewItem[]>> onSuccess = t =>
-                    {
+                    {                        
                         m_lvFiles.Items.Clear();
                         m_lvFiles.Items.AddRange(t.Result);
 

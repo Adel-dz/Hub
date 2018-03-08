@@ -55,8 +55,8 @@ namespace DGD.HubCore.Updating
             }
 
 
-            public static FileData Create(string filePath) => new FileData(Path.GetFileName(filePath));
-            public static FileData Create(string filePath , string destFolder) => new FileData(Path.GetFileName(filePath) , destFolder);
+            public static FileData Create(string filePath) => new FileData(filePath);
+            public static FileData Create(string filePath , string destFolder) => new FileData(filePath , destFolder);
         }
 
 
@@ -70,7 +70,7 @@ namespace DGD.HubCore.Updating
         public void Add(string filePath)
         {
             Assert(!string.IsNullOrWhiteSpace(filePath));
-            Assert(!Contains(filePath) == false);
+            Assert(!Contains(filePath));
 
             m_files.Add(FileData.Create(filePath));
         }
@@ -79,7 +79,7 @@ namespace DGD.HubCore.Updating
         {
             Assert(!string.IsNullOrWhiteSpace(filePath));
             Assert(!string.IsNullOrWhiteSpace(relativeDestDir));
-            Assert(!Contains(filePath , relativeDestDir) == false);
+            Assert(!Contains(filePath , relativeDestDir));
 
             m_files.Add(FileData.Create(filePath , relativeDestDir));
         }
@@ -163,7 +163,7 @@ namespace DGD.HubCore.Updating
                         writer.Write(NDX_CUR_FOLDER);
                     else
                     {
-                        string dir = fd.FileName;
+                        string dir = fd.DestFolder;
                         int ndx = folders.FindIndex(x => string.Compare(dir , x , true) == 0);
 
                         Assert(ndx >= 0);

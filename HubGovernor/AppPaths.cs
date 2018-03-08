@@ -65,6 +65,9 @@ namespace DGD.HubGovernor
             if (!Directory.Exists(DataUpdateFolder))
                 Directory.CreateDirectory(DataUpdateFolder);
 
+            if (!Directory.Exists(AppUpdateFolder))
+                Directory.CreateDirectory(AppUpdateFolder);
+
             if (!Directory.Exists(LocalDialogFolderPath))
                 Directory.CreateDirectory(LocalDialogFolderPath);
         }

@@ -76,7 +76,7 @@ namespace DGD.HubGovernor.Updating
                 m_sslUpdateKey.Text = $"Clé de mise à jour: {AppContext.Settings.AppSettings.UpdateKey}";
             }
         }
-                      
+
         //handlers
         private void BuildUpdate_Click(object sender , EventArgs e)
         {
@@ -101,7 +101,7 @@ namespace DGD.HubGovernor.Updating
             task.Start();
             dlg.ShowDialog(Parent);
 
-            LoadData();            
+            LoadData();
         }
 
         private void Updates_ItemActivate(object sender , EventArgs e)
@@ -113,7 +113,7 @@ namespace DGD.HubGovernor.Updating
                 var updateView = new TableUpdateViewer(inc.ID);
                 updateView.Show(Parent);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 this.ShowError(ex.Message);
             }
@@ -177,20 +177,22 @@ namespace DGD.HubGovernor.Updating
             task.Start();
             dlg.ShowDialog(Parent);
         }
-        
+
         private void AddPackage_Click(object sender , EventArgs e)
         {
             using (var dlg = new AppUpdateDialog())
-                if(dlg.ShowDialog(this) == DialogResult.OK)
+                if (dlg.ShowDialog(this) == DialogResult.OK)
                 {
                     IDatumProvider dp = null;
+                    var waitDlg = new Jobs.ProcessingDialog();
 
-                    try
+                    Action buildUpdate = () =>
                     {
                         var bag = new FilesBag();
-
-                        foreach(string file in dlg.Files)
+                        
+                        foreach (string file in dlg.Files)
                         {
+                            waitDlg.Message = $"Préparation de {file}";
                             string relDir = Path.GetDirectoryName(file.Remove(0 , dlg.RootFolder.Length + 1));
 
                             if (relDir.Length > 0)
@@ -199,24 +201,46 @@ namespace DGD.HubGovernor.Updating
                                 bag.Add(file);
                         }
 
+                        waitDlg.Message = "Compression en cours...";
                         dp = AppContext.TableManager.AppUpdates.DataProvider;
                         dp.Connect();
                         var update = new AppUpdate(AppContext.TableManager.AppUpdates.CreateUniqID() , dlg.Version);
 
-                        bag.Compress(Path.Combine(AppPaths.AppDataFolder , update.ID.ToString()));
+                        
+                        bag.Compress(Path.Combine(AppPaths.AppUpdateFolder , update.ID.ToString()));
 
                         dp.Insert(update);
-                    }                    
-                    catch(Exception ex)
+                    };
+
+
+                    Action<Task> onErr = t =>
                     {
-                        EventLogger.Error(ex.Message);
-                        this.ShowError(ex.Message);
-                    }
-                    finally
+                        EventLogger.Error(t.Exception.InnerException.Message);
+                        this.ShowError(t.Exception.InnerException.Message);
+
+                        dp?.Dispose();
+                        waitDlg.Dispose();
+                    };
+
+                    Action onSuccess = () =>
                     {
                         dp?.Dispose();
-                    }
+                        waitDlg.Dispose();
+                    };
+
+
+                    var task = new Task(buildUpdate , TaskCreationOptions.LongRunning);
+                    task.OnSuccess(onSuccess);
+                    task.OnError(onErr);
+                    task.Start();
+
+                    waitDlg.ShowDialog(this);                    
                 }
+        }
+
+        private void Timer_Tick(object sender , EventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

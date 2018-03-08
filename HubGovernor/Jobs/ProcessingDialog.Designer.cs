@@ -28,9 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.PictureBox m_pbWorking;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProcessingDialog));
             this.m_lblMessage = new System.Windows.Forms.Label();
+            this.m_timer = new System.Windows.Forms.Timer(this.components);
             m_pbWorking = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(m_pbWorking)).BeginInit();
             this.SuspendLayout();
@@ -47,11 +49,17 @@
             // 
             // m_lblMessage
             // 
-            this.m_lblMessage.Location = new System.Drawing.Point(71, 23);
+            this.m_lblMessage.AutoEllipsis = true;
+            this.m_lblMessage.Location = new System.Drawing.Point(71, 31);
             this.m_lblMessage.Name = "m_lblMessage";
-            this.m_lblMessage.Size = new System.Drawing.Size(415, 23);
+            this.m_lblMessage.Size = new System.Drawing.Size(415, 18);
             this.m_lblMessage.TabIndex = 1;
-            this.m_lblMessage.Text = "Traitement en cours ...";
+            this.m_lblMessage.Text = "Patientez svp";
+            // 
+            // m_timer
+            // 
+            this.m_timer.Interval = 500;
+            this.m_timer.Tick += new System.EventHandler(this.Timer_Tick);
             // 
             // ProcessingDialog
             // 
@@ -66,7 +74,7 @@
             this.MinimizeBox = false;
             this.Name = "ProcessingDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Patientez svp";
+            this.Text = "Traitement en cours ...";
             ((System.ComponentModel.ISupportInitialize)(m_pbWorking)).EndInit();
             this.ResumeLayout(false);
 
@@ -75,5 +83,6 @@
         #endregion
 
         private System.Windows.Forms.Label m_lblMessage;
+        private System.Windows.Forms.Timer m_timer;
     }
 }
