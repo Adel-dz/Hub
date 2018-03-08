@@ -17,6 +17,7 @@ namespace DGD.HubGovernor.Updating
         AppArchitecture_t AppArchitecture { get; }
         DateTime CreationTime { get; }
         DateTime DeployTime { get; set; }
+        bool IsDeployed { get; }
     }
 
     sealed class AppUpdate: DataRow, IAppUpdate
@@ -47,7 +48,8 @@ namespace DGD.HubGovernor.Updating
         public DateTime CreationTime { get; private set; }
         public DateTime DeployTime { get; set; }
         public AppArchitecture_t AppArchitecture { get; private set; }
-        public string Version { get; private set; }        
+        public string Version { get; private set; }
+        public bool IsDeployed => DeployTime != NULL_TIME;
 
 
         //protected:

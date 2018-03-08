@@ -1,4 +1,5 @@
-﻿using easyLib.Extensions;
+﻿using DGD.HubCore.Updating;
+using easyLib.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -38,6 +39,8 @@ namespace DGD.HubGovernor.Updating
             get { return new Version(m_tbVersion.Text); }
             set { m_tbVersion.Text = value.ToString(); }
         }
+
+        public AppArchitecture_t AppArchitecture => AppArchitecture_t.Win7SP1;
 
         //private:
         void UpdateUI()

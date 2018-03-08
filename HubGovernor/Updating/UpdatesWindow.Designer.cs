@@ -41,10 +41,11 @@
             System.Windows.Forms.TabControl m_tabControl;
             System.Windows.Forms.TabPage m_datapPage;
             System.Windows.Forms.TabPage m_hubPage;
+            System.Windows.Forms.ColumnHeader m_colID;
             System.Windows.Forms.ColumnHeader m_colVer;
+            System.Windows.Forms.ColumnHeader m_colSystem;
             System.Windows.Forms.ColumnHeader m_colCreationDate;
             System.Windows.Forms.ColumnHeader m_colPublishDate;
-            System.Windows.Forms.ColumnHeader m_colSystem;
             System.Windows.Forms.ToolStrip m_toolStripHub;
             System.Windows.Forms.ToolStripButton m_tsbAddApp;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
@@ -53,11 +54,11 @@
             System.Windows.Forms.ImageList m_ilSmall;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UpdatesWindow));
             this.m_tsbBuildUpdate = new System.Windows.Forms.ToolStripButton();
-            this.m_tsbUpload = new System.Windows.Forms.ToolStripButton();
+            this.m_tsbUploadDataUpdates = new System.Windows.Forms.ToolStripButton();
             this.m_sslUpdateKey = new System.Windows.Forms.ToolStripStatusLabel();
-            this.m_lvUpdates = new System.Windows.Forms.ListView();
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.m_tsbPublish = new System.Windows.Forms.ToolStripButton();
+            this.m_lvDataUpdates = new System.Windows.Forms.ListView();
+            this.m_lvAppUpdates = new System.Windows.Forms.ListView();
+            this.m_tsbUploadAppUpdates = new System.Windows.Forms.ToolStripButton();
             m_toolStripData = new System.Windows.Forms.ToolStrip();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             m_tsbDataUpdateOptions = new System.Windows.Forms.ToolStripButton();
@@ -70,10 +71,11 @@
             m_tabControl = new System.Windows.Forms.TabControl();
             m_datapPage = new System.Windows.Forms.TabPage();
             m_hubPage = new System.Windows.Forms.TabPage();
+            m_colID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             m_colVer = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            m_colSystem = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             m_colCreationDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             m_colPublishDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            m_colSystem = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             m_toolStripHub = new System.Windows.Forms.ToolStrip();
             m_tsbAddApp = new System.Windows.Forms.ToolStripButton();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -92,7 +94,7 @@
             // 
             m_toolStripData.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.m_tsbBuildUpdate,
-            this.m_tsbUpload,
+            this.m_tsbUploadDataUpdates,
             toolStripSeparator1,
             m_tsbDataUpdateOptions,
             m_tsbDataUpdateHelp});
@@ -112,15 +114,15 @@
             this.m_tsbBuildUpdate.Text = "Construire la MAJ";
             this.m_tsbBuildUpdate.Click += new System.EventHandler(this.BuildUpdate_Click);
             // 
-            // m_tsbUpload
+            // m_tsbUploadDataUpdates
             // 
-            this.m_tsbUpload.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.m_tsbUpload.Image = global::DGD.HubGovernor.Properties.Resources.upload_16;
-            this.m_tsbUpload.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.m_tsbUpload.Name = "m_tsbUpload";
-            this.m_tsbUpload.Size = new System.Drawing.Size(23, 22);
-            this.m_tsbUpload.Text = "Publier la MAJ";
-            this.m_tsbUpload.Click += new System.EventHandler(this.Upload_Click);
+            this.m_tsbUploadDataUpdates.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.m_tsbUploadDataUpdates.Image = global::DGD.HubGovernor.Properties.Resources.upload_16;
+            this.m_tsbUploadDataUpdates.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.m_tsbUploadDataUpdates.Name = "m_tsbUploadDataUpdates";
+            this.m_tsbUploadDataUpdates.Size = new System.Drawing.Size(23, 22);
+            this.m_tsbUploadDataUpdates.Text = "Publier la MAJ";
+            this.m_tsbUploadDataUpdates.Click += new System.EventHandler(this.UploadDataUpdates_Click);
             // 
             // toolStripSeparator1
             // 
@@ -194,7 +196,7 @@
             // 
             // m_datapPage
             // 
-            m_datapPage.Controls.Add(this.m_lvUpdates);
+            m_datapPage.Controls.Add(this.m_lvDataUpdates);
             m_datapPage.Controls.Add(m_toolStripData);
             m_datapPage.ImageIndex = 1;
             m_datapPage.Location = new System.Drawing.Point(4, 26);
@@ -205,27 +207,28 @@
             m_datapPage.Text = "Données";
             m_datapPage.UseVisualStyleBackColor = true;
             // 
-            // m_lvUpdates
+            // m_lvDataUpdates
             // 
-            this.m_lvUpdates.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.m_lvDataUpdates.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             m_colIncID,
             m_colDataGeneration,
             m_colCreationTime,
             m_colDeployTime});
-            this.m_lvUpdates.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.m_lvUpdates.FullRowSelect = true;
-            this.m_lvUpdates.Location = new System.Drawing.Point(3, 28);
-            this.m_lvUpdates.MultiSelect = false;
-            this.m_lvUpdates.Name = "m_lvUpdates";
-            this.m_lvUpdates.Size = new System.Drawing.Size(659, 226);
-            this.m_lvUpdates.TabIndex = 1;
-            this.m_lvUpdates.UseCompatibleStateImageBehavior = false;
-            this.m_lvUpdates.View = System.Windows.Forms.View.Details;
-            this.m_lvUpdates.ItemActivate += new System.EventHandler(this.Updates_ItemActivate);
+            this.m_lvDataUpdates.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.m_lvDataUpdates.FullRowSelect = true;
+            this.m_lvDataUpdates.HideSelection = false;
+            this.m_lvDataUpdates.Location = new System.Drawing.Point(3, 28);
+            this.m_lvDataUpdates.MultiSelect = false;
+            this.m_lvDataUpdates.Name = "m_lvDataUpdates";
+            this.m_lvDataUpdates.Size = new System.Drawing.Size(659, 226);
+            this.m_lvDataUpdates.TabIndex = 1;
+            this.m_lvDataUpdates.UseCompatibleStateImageBehavior = false;
+            this.m_lvDataUpdates.View = System.Windows.Forms.View.Details;
+            this.m_lvDataUpdates.ItemActivate += new System.EventHandler(this.Updates_ItemActivate);
             // 
             // m_hubPage
             // 
-            m_hubPage.Controls.Add(this.listView1);
+            m_hubPage.Controls.Add(this.m_lvAppUpdates);
             m_hubPage.Controls.Add(m_toolStripHub);
             m_hubPage.ImageIndex = 0;
             m_hubPage.Location = new System.Drawing.Point(4, 26);
@@ -236,25 +239,37 @@
             m_hubPage.Text = "Hub";
             m_hubPage.UseVisualStyleBackColor = true;
             // 
-            // listView1
+            // m_lvAppUpdates
             // 
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.m_lvAppUpdates.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            m_colID,
             m_colVer,
+            m_colSystem,
             m_colCreationDate,
-            m_colPublishDate,
-            m_colSystem});
-            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView1.Location = new System.Drawing.Point(3, 28);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(659, 226);
-            this.listView1.TabIndex = 1;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
+            m_colPublishDate});
+            this.m_lvAppUpdates.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.m_lvAppUpdates.FullRowSelect = true;
+            this.m_lvAppUpdates.HideSelection = false;
+            this.m_lvAppUpdates.Location = new System.Drawing.Point(3, 28);
+            this.m_lvAppUpdates.Name = "m_lvAppUpdates";
+            this.m_lvAppUpdates.Size = new System.Drawing.Size(659, 226);
+            this.m_lvAppUpdates.TabIndex = 1;
+            this.m_lvAppUpdates.UseCompatibleStateImageBehavior = false;
+            this.m_lvAppUpdates.View = System.Windows.Forms.View.Details;
+            // 
+            // m_colID
+            // 
+            m_colID.Text = "ID";
             // 
             // m_colVer
             // 
             m_colVer.Text = "Version";
             m_colVer.Width = 91;
+            // 
+            // m_colSystem
+            // 
+            m_colSystem.Text = "Système requis";
+            m_colSystem.Width = 152;
             // 
             // m_colCreationDate
             // 
@@ -266,16 +281,11 @@
             m_colPublishDate.Text = "Publié le";
             m_colPublishDate.Width = 200;
             // 
-            // m_colSystem
-            // 
-            m_colSystem.Text = "Système requis";
-            m_colSystem.Width = 152;
-            // 
             // m_toolStripHub
             // 
             m_toolStripHub.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             m_tsbAddApp,
-            this.m_tsbPublish,
+            this.m_tsbUploadAppUpdates,
             toolStripSeparator2,
             m_tsbAppUpdateOption,
             m_tsbAppUpdateHelp});
@@ -294,14 +304,15 @@
             m_tsbAddApp.Text = "Ajouter une mise à jour...";
             m_tsbAddApp.Click += new System.EventHandler(this.AddPackage_Click);
             // 
-            // m_tsbPublish
+            // m_tsbUploadAppUpdates
             // 
-            this.m_tsbPublish.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.m_tsbPublish.Image = global::DGD.HubGovernor.Properties.Resources.upload_16;
-            this.m_tsbPublish.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.m_tsbPublish.Name = "m_tsbPublish";
-            this.m_tsbPublish.Size = new System.Drawing.Size(23, 22);
-            this.m_tsbPublish.Text = "Publier";
+            this.m_tsbUploadAppUpdates.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.m_tsbUploadAppUpdates.Image = global::DGD.HubGovernor.Properties.Resources.upload_16;
+            this.m_tsbUploadAppUpdates.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.m_tsbUploadAppUpdates.Name = "m_tsbUploadAppUpdates";
+            this.m_tsbUploadAppUpdates.Size = new System.Drawing.Size(23, 22);
+            this.m_tsbUploadAppUpdates.Text = "Publier";
+            this.m_tsbUploadAppUpdates.Click += new System.EventHandler(this.UploadAppUpdates_Click);
             // 
             // toolStripSeparator2
             // 
@@ -365,11 +376,11 @@
 
         #endregion
 
-        private System.Windows.Forms.ToolStripButton m_tsbUpload;
-        private System.Windows.Forms.ListView m_lvUpdates;
+        private System.Windows.Forms.ToolStripButton m_tsbUploadDataUpdates;
+        private System.Windows.Forms.ListView m_lvDataUpdates;
         private System.Windows.Forms.ToolStripButton m_tsbBuildUpdate;
         private System.Windows.Forms.ToolStripStatusLabel m_sslUpdateKey;
-        private System.Windows.Forms.ToolStripButton m_tsbPublish;
-        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ToolStripButton m_tsbUploadAppUpdates;
+        private System.Windows.Forms.ListView m_lvAppUpdates;
     }
 }

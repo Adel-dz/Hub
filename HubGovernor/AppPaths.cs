@@ -29,7 +29,8 @@ namespace DGD.HubGovernor
         public static Uri RemoteManifestURI => Uris.GetManifestURI(RemoteBaseURI);
         public static string LocalDataManifestPath => Path.Combine(DataUpdateFolder , Names.DataManifestFile);
         public static Uri RemoteDataMainfestURI => Uris.GetDataMainfestURI(RemoteBaseURI);
-        public static Uri RemoteDataDirUri => Uris.GetUpdateDataDirUri(RemoteBaseURI);
+        public static Uri RemoteDataUpdateDirUri => Uris.GetDataUpdateDirUri(RemoteBaseURI);
+        public static Uri RemoteAppUpdateDirUri => Uris.GetAppUpdateDirUri(RemoteBaseURI);
         public static string LocalDialogFolderPath => Path.Combine(AppDataFolder , DLG_DIR);
         public static Uri RemoteDialogDirUri => Uris.GetDialogDirUri(RemoteBaseURI);
         public static string LocalConnectionRespPath => Path.Combine(LocalDialogFolderPath , Names.ConnectionRespFile);

@@ -102,8 +102,20 @@ namespace DGD.HubGovernor.Updating
 
             AppContext.Settings.Save();
 
-            string manifest = AppPaths.LocalManifestPath;
-            UpdateEngin.WriteUpdateManifest(new UpdateManifest(opt.UpdateKey, opt.DataGeneration , 0) , manifest);                        
+            string manifestFile = AppPaths.LocalManifestPath;
+
+
+            try
+            {
+                IUpdateManifest oldManifest = UpdateEngin.ReadUpdateManifest(manifestFile);
+                var newManifest = new UpdateManifest(opt.UpdateKey , opt.DataGeneration , oldManifest.Versions);
+                UpdateEngin.WriteUpdateManifest(newManifest , manifestFile);
+
+            }
+            catch
+            {
+                UpdateEngin.WriteUpdateManifest(new UpdateManifest(opt.UpdateKey , opt.DataGeneration), manifestFile);
+            }
         }
 
 

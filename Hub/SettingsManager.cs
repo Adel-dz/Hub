@@ -159,7 +159,7 @@ namespace DGD.Hub
         }
 
         public static Uri ServerURI => new Uri("ftp://douane.gov.dz");
-        public static Uri DataUpdateDirURI => Uris.GetUpdateDataDirUri(ServerURI);
+        public static Uri DataUpdateDirURI => Uris.GetDataUpdateDirUri(ServerURI);
         public static Uri ManifestURI => Uris.GetManifestURI(ServerURI);
         public static Uri DataManifestURI => Uris.GetDataMainfestURI(ServerURI);
         public static Uri ProfilesURI => Uris.GetProfilesURI(ServerURI);
