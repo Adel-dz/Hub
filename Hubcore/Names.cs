@@ -4,6 +4,7 @@
     {
         public static string ManifestFile => "manifest.gov";
         public static string DataManifestFile => "datamanifest.gov";
+        public static string AppManifestFile => "appmanifest.gov";
         public static string ConnectionReqFile => "cxnreq.hub";
         public static string ConnectionRespFile => "cxnresp.gov";
         public static string ProfilesFile => "profiles.gov";

@@ -2,9 +2,6 @@
 using easyLib.DB;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static System.Diagnostics.Debug;
 
 
@@ -15,7 +12,6 @@ namespace DGD.HubGovernor.DB
         readonly object m_lock = new object();
         readonly List<IDatumProvider> m_providers = new List<IDatumProvider>();
         readonly List<KeyIndexer> m_keysIndexers = new List<KeyIndexer>();
-        //AttrIndexer<uint> m_ndxerTRLabelMappingTRLabelID;
 
 
         public KeyIndexer GetKeyIndexer(uint idTable)
@@ -59,33 +55,10 @@ namespace DGD.HubGovernor.DB
             }
         }
 
-        //public AttrIndexer<uint> TRLabelMappingIDXTRLabelID
-        //{
-        //    get
-        //    {
-        //        lock(m_lock)
-        //            if(m_ndxerTRLabelMappingTRLabelID == null)
-        //            {
-        //                m_ndxerTRLabelMappingTRLabelID = new AttrIndexer<uint>(
-        //                    GetDataProvider(AppContext.TableManager.TRLabelsMapping.ID) ,
-        //                    d => (d as TR.LabelMapping).TRLabelID);
-
-        //                m_ndxerTRLabelMappingTRLabelID.Connect();
-        //            }
-
-        //        return m_ndxerTRLabelMappingTRLabelID;
-        //    }
-        //}
-
         public void Dispose()
         {
             lock (m_lock)
             {
-                //m_ndxerTRLabelMappingTRLabelID?.Close();
-
-                //m_ndxerTRLabelMappingTRLabelID = null;
-
-
                 foreach (KeyIndexer ndxer in m_keysIndexers)
                     ndxer.Close();
 

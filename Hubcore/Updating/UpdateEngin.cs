@@ -16,6 +16,7 @@ namespace DGD.HubCore.Updating
         const string TABLES_UPDATE_SIGNATURE = "HGTBLUPDATE1";
         const string GLOBAL_MANIFEST_SIGNATURE = "HGUM1";
         const string DATA_MANIFEST_SIGNATURE = "HGDUM1";
+        const string APP_MANIFEST_SIGNATURE = "HAUM1";
 
 
         public static void WriteUpdateManifest(IUpdateManifest manifset , string filePath)
@@ -29,27 +30,22 @@ namespace DGD.HubCore.Updating
 
                 bw.Write(manifset.UpdateKey);
                 bw.Write(manifset.DataGeneration);
-                IEnumerable<AppArchitecture_t> archs = AppArchitectures.Architectures;
+                bw.Write(manifset.Versions.Keys.Count());
 
-                bw.Write(archs.Count());
-
-                foreach (AppArchitecture_t arch in archs)
+                foreach (AppArchitecture_t arch in manifset.Versions.Keys)
                 {
-                    Version ver = manifset.GetAppVersion(arch);
+                    Version ver = manifset.Versions[arch];
 
-                    if (ver != null)
-                    {
-                        bw.Write((byte)arch);
-                        bw.Write(ver.Major);
-                        bw.Write(ver.Minor);
-                        bw.Write(ver.Build);
-                        bw.Write(ver.Revision);
-                    }
+                    bw.Write((byte)arch);
+                    bw.Write(ver.Major);
+                    bw.Write(ver.Minor);
+                    bw.Write(ver.Build);
+                    bw.Write(ver.Revision);
                 }
             }
         }
 
-        public static IUpdateManifest ReadUpdateManifest(string filePath)
+        public static UpdateManifest ReadUpdateManifest(string filePath)
         {
             using (FileStream fs = File.OpenRead(filePath))
             {
@@ -67,7 +63,7 @@ namespace DGD.HubCore.Updating
 
                 var dict = new Dictionary<AppArchitecture_t , Version>(archCount);
 
-                for(int i = 0;i < archCount; ++i)
+                for (int i = 0; i < archCount; ++i)
                 {
                     byte arch = br.ReadByte();
 
@@ -78,7 +74,7 @@ namespace DGD.HubCore.Updating
                     int min = br.ReadInt32();
                     int build = br.ReadInt32();
                     int rev = br.ReadInt32();
-                                       
+
                     Version ver;
 
                     if (build == -1)
@@ -98,7 +94,6 @@ namespace DGD.HubCore.Updating
         public static void UpdateDataManifest(string filePath , UpdateURI updateURI)
         {
             Assert(updateURI != null);
-
 
             using (FileStream fs = File.Open(filePath , FileMode.OpenOrCreate , FileAccess.ReadWrite))
             {
@@ -127,6 +122,56 @@ namespace DGD.HubCore.Updating
                 writer.Write(updateURI.DataPreGeneration);
                 writer.Write(updateURI.DataPostGeneration);
                 writer.Write(updateURI.FileURI);
+            }
+        }
+
+        public static void WriteAppManifest(string filePath , IReadOnlyDictionary<AppArchitecture_t , string> updates)
+        {
+            Assert(updates != null);
+
+            using (FileStream fs = File.Open(filePath , FileMode.OpenOrCreate , FileAccess.ReadWrite))
+            {
+                var writer = new RawDataWriter(fs , Encoding.UTF8);
+                byte[] sign = Encoding.UTF8.GetBytes(APP_MANIFEST_SIGNATURE);
+
+                writer.Write(sign);
+                writer.Write(updates.Count);
+
+                foreach (KeyValuePair<AppArchitecture_t , string> kv in updates)
+                {
+                    writer.Write((byte)kv.Key);
+                    writer.Write(kv.Value);
+                }
+
+            }
+        }
+
+        public static Dictionary<AppArchitecture_t , string> ReadAppManifest(string filePath)
+        {
+            using (FileStream fs = File.OpenRead(filePath))
+            {
+                var reader = new RawDataReader(fs , Encoding.UTF8);
+                byte[] sign = Encoding.UTF8.GetBytes(APP_MANIFEST_SIGNATURE);
+
+                foreach (byte b in sign)
+                    if (b != reader.ReadByte())
+                        throw new CorruptedFileException(filePath);
+
+                int nbKey = reader.ReadInt();
+                var dict = new Dictionary<AppArchitecture_t , string>(nbKey);
+
+                for (int i = 0; i < nbKey; ++i)
+                {
+                    byte arch = reader.ReadByte();
+
+                    if (!Enum.IsDefined(typeof(AppArchitecture_t) , arch))
+                        throw new CorruptedFileException(filePath);
+
+                    string fileName = reader.ReadString();
+                    dict[(AppArchitecture_t)arch] = fileName;
+                }
+
+                return dict;
             }
         }
 

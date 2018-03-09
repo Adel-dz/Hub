@@ -112,7 +112,7 @@
             this.m_tsbBuildUpdate.Name = "m_tsbBuildUpdate";
             this.m_tsbBuildUpdate.Size = new System.Drawing.Size(23, 22);
             this.m_tsbBuildUpdate.Text = "Construire la MAJ";
-            this.m_tsbBuildUpdate.Click += new System.EventHandler(this.BuildUpdate_Click);
+            this.m_tsbBuildUpdate.Click += new System.EventHandler(this.BuildDataUpdate_Click);
             // 
             // m_tsbUploadDataUpdates
             // 
@@ -224,7 +224,7 @@
             this.m_lvDataUpdates.TabIndex = 1;
             this.m_lvDataUpdates.UseCompatibleStateImageBehavior = false;
             this.m_lvDataUpdates.View = System.Windows.Forms.View.Details;
-            this.m_lvDataUpdates.ItemActivate += new System.EventHandler(this.Updates_ItemActivate);
+            this.m_lvDataUpdates.ItemActivate += new System.EventHandler(this.Updates_DataItemActivate);
             // 
             // m_hubPage
             // 
@@ -279,7 +279,7 @@
             // m_colPublishDate
             // 
             m_colPublishDate.Text = "Publié le";
-            m_colPublishDate.Width = 200;
+            m_colPublishDate.Width = 188;
             // 
             // m_toolStripHub
             // 

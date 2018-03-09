@@ -35,7 +35,7 @@ namespace DGD.Hub
             {
                 var netEngin = new NetEngin(Program.Settings);
                 netEngin.Download(manifest , SettingsManager.ManifestURI);
-                UpdateManifest updateManifest = UpdateEngin.ReadUpdateManifest(manifest);
+                IUpdateManifest updateManifest = UpdateEngin.ReadUpdateManifest(manifest);
 
                 if (updateManifest.DataGeneration == Program.Settings.DataGeneration)
                     return true;

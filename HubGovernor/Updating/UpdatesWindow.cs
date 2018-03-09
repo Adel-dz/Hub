@@ -18,15 +18,13 @@ namespace DGD.HubGovernor.Updating
 {
     public partial class UpdatesWindow: Form
     {
-        readonly IDatumProvider m_dpDataUpdates;
-        readonly IDatumProvider m_dpAppUpdates;
+        const string WIN7SP1_UPDATE_FILENAME = "hubw7";
+        const string WIN7SP1X64_UPADTE_FILENAME = "hubw7x64";
+        const string WINXP_UPADTE_FILENAME = "hubwxp";
 
         public UpdatesWindow()
         {
             InitializeComponent();
-
-            m_dpDataUpdates = AppContext.AccessPath.GetDataProvider(InternalTablesID.INCREMENT);
-            m_dpAppUpdates = AppContext.AccessPath.GetDataProvider(InternalTablesID.APP_UPDATE);
         }
 
 
@@ -41,6 +39,8 @@ namespace DGD.HubGovernor.Updating
             m_tsbUploadDataUpdates.Enabled = AppContext.AccessPath.GetDataProvider(
                 InternalTablesID.INCREMENT).Enumerate().Cast<UpdateIncrement>().Where(inc =>
                 inc.IsDeployed == false).Count() > 0;
+            m_tsbUploadAppUpdates.Enabled = AppContext.AccessPath.GetDataProvider(InternalTablesID.APP_UPDATE).Enumerate().
+                Cast<AppUpdate>().Count(up => up.DeployTime == AppUpdate.NOT_YET) > 0;
 
             m_sslUpdateKey.Text = $"Clé de mise à jour: {AppContext.Settings.AppSettings.UpdateKey}";
 
@@ -57,11 +57,21 @@ namespace DGD.HubGovernor.Updating
         void RegisterHandlers()
         {
             AppContext.AccessPath.GetDataProvider(InternalTablesID.TRANSACTION).DatumInserted += Transactions_DatumInserted;
+            AppContext.AccessPath.GetKeyIndexer(InternalTablesID.APP_UPDATE).DatumInserted += AppUpdates_DatumInserted;
+            AppContext.AccessPath.GetKeyIndexer(InternalTablesID.APP_UPDATE).DatumDeleted += AppUpdates_DatumDeleted;
+            AppContext.AccessPath.GetKeyIndexer(InternalTablesID.INCREMENT).DatumInserted += DataUpdates_DatumInserted;
+            AppContext.AccessPath.GetKeyIndexer(InternalTablesID.APP_UPDATE).DatumReplaced += AppUpdates_DatumReplaced;
+            AppContext.AccessPath.GetKeyIndexer(InternalTablesID.INCREMENT).DatumReplaced += DataUpdates_DatumReplaced;
         }
 
         void UnregisterHandlers()
         {
             AppContext.AccessPath.GetDataProvider(InternalTablesID.TRANSACTION).DatumInserted -= Transactions_DatumInserted;
+            AppContext.AccessPath.GetKeyIndexer(InternalTablesID.APP_UPDATE).DatumInserted -= AppUpdates_DatumInserted;
+            AppContext.AccessPath.GetKeyIndexer(InternalTablesID.INCREMENT).DatumInserted -= DataUpdates_DatumInserted;
+            AppContext.AccessPath.GetKeyIndexer(InternalTablesID.APP_UPDATE).DatumReplaced -= AppUpdates_DatumReplaced;
+            AppContext.AccessPath.GetKeyIndexer(InternalTablesID.INCREMENT).DatumReplaced -= DataUpdates_DatumReplaced;
+            AppContext.AccessPath.GetKeyIndexer(InternalTablesID.APP_UPDATE).DatumDeleted -= AppUpdates_DatumDeleted;
         }
 
         void LoadAppUpdates()
@@ -70,8 +80,10 @@ namespace DGD.HubGovernor.Updating
 
             m_lvAppUpdates.Items.Clear();
 
-            if(m_dpAppUpdates.Count > 0)
-                foreach (AppUpdate update in m_dpAppUpdates.Enumerate())
+            IDatumProvider dp = AppContext.AccessPath.GetDataProvider(InternalTablesID.APP_UPDATE);
+
+            if (dp.Count > 0)
+                foreach (AppUpdate update in dp.Enumerate())
                 {
                     var lvi = new ListViewItem(update.Content) { Tag = update };
                     m_lvAppUpdates.Items.Add(lvi);
@@ -82,21 +94,51 @@ namespace DGD.HubGovernor.Updating
         {
             Assert(!InvokeRequired);
 
+            IDatumProvider dp = AppContext.AccessPath.GetDataProvider(InternalTablesID.INCREMENT);
 
             m_lvDataUpdates.Items.Clear();
 
-            if (m_dpDataUpdates.Count > 0)
+            if (dp.Count > 0)
             {
-                foreach (UpdateIncrement inc in m_dpDataUpdates.Enumerate())
+                foreach (UpdateIncrement inc in dp.Enumerate())
                 {
                     var lvi = new ListViewItem(inc.Content) { Tag = inc };
                     m_lvDataUpdates.Items.Add(lvi);
-                }                
+                }
             }
         }
 
+        void NormalizeAppUpdates(AppUpdate update)
+        {
+            KeyIndexer ndxer = AppContext.AccessPath.GetKeyIndexer(InternalTablesID.APP_UPDATE);
+
+            var seq = from AppUpdate up in ndxer.Source.Enumerate()
+                      where up.AppArchitecture == update.AppArchitecture && up.Version.CompareTo(update.Version) > 0
+                      select up;
+
+            if (seq.Any())
+                update.DeployTime = AppUpdate.NEVER;
+            else
+            {
+                seq = from AppUpdate up in ndxer.Source.Enumerate()
+                      where up.AppArchitecture == update.AppArchitecture &&
+                        up.Version.CompareTo(update.Version) <= 0 &&
+                        up.DeployTime == AppUpdate.NOT_YET
+                      select up;
+
+                foreach (AppUpdate up in seq.ToArray())
+                {
+                    var datum = new AppUpdate(up.ID , up.Version , up.AppArchitecture , up.CreationTime);
+                    datum.DeployTime = AppUpdate.NEVER;
+                    int ndx = ndxer.IndexOf(up.ID);
+                    ndxer.Source.Replace(ndx , datum);
+                }
+            }
+        }
+
+     
         //handlers
-        private void BuildUpdate_Click(object sender , EventArgs e)
+        private void BuildDataUpdate_Click(object sender , EventArgs e)
         {
             var dlg = new Jobs.ProcessingDialog();
 
@@ -122,7 +164,7 @@ namespace DGD.HubGovernor.Updating
             LoadDataUpdates();
         }
 
-        private void Updates_ItemActivate(object sender , EventArgs e)
+        private void Updates_DataItemActivate(object sender , EventArgs e)
         {
             var inc = m_lvDataUpdates.SelectedItems[0].Tag as UpdateIncrement;
 
@@ -137,9 +179,12 @@ namespace DGD.HubGovernor.Updating
             }
         }
 
-        private void Transactions_DatumInserted(int ndx , easyLib.DB.IDatum datum)
+        private void Transactions_DatumInserted(int ndx , IDatum datum)
         {
-            m_tsbBuildUpdate.Enabled = true;
+            if (InvokeRequired)
+                Invoke(new Action(() => m_tsbBuildUpdate.Enabled = true));
+            else
+                m_tsbBuildUpdate.Enabled = true;
         }
 
         private void UploadDataUpdates_Click(object sender , EventArgs e)
@@ -183,8 +228,6 @@ namespace DGD.HubGovernor.Updating
             Action onSuccess = () =>
             {
                 dlg.Dispose();
-
-                LoadDataUpdates();
                 m_tsbUploadDataUpdates.Enabled = false;
             };
 
@@ -223,35 +266,10 @@ namespace DGD.HubGovernor.Updating
                         dp = AppContext.TableManager.AppUpdates.DataProvider;
                         dp.Connect();
 
-                        var update = new AppUpdate(AppContext.TableManager.AppUpdates.CreateUniqID() , dlg.Version.ToString());
+                        var update = new AppUpdate(AppContext.TableManager.AppUpdates.CreateUniqID() , dlg.Version);
                         bag.Compress(Path.Combine(AppPaths.AppUpdateFolder , update.ID.ToString("X")));
 
-                        string manifestPath = AppPaths.LocalManifestPath;
-
-                        try
-                        {
-                            IUpdateManifest oldManifest = UpdateEngin.ReadUpdateManifest(manifestPath);
-                            var dict = new Dictionary<AppArchitecture_t , Version>(oldManifest.Versions.Count() + 1);
-                            dict[dlg.AppArchitecture] = dlg.Version;
-
-                            var newManifest = new UpdateManifest(oldManifest.UpdateKey , oldManifest.DataGeneration , dict);
-                            UpdateEngin.WriteUpdateManifest(newManifest , manifestPath);
-                        }
-                        catch (Exception ex)
-                        {
-                            EventLogger.Warning(ex.Message);
-
-                            var dict = new Dictionary<AppArchitecture_t , Version>
-                            {
-                                { dlg.AppArchitecture, dlg.Version }
-                            };
-
-                            var newManifest = new UpdateManifest(AppContext.Settings.AppSettings.UpdateKey ,
-                                AppContext.Settings.AppSettings.DataGeneration , dict);
-
-                            UpdateEngin.WriteUpdateManifest(newManifest , manifestPath);
-                        }
-
+                        NormalizeAppUpdates(update);
                         dp.Insert(update);
                     };
 
@@ -283,56 +301,195 @@ namespace DGD.HubGovernor.Updating
 
         private void UploadAppUpdates_Click(object sender , EventArgs e)
         {
-            var dlg = new Jobs.ProcessingDialog();
+            var filesNames = new Dictionary<AppArchitecture_t , string>
+                {
+                    { AppArchitecture_t.Win7SP1, WIN7SP1_UPDATE_FILENAME },
+                    { AppArchitecture_t.Win7SP1X64, WIN7SP1X64_UPADTE_FILENAME },
+                    { AppArchitecture_t.WinXP, WINXP_UPADTE_FILENAME }
+                };
 
-            Action upload = () =>
+
+            var waitDlg = new Jobs.ProcessingDialog();
+
+
+            Action run = () =>
             {
-                KeyIndexer ndxerInc = AppContext.AccessPath.GetKeyIndexer(InternalTablesID.APP_UPDATE);
-                IEnumerable<uint> ids = from AppUpdate update in ndxerInc.Source.Enumerate()
-                                        where update.IsDeployed == false
-                                        select update.ID;
+                KeyIndexer ndxer = AppContext.AccessPath.GetKeyIndexer(InternalTablesID.APP_UPDATE);
+
+                var seq = from AppUpdate up in ndxer.Source.Enumerate()
+                          where up.DeployTime == AppUpdate.NOT_YET
+                          select up;
+
+                //maj app manifest + manifest global
+                Dictionary<AppArchitecture_t , string> appManifest;
+
+                try
+                {
+                    appManifest = UpdateEngin.ReadAppManifest(AppPaths.LocalAppManifestPath);
+
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Warning(ex.Message);
+                    appManifest = new Dictionary<AppArchitecture_t , string>();
+                }
+                                
+
+
+                IUpdateManifest gManifest;
+
+                try
+                {
+                    gManifest = UpdateEngin.ReadUpdateManifest(AppPaths.LocalManifestPath);
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Warning(ex.Message);
+                    Opts.AppSettings opt = AppContext.Settings.AppSettings;
+                    gManifest = new UpdateManifest(opt.UpdateKey , opt.DataGeneration);
+                }
+
+
 
                 var netEngin = new NetEngin(AppContext.Settings.AppSettings);
-
-                foreach (var id in ids)
+                
+                foreach (AppUpdate up in seq)
                 {
-                    string fileName = id.ToString("X");
-                    string src = Path.Combine(AppPaths.AppUpdateFolder , fileName);
-                    Uri dst = new Uri(AppPaths.RemoteDataUpdateDirUri , fileName);
-                    netEngin.Upload(dst , src);
+                    gManifest.Versions[up.AppArchitecture] = up.Version;
+                    appManifest[up.AppArchitecture] = filesNames[up.AppArchitecture];
+
+                    string fileName = up.ID.ToString("X");
+                    Uri dst = new Uri(AppPaths.RemoteAppUpdateDirUri , fileName);
+
+                    waitDlg.Message = $"Transfert du fichier {filesNames[up.AppArchitecture]}. Cette opération peut durer plusieurs minutes.";
+                    netEngin.Upload(dst , Path.Combine(AppPaths.AppUpdateFolder , fileName));
+                    up.DeployTime = DateTime.Now;
+
+                    ndxer.Source.Replace(ndxer.IndexOf(up.ID) , up);
                 }
 
-                netEngin.Upload(AppPaths.RemoteDataMainfestURI , AppPaths.LocalDataManifestPath);
+                waitDlg.Message = "Transfert du manifest des applications...";
+                UpdateEngin.WriteAppManifest(AppPaths.LocalAppManifestPath , appManifest);
+                netEngin.Upload(AppPaths.RemoteAppMainfestURI , AppPaths.LocalAppManifestPath);
+
+                waitDlg.Message = "Transfert du manifest global...";
+                UpdateEngin.WriteUpdateManifest(gManifest , AppPaths.LocalManifestPath);
                 netEngin.Upload(AppPaths.RemoteManifestURI , AppPaths.LocalManifestPath);
+            };
 
-                foreach (uint id in ids)
-                {
-                    var inc = ndxerInc.Get(id) as UpdateIncrement;
-                    inc.DeployTime = DateTime.Now;
-                    ndxerInc.Source.Replace(ndxerInc.IndexOf(id) , inc);
-                }
+
+            Action onSucces = () =>
+            {
+                m_tsbUploadAppUpdates.Enabled = false;
+                waitDlg.Dispose();
             };
 
             Action<Task> onErr = t =>
             {
-                dlg.Dispose();
+                waitDlg.Dispose();
                 this.ShowError(t.Exception.InnerException.Message);
+                EventLogger.Error(t.Exception.InnerException.Message);
             };
 
-            Action onSuccess = () =>
-            {
-                dlg.Dispose();
 
-                LoadDataUpdates();
-                m_tsbUploadDataUpdates.Enabled = false;
-            };
-
-            var task = new Task(upload , TaskCreationOptions.LongRunning);
-            task.OnSuccess(onSuccess);
+            var task = new Task(run , TaskCreationOptions.LongRunning);
+            task.OnSuccess(onSucces);
             task.OnError(onErr);
-
             task.Start();
-            dlg.ShowDialog(Parent);
+
+            waitDlg.ShowDialog(this);
+        }
+
+        private void DataUpdates_DatumInserted(IDataRow row)
+        {
+            if (InvokeRequired)
+                Invoke(new Action<IDataRow>(DataUpdates_DatumInserted) , row);
+            else
+            {
+                var lvi = new ListViewItem(row.Content)
+                {
+                    Tag = row
+                };
+
+                m_lvDataUpdates.Items.Add(lvi);               
+            }
+        }
+
+        private void AppUpdates_DatumInserted(IDataRow row)
+        {
+            if (InvokeRequired)
+                Invoke(new Action<IDataRow>(AppUpdates_DatumInserted) , row);
+            else
+            {
+                var lvi = new ListViewItem(row.Content)
+                {
+                    Tag = row
+                };
+
+                m_lvAppUpdates.Items.Add(lvi);
+
+                if ((row as AppUpdate).DeployTime == AppUpdate.NOT_YET)
+                    m_tsbUploadAppUpdates.Enabled = true;
+            }
+        }
+
+        private void AppUpdates_DatumReplaced(IDataRow row)
+        {
+            if (InvokeRequired)
+                Invoke(new Action<IDataRow>(AppUpdates_DatumReplaced) , row);
+            else
+            {
+                for (int i = 0; i < m_lvAppUpdates.Items.Count; ++i)
+                {
+                    if ((m_lvAppUpdates.Items[i].Tag as IDataRow).ID == row.ID)
+                    {
+                        var lvi = new ListViewItem(row.Content)
+                        {
+                            Tag = row
+                        };
+
+                        m_lvAppUpdates.Items[i] = lvi;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void DataUpdates_DatumReplaced(IDataRow row)
+        {
+            if (InvokeRequired)
+                Invoke(new Action<IDataRow>(DataUpdates_DatumReplaced) , row);
+            else
+            {
+                for (int i = 0; i < m_lvDataUpdates.Items.Count; ++i)
+                {
+                    if ((m_lvDataUpdates.Items[i].Tag as IDataRow).ID == row.ID)
+                    {
+                        var lvi = new ListViewItem(row.Content)
+                        {
+                            Tag = row
+                        };
+
+                        m_lvDataUpdates.Items[i] = lvi;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void AppUpdates_DatumDeleted(IDataRow row)
+        {
+            if (InvokeRequired)
+                Invoke(new Action<IDataRow>(AppUpdates_DatumDeleted) , row);
+            else
+            {
+                for (int i = 0; i < m_lvAppUpdates.Items.Count; ++i)
+                    if ((m_lvAppUpdates.Items[i].Tag as IDataRow).ID == row.ID)
+                    {
+                        m_lvAppUpdates.Items.RemoveAt(i);
+                        break;
+                    }
+            }
         }
     }
 }

@@ -9,7 +9,7 @@ namespace DGD.HubCore.Updating
     {
         uint UpdateKey { get; }
         uint DataGeneration { get; }
-        IReadOnlyDictionary<AppArchitecture_t , Version> Versions { get; }
+        Dictionary<AppArchitecture_t , Version> Versions { get; }
 
         Version GetAppVersion(AppArchitecture_t appArch);
     }
@@ -33,7 +33,7 @@ namespace DGD.HubCore.Updating
 
         public uint UpdateKey { get; }
         public uint DataGeneration { get; }
-        public IReadOnlyDictionary<AppArchitecture_t , Version> Versions => m_appVersions;
+        public Dictionary<AppArchitecture_t , Version> Versions => m_appVersions;
 
         public Version GetAppVersion(AppArchitecture_t appArch)
         {

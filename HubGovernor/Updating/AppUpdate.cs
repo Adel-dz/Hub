@@ -1,19 +1,14 @@
 ﻿using DGD.HubCore.DB;
 using DGD.HubCore.Updating;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using easyLib;
-using DGD.HubCore;
 
 namespace DGD.HubGovernor.Updating
 {
 
     interface IAppUpdate: IDataRow
     {
-        string Version { get; }
+        Version Version { get; }
         AppArchitecture_t AppArchitecture { get; }
         DateTime CreationTime { get; }
         DateTime DeployTime { get; set; }
@@ -22,34 +17,33 @@ namespace DGD.HubGovernor.Updating
 
     sealed class AppUpdate: DataRow, IAppUpdate
     {
-        public static readonly DateTime NULL_TIME = default(DateTime);
+        public static readonly DateTime NOT_YET = DateTime.MinValue;
+        public static readonly DateTime NEVER = DateTime.MaxValue;
 
-        public AppUpdate(uint id, string ver, AppArchitecture_t appArch, DateTime tmCreation):
+        public AppUpdate(uint id , Version ver , AppArchitecture_t appArch , DateTime tmCreation) :
             base(id)
         {
-            Dbg.Assert(!string.IsNullOrWhiteSpace(ver));
-
             Version = ver;
             AppArchitecture = appArch;
             CreationTime = tmCreation;
-            DeployTime = NULL_TIME;
+            DeployTime = NOT_YET;
         }
 
-        public AppUpdate(uint id, string ver, AppArchitecture_t appArch = AppArchitecture_t.Win7SP1): 
-            this(id, ver, appArch, DateTime.Now)
+        public AppUpdate(uint id , Version ver , AppArchitecture_t appArch = AppArchitecture_t.Win7SP1) :
+            this(id , ver , appArch , DateTime.Now)
         { }
 
         public AppUpdate()
         {
-            DeployTime = NULL_TIME;
+            DeployTime = NOT_YET;
             CreationTime = DateTime.Now;
         }
 
         public DateTime CreationTime { get; private set; }
         public DateTime DeployTime { get; set; }
         public AppArchitecture_t AppArchitecture { get; private set; }
-        public string Version { get; private set; }
-        public bool IsDeployed => DeployTime != NULL_TIME;
+        public Version Version { get; private set; }
+        public bool IsDeployed => DeployTime != NOT_YET && DeployTime != NEVER;
 
 
         //protected:
@@ -63,7 +57,7 @@ namespace DGD.HubGovernor.Updating
 
             CreationTime = reader.ReadTime();
             DeployTime = reader.ReadTime();
-            Version = ver;
+            Version = Version.Parse(ver);
             AppArchitecture = (AppArchitecture_t)appArch;
         }
 
@@ -71,8 +65,7 @@ namespace DGD.HubGovernor.Updating
         {
             writer.Write((byte)AppArchitecture);
 
-            Dbg.Assert(!string.IsNullOrEmpty(Version));
-            writer.Write(Version);
+            writer.Write(Version.ToString());
 
             writer.Write(CreationTime);
             writer.Write(DeployTime);
@@ -80,13 +73,14 @@ namespace DGD.HubGovernor.Updating
 
         protected override string[] GetContent()
         {
+            string deployStr = DeployTime == NOT_YET ? "" : (DeployTime == NEVER ? "Ignorée" : DeployTime.ToString());
             return new[]
             {
                 ID.ToString(),
-                Version,
-                HubCore.Updating.AppArchitectures.GetArchitectureName(AppArchitecture),
+                Version.ToString(),
+                AppArchitectures.GetArchitectureName(AppArchitecture),
                 CreationTime.ToString(),
-                DeployTime == NULL_TIME? "" : DeployTime.ToString()
+                DeployTime == NOT_YET? "" : (DeployTime == NEVER? "Ignorée" : DeployTime.ToString())
             };
         }
     }
