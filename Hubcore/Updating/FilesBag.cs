@@ -180,7 +180,7 @@ namespace DGD.HubCore.Updating
             }
         }
 
-        public void Decompress(string filePath , string destFolder)
+        public static void Decompress(string filePath , string destFolder)
         {
             using (FileStream fs = File.OpenRead(filePath))
             using (var gzs = new GZipStream(fs , CompressionMode.Decompress))
@@ -214,7 +214,7 @@ namespace DGD.HubCore.Updating
                     else
                         file = Path.Combine(folders[ndxDir] , file);
 
-                    int fileLen = reader.ReadInt();
+                    long fileLen = reader.ReadLong();
 
                     CreateFile(gzs, file, fileLen);
                 }
@@ -226,9 +226,11 @@ namespace DGD.HubCore.Updating
         static byte[] Signature => Encoding.UTF8.GetBytes(SIGNATURE);
 
 
-        static void CreateFile(Stream input , string filePath , int fileLen)
+        static void CreateFile(Stream input , string filePath , long fileLen)
         {
             const int SZ_BUFFER = 1024;
+
+            System.Diagnostics.Debug.WriteLine($"Extracting {filePath}...");
 
             using (FileStream fs = File.Create(filePath))
             {
@@ -237,7 +239,7 @@ namespace DGD.HubCore.Updating
 
                 while(fileLen > 0)
                 {
-                    byte[] buffer = reader.ReadBytes(Math.Min(SZ_BUFFER , fileLen));
+                    byte[] buffer = reader.ReadBytes(SZ_BUFFER);
                     writer.Write(buffer);
                     fileLen -= buffer.Length;
                 }

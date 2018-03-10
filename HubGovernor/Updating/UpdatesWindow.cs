@@ -345,8 +345,7 @@ namespace DGD.HubGovernor.Updating
                 catch (Exception ex)
                 {
                     EventLogger.Warning(ex.Message);
-                    Opts.AppSettings opt = AppContext.Settings.AppSettings;
-                    gManifest = new UpdateManifest(opt.UpdateKey , opt.DataGeneration);
+                    gManifest = new UpdateManifest(0 , 0);
                 }
 
 
@@ -358,11 +357,12 @@ namespace DGD.HubGovernor.Updating
                     gManifest.Versions[up.AppArchitecture] = up.Version;
                     appManifest[up.AppArchitecture] = filesNames[up.AppArchitecture];
 
-                    string fileName = up.ID.ToString("X");
-                    Uri dst = new Uri(AppPaths.RemoteAppUpdateDirUri , fileName);
+                    string srcFileName = up.ID.ToString("X");
+                    string destFileName = filesNames[up.AppArchitecture];
+                    Uri dst = new Uri(AppPaths.RemoteAppUpdateDirUri , destFileName);
 
-                    waitDlg.Message = $"Transfert du fichier {filesNames[up.AppArchitecture]}. Cette opération peut durer plusieurs minutes.";
-                    netEngin.Upload(dst , Path.Combine(AppPaths.AppUpdateFolder , fileName));
+                    waitDlg.Message = $"Transfert du fichier {destFileName}. Cette opération peut durer plusieurs minutes.";
+                    netEngin.Upload(dst , Path.Combine(AppPaths.AppUpdateFolder , srcFileName));
                     up.DeployTime = DateTime.Now;
 
                     ndxer.Source.Replace(ndxer.IndexOf(up.ID) , up);

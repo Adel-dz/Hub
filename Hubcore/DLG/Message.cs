@@ -17,7 +17,7 @@ namespace DGD.HubCore.DLG
         SendInfo,    //data = ClientID
         SetInfo,    //data = ClientInfo
         Start,  //data = ClientID + start time , resp = ok
-        Close,  //data = ClientID + close time, resp = ok
+        Close,  //data = ClientID + close time, no resp
         Refresh,    //data = clD, resp = running
         Running,    // data = clID + current Time
     }

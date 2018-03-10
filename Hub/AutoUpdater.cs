@@ -7,6 +7,7 @@ using DGD.HubCore.Updating;
 using DGD.HubCore.DB;
 using System.Linq;
 using DGD.HubCore.Net;
+using System.Reflection;
 
 namespace DGD.Hub
 {
@@ -14,6 +15,8 @@ namespace DGD.Hub
     {
         public static event Action<uint> BeginTableUpdate;
         public static event Action<uint> EndTableUpdate;
+        public static event Func<bool> CanDownlaodAppUpdate;
+        public static event Func<bool> CanRunAppUpdate;
 
         public static bool UpdateData()
         {
@@ -40,7 +43,7 @@ namespace DGD.Hub
                 if (updateManifest.DataGeneration == Program.Settings.DataGeneration)
                     return true;
 
-                if(Program.Settings.UpdateKey != updateManifest.UpdateKey)
+                if (Program.Settings.UpdateKey != updateManifest.UpdateKey)
                 {
                     if (Program.Settings.UpdateKey == 0)
                         Program.Settings.UpdateKey = updateManifest.UpdateKey;
@@ -51,14 +54,13 @@ namespace DGD.Hub
 
                         return false;
                     }
-
                 }
 
                 //TODO: signaler l'erreur si DataGeneration < manifest.DataGeneration            
 
                 string dataManifest = Path.GetTempFileName();
 
-                using(Log.LogEngin.PushMessage("Installation des mises à jour..."))
+                using (Log.LogEngin.PushMessage("Installation des mises à jour..."))
                 using (new AutoReleaser(() => File.Delete(dataManifest)))
                 {
                     netEngin.Download(dataManifest , SettingsManager.DataManifestURI);
@@ -71,19 +73,66 @@ namespace DGD.Hub
                         {
                             string updateFile = Path.GetTempFileName();
                             using (new AutoReleaser(() => File.Delete(updateFile)))
-                            {                                
-                                netEngin.Download(updateFile , new Uri(SettingsManager.DataUpdateDirURI , uu.FileURI));                                
+                            {
+                                netEngin.Download(updateFile , new Uri(SettingsManager.DataUpdateDirURI , uu.FileURI));
                                 ApplyUpdate(updateFile);
                                 Program.Settings.DataGeneration = uu.DataPostGeneration;
-                            }                            
+                            }
                         }
-                    }                   
+                    }
                 }
 
                 Assert(Program.Settings.DataGeneration == updateManifest.DataGeneration);
             }
 
             return true;
+        }
+
+        public static void UpdateApp()
+        {
+            //dl global manifest
+            Log.LogEngin.PushFlash("Rechercher d'une mise à jour de l'application...");
+
+            string tmpFile = Path.GetTempFileName();
+            using (new AutoReleaser(() => File.Delete(tmpFile)))
+            {
+                var netEngin = new NetEngin(Program.Settings);
+                netEngin.Download(tmpFile , SettingsManager.ManifestURI);
+                IUpdateManifest updateManifest = UpdateEngin.ReadUpdateManifest(tmpFile);
+
+                Version curVer = Assembly.GetExecutingAssembly().GetName().Version;
+                Version ver = updateManifest.Versions[Program.AppArchitecture];
+
+                if (ver.CompareTo(curVer) >= 0)
+                {
+                    Log.LogEngin.PushFlash("Vous disposez déjà de la dernière version de l’application.");
+                    return;
+                }
+
+                Log.LogEngin.PushFlash($"Une nouvelle version de l'application est disponible ({ver}).");
+
+                if (CanDownlaodAppUpdate?.Invoke() != true)
+                    return;
+
+                Log.LogEngin.PushFlash($"Téléchargement de la mise à jour...");
+
+                //dl app manifest
+                netEngin.Download(tmpFile , SettingsManager.AppManifestURI);
+                Dictionary<AppArchitecture_t , string> upFiles = UpdateEngin.ReadAppManifest(tmpFile);
+                string fileName = upFiles[Program.AppArchitecture];
+
+                //dl update file
+                var uri = new Uri(SettingsManager.AppUpdateDirURI , fileName);
+                netEngin.Download(tmpFile , uri);
+
+                if (CanRunAppUpdate?.Invoke() != true)
+                    return;
+
+                string tmpDir = Path.GetTempPath();
+                FilesBag.Decompress(tmpFile , tmpDir);
+                System.Diagnostics.Process.Start(Path.Combine(tmpDir , "setup.exe"));
+                System.Windows.Forms.Application.Exit();
+            }
         }
 
 

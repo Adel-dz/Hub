@@ -52,7 +52,7 @@ namespace DGD.HubGovernor.Clients
 
             ClientClosed?.Invoke(clID);
 
-            return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , BitConverter.GetBytes(clID));
+            return null;
         }
 
         Message ProcessStartMessage(Message msg)

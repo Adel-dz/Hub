@@ -43,6 +43,7 @@ namespace DGD.Hub.DLG
         }
 
         public bool IsDisposed { get; private set; }
+        public bool IsRunning { get; private set; }
 
         public IEnumerable<ProfileInfo> Profiles
         {
@@ -61,6 +62,10 @@ namespace DGD.Hub.DLG
 
         public void Start()
         {
+            Dbg.Assert(IsRunning == false);
+
+            IsRunning = true;
+
             //client enregistre?
             m_clInfo = Program.Settings.ClientInfo;
 
@@ -74,11 +79,20 @@ namespace DGD.Hub.DLG
                 }
 
                 return;
-            }
+            }            
 
             //update last client msg id
-            IEnumerable<Message> clMsgs = DialogEngin.ReadHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) ,
-                m_clInfo.ClientID);
+            IEnumerable<Message> clMsgs;
+            try
+            {
+                clMsgs = DialogEngin.ReadHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) ,
+                    m_clInfo.ClientID);
+            }
+            catch(Exception ex)
+            {
+                Dbg.Log(ex.Message);
+                clMsgs = Enumerable.Empty<Message>();
+            }
 
             if (clMsgs.Any())
                 m_clientLastMsgID = clMsgs.Max(m => m.ID);
@@ -149,13 +163,18 @@ namespace DGD.Hub.DLG
             task.Start();
         }
 
-        public void Stop()
+        public void Stop(bool ignoreCloseNotification = false)
         {
-            m_updateTimer.Stop();
-            m_dialogTimer.Stop();
+            if (IsRunning)
+            {
+                m_updateTimer.Stop();
+                m_dialogTimer.Stop();
 
-            if (m_clInfo != null)
-                new CloseHandler(m_clInfo.ClientID).Start();            
+                if (m_clInfo != null && !ignoreCloseNotification)
+                    new CloseHandler(m_clInfo.ClientID).Start();
+
+                IsRunning = false;
+            }
         }
 
         public void Exit()
@@ -391,19 +410,20 @@ namespace DGD.Hub.DLG
 
             try
             {
-                LogEngin.PushFlash("Recherche des mises à jour...");
+                LogEngin.PushFlash("Recherche des mises à jour de données...");
 
                 try
                 {
                     if (AutoUpdater.UpdateData())
-                        LogEngin.PushFlash("Votre application est à jour.");
+                        LogEngin.PushFlash("Vos données sont à jour.");
+
+                    EventLogger.Debug("Update done!");
                 }
                 catch (Exception ex)
                 {
                     LogEngin.PushFlash(ex.Message);
                 }
-
-                EventLogger.Debug("Update done!");
+                
             }
             catch (Exception ex)
             {
@@ -414,8 +434,5 @@ namespace DGD.Hub.DLG
                 m_updateTimer.Start();
             }
         }
-
-
-
     }
 }

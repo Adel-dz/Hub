@@ -62,7 +62,8 @@ namespace DGD.Hub
         {
             base.OnFormClosing(e);
 
-            Program.DialogManager.Stop();
+            if(Program.DialogManager.IsRunning)
+                Program.DialogManager.Stop();
 
             if (WindowState == FormWindowState.Maximized)
                 Program.Settings.IsMaximized = true;
@@ -114,9 +115,9 @@ namespace DGD.Hub
 
         void StartLogBox(string msg)
         {
-            m_logBox.Show();         
-            m_logBox.Message = msg;            
-            m_logBox.BringToFront();            
+            m_logBox.Show();
+            m_logBox.Message = msg;
+            m_logBox.BringToFront();
 
         }
 
@@ -176,7 +177,45 @@ namespace DGD.Hub
         {
             Application.Idle -= Application_Idle;
 
+            AutoUpdater.CanDownlaodAppUpdate += AutoUpdater_CanDownlaodAppUpdate;
+            AutoUpdater.CanRunAppUpdate += AutoUpdater_CanRunAppUpdate;
+
+            var task = new Task(AutoUpdater.UpdateApp , TaskCreationOptions.LongRunning);
+            task.Start();
+
             Program.DialogManager.Start();
+        }
+
+        private bool AutoUpdater_CanRunAppUpdate()
+        {
+            if (InvokeRequired)
+                return (bool)Invoke(new Func<bool>(AutoUpdater_CanRunAppUpdate));
+
+            if (MessageBox.Show(this ,
+                    "Le téléchargement de la mise à jour est terminé.  Voulez-vous poursuivre l’installation ?" ,
+                    Text ,
+                    MessageBoxButtons.YesNo ,
+                    MessageBoxIcon.Question) != DialogResult.Yes)
+                return false;
+
+            Program.DialogManager.Stop(true);            
+            return true;
+        }
+
+        private bool AutoUpdater_CanDownlaodAppUpdate()
+        {
+            if (InvokeRequired)
+                return (bool)Invoke(new Func<bool>(AutoUpdater_CanDownlaodAppUpdate));
+
+            if (MessageBox.Show(this ,
+                    "Une nouvelle version de l’application est disponible au téléchargement.Voulez - vous l’installer ?" ,
+                    Text ,
+                    MessageBoxButtons.YesNo ,
+                    MessageBoxIcon.Question) == DialogResult.Yes)
+                return true;
+
+            return false;
+
         }
 
         private void SetView_Handler(object sender , EventArgs e)
@@ -190,7 +229,7 @@ namespace DGD.Hub
                 MessageBox.Show(this , ex.Message , null , MessageBoxButtons.OK , MessageBoxIcon.Error);
             }
         }
-            
+
         private void LogEngin_MessageTimeout()
         {
             if (InvokeRequired)
