@@ -78,6 +78,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientEnvironment.cs" />
+    <Compile Include="DB\ClientEnvironmentRow.cs" />
     <Compile Include="DB\ClientStatusRow.cs" />
     <Compile Include="DB\DatumFactory.cs" />
     <Compile Include="DB\DBKeyIndexer.cs" />
@@ -123,7 +125,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SubHeading.cs" />
     <Compile Include="Updating\TableUpdate.cs" />
-    <Compile Include="Updating\AppArchitecture.cs" />
+    <Compile Include="AppArchitecture.cs" />
     <Compile Include="Updating\UpdateManifest.cs" />
     <Compile Include="Updating\UpdateAction.cs" />
     <Compile Include="Updating\UpdateEngin.cs" />

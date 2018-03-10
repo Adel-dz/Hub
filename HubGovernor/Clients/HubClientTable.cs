@@ -22,7 +22,6 @@ namespace DGD.HubGovernor.Clients
                 new IntegerColumn("ID"),
                 new IntegerColumn("ID Profile"),
                 new TimeColumn("Crée le"),
-                new TextColumn("Nom de la machine"),
                 new TextColumn("Contact"),
                 new TextColumn("Tél."),
                 new TextColumn("e-Mail")

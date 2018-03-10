@@ -1,6 +1,5 @@
-﻿#define WIN7SP1
-
-using DGD.Hub.DB;
+﻿using DGD.Hub.DB;
+using DGD.HubCore;
 using DGD.HubCore.Updating;
 using System;
 using System.IO;
@@ -20,12 +19,12 @@ namespace DGD.Hub
         public static DLG.DialogManager DialogManager => m_dlgManager;
 
         public static AppArchitecture_t AppArchitecture =>
-#if WIN7SP1
-            AppArchitecture_t.Win7SP1;
+#if WINXP
+            AppArchitecture_t.WinXP;
 #elif WIN7SP1X64
-           TargetSystem_t.Win7SP1X64;
+           AppArchitecture_t.Win7SP1X64;
 #else
-            TargetSystem_t.WinXP;
+            AppArchitecture_t.Win7SP1;
 #endif
 
         //private:

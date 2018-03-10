@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DGD.HubCore.Updating
+namespace DGD.HubCore
 {
     public enum AppArchitecture_t : byte
     {

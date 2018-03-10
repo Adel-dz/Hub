@@ -13,6 +13,7 @@ using easyLib.DB;
 using DGD.HubCore.Updating;
 using System.IO;
 using easyLib.Log;
+using DGD.HubCore;
 
 namespace DGD.HubGovernor.Updating
 {
@@ -141,6 +142,7 @@ namespace DGD.HubGovernor.Updating
         private void BuildDataUpdate_Click(object sender , EventArgs e)
         {
             var dlg = new Jobs.ProcessingDialog();
+            bool firstUpdate = AppContext.Settings.AppSettings.UpdateKey == 0;
 
             Action<Task> onErr = (t) =>
             {
@@ -153,6 +155,11 @@ namespace DGD.HubGovernor.Updating
                 dlg.Dispose();
                 m_tsbBuildUpdate.Enabled = false;
                 m_tsbUploadDataUpdates.Enabled = true;
+
+                if(firstUpdate)
+                    m_sslUpdateKey.Text = 
+                        $"Clé de mise à jour: {AppContext.Settings.AppSettings.UpdateKey}";
+
             };
 
             var task = new Task(new UpdateBuilder().Run , TaskCreationOptions.LongRunning);
@@ -160,8 +167,6 @@ namespace DGD.HubGovernor.Updating
 
             task.Start();
             dlg.ShowDialog(Parent);
-
-            LoadDataUpdates();
         }
 
         private void Updates_DataItemActivate(object sender , EventArgs e)
@@ -203,7 +208,7 @@ namespace DGD.HubGovernor.Updating
                 foreach (var id in ids)
                 {
                     string fileName = id.ToString("X");
-                    string src = System.IO.Path.Combine(AppPaths.DataUpdateFolder , fileName);
+                    string src = Path.Combine(AppPaths.DataUpdateFolder , fileName);
                     Uri dst = new Uri(AppPaths.RemoteDataUpdateDirUri , fileName);
                     netEngin.Upload(dst , src);
                 }
@@ -229,6 +234,7 @@ namespace DGD.HubGovernor.Updating
             {
                 dlg.Dispose();
                 m_tsbUploadDataUpdates.Enabled = false;
+
             };
 
             var task = new Task(upload , TaskCreationOptions.LongRunning);

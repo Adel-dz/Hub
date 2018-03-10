@@ -13,7 +13,7 @@ namespace DGD.HubGovernor.Clients
 
 
         public override string ToString() =>
-            $"ID:{ID}, Profile:{ProfileID}, Date de création:{CreationTime}, Machine:{MachineName}, " +
+            $"ID:{ID}, Profile:{ProfileID}, Date de création:{CreationTime},  " +
             $"Contact:{ContactName}, Tel:{ContactPhone}, eMail:{ContaclEMail}";
     }
 }

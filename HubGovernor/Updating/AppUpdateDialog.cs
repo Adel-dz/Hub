@@ -1,4 +1,5 @@
-﻿using DGD.HubCore.Updating;
+﻿using DGD.HubCore;
+using DGD.HubCore.Updating;
 using easyLib.Extensions;
 using System;
 using System.Collections.Generic;
@@ -15,9 +16,26 @@ namespace DGD.HubGovernor.Updating
 {
     sealed partial class AppUpdateDialog: Form
     {
+        class ArchitectureItemHolder
+        {
+            public ArchitectureItemHolder(AppArchitecture_t arch)
+            {
+                Architecture = arch;
+            }
+
+            public AppArchitecture_t Architecture { get; }
+
+            public override string ToString() => AppArchitectures.GetArchitectureName(Architecture);
+        }
+
+
+
         public AppUpdateDialog()
         {
             InitializeComponent();
+
+            foreach (AppArchitecture_t arch in AppArchitectures.Architectures)
+                m_cmbSystem.Items.Add(new ArchitectureItemHolder(arch));
 
             m_cmbSystem.SelectedIndex = 0;
         }
@@ -40,7 +58,9 @@ namespace DGD.HubGovernor.Updating
             set { m_tbVersion.Text = value.ToString(); }
         }
 
-        public AppArchitecture_t AppArchitecture => AppArchitecture_t.Win7SP1;
+        public AppArchitecture_t AppArchitecture => 
+            (m_cmbSystem.SelectedItem as ArchitectureItemHolder).Architecture ;
+
 
         //private:
         void UpdateUI()

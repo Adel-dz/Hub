@@ -38,7 +38,7 @@ namespace DGD.HubGovernor.Clients
         readonly KeyIndexer m_ndxerProfiles;
         readonly KeyIndexer m_ndxerClients;
         readonly KeyIndexer m_ndxerClientsStatus;
-        readonly KeyIndexer m_ndxerProfilesMgmnt;
+        readonly KeyIndexer m_ndxerProfilesMgmnt;        
         readonly List<string> m_pendingUploads = new List<string>();
         readonly List<string> m_pendingDownloads = new List<string>();
         readonly Dictionary<Message_t , Func<Message , uint , Message>> m_msgProcessors;

@@ -32,7 +32,7 @@ namespace DGD.HubCore.DB
 
         public uint ClientID => ID;
         public ClientStatus_t Status { get; private set; }
-        public DateTime LastSeen { get; private set; }
+        public DateTime LastSeen { get; set; }
 
 
         //protected:
@@ -60,7 +60,7 @@ namespace DGD.HubCore.DB
         {
             return new[]
             {
-                ID.ToString(),
+                ID.ToString("X"),
                 ClientStatuses.GetStatusName(Status),
                 LastSeen.ToString()
             };

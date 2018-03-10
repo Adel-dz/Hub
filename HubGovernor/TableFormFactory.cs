@@ -106,6 +106,10 @@ namespace DGD.HubGovernor
             m_addFlags[InternalTablesID.APP_UPDATE] = false;
             m_deleteFlags[InternalTablesID.APP_UPDATE] = false;
             m_editFlags[InternalTablesID.APP_UPDATE] = false;
+
+            m_addFlags[InternalTablesID.CLIENT_ENV] = false;
+            m_deleteFlags[InternalTablesID.CLIENT_ENV] = false;
+            m_editFlags[InternalTablesID.CLIENT_ENV] = false;
         }
 
 

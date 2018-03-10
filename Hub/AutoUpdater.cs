@@ -8,6 +8,7 @@ using DGD.HubCore.DB;
 using System.Linq;
 using DGD.HubCore.Net;
 using System.Reflection;
+using DGD.HubCore;
 
 namespace DGD.Hub
 {
@@ -103,7 +104,7 @@ namespace DGD.Hub
                 Version curVer = Assembly.GetExecutingAssembly().GetName().Version;
                 Version ver = updateManifest.Versions[Program.AppArchitecture];
 
-                if (ver.CompareTo(curVer) >= 0)
+                if (curVer.CompareTo(ver) >= 0)
                 {
                     Log.LogEngin.PushFlash("Vous disposez déjà de la dernière version de l’application.");
                     return;

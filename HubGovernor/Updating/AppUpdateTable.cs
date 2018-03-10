@@ -8,7 +8,7 @@ namespace DGD.HubGovernor.Updating
     sealed class AppUpdateTable: FuzzyTable<AppUpdate>, ITableRelation
     {
         public AppUpdateTable(string filePath) :
-            base(InternalTablesID.APP_UPDATE , "MAJ des Clients" , filePath)
+            base(InternalTablesID.APP_UPDATE , "MAJ Hub" , filePath)
         { }
 
 

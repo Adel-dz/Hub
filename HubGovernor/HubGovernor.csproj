@@ -111,6 +111,8 @@
       <DependentUpon>ClientsWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Clients\HubClient.cs" />
+    <Compile Include="Clients\HubClientEnvironment.cs" />
+    <Compile Include="Clients\HubClientEnvTable.cs" />
     <Compile Include="Clients\HubClientTable.cs" />
     <Compile Include="Countries\ChooseCountryDialog.cs">
       <SubType>Form</SubType>

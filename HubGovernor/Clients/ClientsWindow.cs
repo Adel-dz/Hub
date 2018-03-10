@@ -154,7 +154,6 @@ namespace DGD.HubGovernor.Clients
             m_lblContactName.Text = client.ContactName;
             m_lblCreationTime.Text = client.CreationTime.ToString();
             m_lblEMail.Text = string.IsNullOrWhiteSpace(client.ContaclEMail) ? "-" : client.ContaclEMail;
-            m_lblMachineName.Text = client.MachineName;
             m_lblPhone.Text = string.IsNullOrWhiteSpace(client.ContactPhone) ? "-" : client.ContactPhone;
 
             ClientStatus_t status = (m_ndxerStatus.Get(client.ID) as ClientStatus).Status;

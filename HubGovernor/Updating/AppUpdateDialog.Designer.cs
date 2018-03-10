@@ -160,8 +160,6 @@
             // 
             this.m_cmbSystem.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.m_cmbSystem.FormattingEnabled = true;
-            this.m_cmbSystem.Items.AddRange(new object[] {
-            "Microsoft Windows 7 SP1"});
             this.m_cmbSystem.Location = new System.Drawing.Point(65, 324);
             this.m_cmbSystem.Name = "m_cmbSystem";
             this.m_cmbSystem.Size = new System.Drawing.Size(177, 21);

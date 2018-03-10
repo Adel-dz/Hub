@@ -1,4 +1,5 @@
-﻿using DGD.HubCore.DLG;
+﻿using DGD.HubCore;
+using DGD.HubCore.DLG;
 using DGD.HubCore.Net;
 using easyLib;
 using easyLib.Extensions;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,7 +37,9 @@ namespace DGD.Hub.DLG
         {
             var ms = new MemoryStream();
             var writer = new RawDataWriter(ms , Encoding.UTF8);
+            ClientEnvironment clEnv = GetEnvironment();
             writer.Write(m_clID);
+            clEnv.Write(writer);
             writer.Write(DateTime.Now);
             m_msgData = ms.ToArray();
 
@@ -43,7 +47,21 @@ namespace DGD.Hub.DLG
             task.Start();
         }
 
+
         //private:
+        ClientEnvironment GetEnvironment()
+        {
+            var clEnv = new ClientEnvironment();
+            clEnv.HubArchitecture = Program.AppArchitecture;
+            clEnv.HubVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            clEnv.Is64BitOperatingSystem = Environment.Is64BitOperatingSystem;
+            clEnv.MachineName = Environment.MachineName;
+            clEnv.OSVersion = Environment.OSVersion.VersionString;
+            clEnv.UserName = Environment.UserName;
+
+            return clEnv;
+        }
+
         void PostReq()
         {
             Dbg.Log("Posting start msg...");
@@ -135,6 +153,5 @@ namespace DGD.Hub.DLG
                 File.Delete(tmpFile);
             }
         }
-
     }
 }

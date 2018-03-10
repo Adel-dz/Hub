@@ -3,6 +3,7 @@ using DGD.HubCore.DLG;
 using DGD.HubCore.Net;
 using DGD.HubGovernor.Profiles;
 using easyLib;
+using easyLib.DB;
 using easyLib.Log;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace DGD.HubGovernor.Clients
             uint clID = reader.ReadUInt();
 
             var client = m_ndxerClients.Get(clID) as HubClient;
-            
+
             if (client == null)
             {
                 EventLogger.Warning("Réception d’une notification de démarrage " +
@@ -42,7 +43,7 @@ namespace DGD.HubGovernor.Clients
             DateTime dt = reader.ReadTime();
 
             EventLogger.Info($"client arrêté le {dt.ToShortDateString()} à {dt.ToLongTimeString()}");
-            
+
 
             var clData = new ClientData(dt);
             string hubFilePath = AppPaths.GetLocalClientDilogPath(clID);
@@ -65,6 +66,8 @@ namespace DGD.HubGovernor.Clients
 
             var reader = new RawDataReader(new MemoryStream(msg.Data) , Encoding.UTF8);
             uint clID = reader.ReadUInt();
+            ClientEnvironment clEnv = ClientEnvironment.Load(reader);
+            DateTime dtStart = reader.ReadTime();
 
             var client = m_ndxerClients.Get(clID) as HubClient;
 
@@ -87,29 +90,18 @@ namespace DGD.HubGovernor.Clients
             EventLogger.Info("Réception d’une notification de démarrage " +
                     $"de la part du client {client.ContactName}");
 
-            //maj du dic des clients actifs
-            DateTime dt = reader.ReadTime();
 
-            EventLogger.Info($"Client démarré le {dt.Date.ToShortDateString()} à {dt.ToLongTimeString()}");
+            EventLogger.Info($"Client démarré le {dtStart.Date.ToShortDateString()} à {dtStart.ToLongTimeString()}");
 
-            var clData = new ClientData(dt);
-            string hubFilePath = AppPaths.GetLocalClientDilogPath(clID);
+            //verifier si l'env du client a changé
+            UpdateClientEnvironment(clID , clEnv);
 
-            try
-            {
-                IEnumerable<Message> msgs = DialogEngin.ReadHubDialog(hubFilePath , clID);
+            AddRunningClient(clID , dtStart);
 
-                if (msgs.Any())
-                    clData.LastHandledMessageID = msgs.Max(m => m.ID);
-            }
-            catch (Exception ex)
-            {
-                DialogEngin.WriteHubDialog(hubFilePath , clID , Enumerable.Empty<Message>());
-                EventLogger.Error(ex.Message);
-            }
-
-            //TODO: traiter le cas ou un client de meme ID est en execution
-            m_runningClients[clID] = clData;
+            //maj du last seen
+            var clStatus = m_ndxerClientsStatus.Get(clID) as ClientStatus;
+            clStatus.LastSeen = dtStart;
+            m_ndxerClientsStatus.Source.Replace(m_ndxerClientsStatus.IndexOf(clID) , clStatus);
 
             return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , msg.Data);
         }
@@ -335,7 +327,6 @@ namespace DGD.HubGovernor.Clients
                 ContaclEMail = clInfo.ContaclEMail ,
                 ContactName = clInfo.ContactName ,
                 ContactPhone = clInfo.ContactPhone ,
-                MachineName = clInfo.MachineName ,
             };
 
             m_ndxerClients.Source.Insert(hClient);
@@ -375,6 +366,69 @@ namespace DGD.HubGovernor.Clients
 
             return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.UnknonwnMsg ,
                 BitConverter.GetBytes(clientID));
+        }
+
+        void AddRunningClient(uint clID , DateTime dtStart)
+        {
+            var clData = new ClientData(dtStart);
+            string hubFilePath = AppPaths.GetLocalClientDilogPath(clID);
+
+            try
+            {
+                IEnumerable<Message> msgs = DialogEngin.ReadHubDialog(hubFilePath , clID);
+
+                if (msgs.Any())
+                    clData.LastHandledMessageID = msgs.Max(m => m.ID);
+            }
+            catch (Exception ex)
+            {
+                DialogEngin.WriteHubDialog(hubFilePath , clID , Enumerable.Empty<Message>());
+                EventLogger.Error(ex.Message);
+            }
+
+
+            //TODO: traiter le cas ou un client de meme ID est en execution
+            m_runningClients[clID] = clData;
+        }
+
+        static void UpdateClientEnvironment(uint clID , ClientEnvironment clEnv)
+        {
+            using (IDatumProvider dp = AppContext.TableManager.ClientsEnvironment.DataProvider)
+            {
+                dp.Connect();
+
+                IEnumerable<HubClientEnvironment> seq = from HubClientEnvironment env in dp.Enumerate()
+                                                        where env.ClientID == clID
+                                                        select env;
+                if (seq.Any())
+                {
+                    HubClientEnvironment hubEnv = seq.First();
+
+                    foreach (HubClientEnvironment hce in seq.Skip(1))
+                        if (hubEnv.CreationTime < hce.CreationTime)
+                            hubEnv = hce;
+
+                    if (hubEnv.HubArchitecture == clEnv.HubArchitecture &&
+                            hubEnv.HubVersion == clEnv.HubVersion &&
+                            hubEnv.Is64BitOperatingSystem == clEnv.Is64BitOperatingSystem &&
+                            hubEnv.MachineName == clEnv.MachineName &&
+                            hubEnv.OSVersion == clEnv.OSVersion &&
+                            hubEnv.UserName == clEnv.UserName)
+                        return;
+                }
+
+                var newHubEnv = new HubClientEnvironment(AppContext.TableManager.ClientsEnvironment.CreateUniqID() ,
+                    clID);
+
+                newHubEnv.HubArchitecture = clEnv.HubArchitecture;
+                newHubEnv.HubVersion = clEnv.HubVersion;
+                newHubEnv.Is64BitOperatingSystem = clEnv.Is64BitOperatingSystem;
+                newHubEnv.MachineName = clEnv.MachineName;
+                newHubEnv.OSVersion = clEnv.OSVersion;
+                newHubEnv.UserName = clEnv.UserName;
+
+                dp.Insert(newHubEnv);
+            }
         }
     }
 }

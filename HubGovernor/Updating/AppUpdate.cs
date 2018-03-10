@@ -2,6 +2,7 @@
 using DGD.HubCore.Updating;
 using System;
 using easyLib;
+using DGD.HubCore;
 
 namespace DGD.HubGovernor.Updating
 {
