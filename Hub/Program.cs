@@ -3,13 +3,14 @@ using DGD.HubCore;
 using DGD.HubCore.Updating;
 using System;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 
 
 namespace DGD.Hub
 {
     static class Program
-    {        
+    {
         static TablesManager m_tblManager;
         static SettingsManager m_settings;
         static DLG.DialogManager m_dlgManager;
@@ -33,31 +34,59 @@ namespace DGD.Hub
         [STAThread]
         static void Main()
         {
-            using(m_settings = new SettingsManager())
-            using (m_tblManager = new TablesManager())
-            using (m_dlgManager = new DLG.DialogManager())
+            bool created;
+            Mutex mtx = null;
+
+            try
             {
-                if (!Directory.Exists(SettingsManager.AppDataFolder))
-                    Directory.CreateDirectory(SettingsManager.AppDataFolder);
+                mtx = new Mutex(true , @"Global\HUB_BoumekouezKhaled" , out created);
 
-                if (!Directory.Exists(SettingsManager.UserDataFolder))
-                    Directory.CreateDirectory(SettingsManager.UserDataFolder);
+                if (created)
+                {
+                    using (m_settings = new SettingsManager())
+                    using (m_tblManager = new TablesManager())
+                    using (m_dlgManager = new DLG.DialogManager())
+                    {
+                        if (!Directory.Exists(SettingsManager.AppDataFolder))
+                            Directory.CreateDirectory(SettingsManager.AppDataFolder);
 
-                if (!Directory.Exists(SettingsManager.TablesFolder))
-                    Directory.CreateDirectory(SettingsManager.TablesFolder);
+                        if (!Directory.Exists(SettingsManager.UserDataFolder))
+                            Directory.CreateDirectory(SettingsManager.UserDataFolder);
 
-                if (!Directory.Exists(SettingsManager.DialogFolder))
-                    Directory.CreateDirectory(SettingsManager.DialogFolder);
+                        if (!Directory.Exists(SettingsManager.TablesFolder))
+                            Directory.CreateDirectory(SettingsManager.TablesFolder);
+
+                        if (!Directory.Exists(SettingsManager.DialogFolder))
+                            Directory.CreateDirectory(SettingsManager.DialogFolder);
 
 
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
+                        Application.EnableVisualStyles();
+                        Application.SetCompatibleTextRenderingDefault(false);
 
-                Application.Run(new MainWindow());
+                        Application.Run(new MainWindow());
+                    }
+
+                    Log.LogEngin.Dispose();
+                }
+                else
+                {
+                    Dbg.Log("App already running!");
+                }
             }
-
-            Log.LogEngin.Dispose();
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Une erreur fatale c’est produite:\n{ex.Message}\nCliquez sur OK pour fermer l'apliaction." ,
+                    null ,
+                    MessageBoxButtons.OK , MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (mtx != null)
+                {
+                    mtx.ReleaseMutex();
+                    mtx.Dispose();
+                }
+            }
         }
-
     }
 }

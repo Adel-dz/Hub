@@ -20,6 +20,8 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "HubSetup", "HubSetup\HubSet
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "HubSetupx64", "HubSetupx64\HubSetupx64.vdproj", "{A9225F71-CBFD-42C9-BEB2-95251C0BB346}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "HubGovernorSetup", "HubGovernorSetup\HubGovernorSetup.vdproj", "{FB4FCAB1-F968-4FE4-92C0-701734F426D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -98,6 +100,12 @@ Global
 		{A9225F71-CBFD-42C9-BEB2-95251C0BB346}.Release|Any CPU.ActiveCfg = Release
 		{A9225F71-CBFD-42C9-BEB2-95251C0BB346}.Release|x64.ActiveCfg = Release
 		{A9225F71-CBFD-42C9-BEB2-95251C0BB346}.Release|x86.ActiveCfg = Release
+		{FB4FCAB1-F968-4FE4-92C0-701734F426D5}.Debug|Any CPU.ActiveCfg = Debug
+		{FB4FCAB1-F968-4FE4-92C0-701734F426D5}.Debug|x64.ActiveCfg = Debug
+		{FB4FCAB1-F968-4FE4-92C0-701734F426D5}.Debug|x86.ActiveCfg = Debug
+		{FB4FCAB1-F968-4FE4-92C0-701734F426D5}.Release|Any CPU.ActiveCfg = Release
+		{FB4FCAB1-F968-4FE4-92C0-701734F426D5}.Release|x64.ActiveCfg = Release
+		{FB4FCAB1-F968-4FE4-92C0-701734F426D5}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

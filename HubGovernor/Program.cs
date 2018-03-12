@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace DGD.HubGovernor
@@ -11,17 +12,41 @@ namespace DGD.HubGovernor
         [STAThread]
         static void Main()
         {
-            AppPaths.CheckFolders();
+            Mutex mtx = null;
 
-            AppContext.Init();
+            try
+            {
+                bool mtxOwned;
+                mtx = new Mutex(true , @"Global\GOVERNOR_BoumekouezKhaled" , out mtxOwned);
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainWindow());
+                if (mtxOwned)
+                {
+                    AppPaths.CheckFolders();
 
-            AppContext.Dispose();
+                    AppContext.Init();
+
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+                    Application.Run(new MainWindow());
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Une erreur fatale c’est produite:\n{ex.Message}\nCliquez sur OK pour fermer l'apliaction." , 
+                    null , MessageBoxButtons.OK , MessageBoxIcon.Error);
+            }
+            finally
+            {
+                AppContext.Dispose();
+
+                if (mtx != null)
+                {
+                    mtx.ReleaseMutex();
+                    mtx.Dispose();
+                }
+            }
         }
 
-       
+
     }
 }

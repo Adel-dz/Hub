@@ -73,9 +73,7 @@ namespace DGD.Hub.DLG
             }
         }
 
-
-        //protected:
-        
+                       
 
         //private:
         bool ValidatePhoneNumber(string str)
@@ -88,7 +86,7 @@ namespace DGD.Hub.DLG
 
         bool ValidateEMail(string str)
         {
-            const string pattern = @"^[a-z]+\S*@[a-z]+\S*\.[a-z]+\S*$";
+            const string pattern = @"^[a-z\.\-_]+\S*@[a-z]+\S*\.[a-z]+\S*$";
             var re = new Regex(pattern , RegexOptions.IgnoreCase);
 
             return re.IsMatch(str);
