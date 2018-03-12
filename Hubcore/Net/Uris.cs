@@ -4,7 +4,7 @@ namespace DGD.HubCore.Net
 {
     public static class Uris
     {
-        const string ROOT_DIR = "hub/";
+        const string ROOT_DIR = "hub_tst/";
 
 
         public static Uri GetManifestURI(Uri baseUri) => new Uri(baseUri , ROOT_DIR + Names.ManifestFile);
