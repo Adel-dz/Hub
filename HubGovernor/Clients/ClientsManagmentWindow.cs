@@ -41,7 +41,7 @@ namespace DGD.HubGovernor.Clients
         //protected:
         protected override void OnLoad(EventArgs e)
         {
-            LoadDataAsync();
+            LoadRunningClientsAsync();
             RegisterHandlers();
 
             base.OnLoad(e);
@@ -54,6 +54,16 @@ namespace DGD.HubGovernor.Clients
         }
 
         //private:
+        TreeNode LocateClientNode(uint clID)
+        {
+            foreach (TreeNode root in m_tvClients.Nodes)
+                foreach (TreeNode node in root.Nodes)
+                    if ((node.Tag as HubClient).ID == clID)
+                        return node;
+
+            return null;
+        }
+
         TreeNode CreateClientNode(HubClient client)
         {
             var node = new TreeNode(client.ID.ToString("X"))
@@ -69,7 +79,64 @@ namespace DGD.HubGovernor.Clients
             return node;
         }
 
-        void LoadDataAsync()
+        void LoadRunningClientsAsync()
+        {
+            Dbg.Assert(!InvokeRequired);
+
+            Func<TreeNode[]> load = () =>
+            {
+                var roots = new List<TreeNode>();
+
+                foreach (HubClient hc in AppContext.ClientsManager.RunningClients)
+                {
+                    var profile = m_ndxerProfiles.Get(hc.ProfileID) as UserProfile;
+
+                    var root = new TreeNode(profile.Name)
+                    {
+                        Tag = profile ,
+                        SelectedImageIndex = NDXIMG_PROFILE ,
+                        ImageIndex = NDXIMG_PROFILE
+                    };
+
+                    root.Nodes.Add(CreateClientNode(hc));
+
+                    roots.Add(root);
+                }
+
+                return roots.ToArray();
+            };
+
+
+            var waitClue = new Waits.WaitClue(this);
+
+            Action<Task> onErr = t =>
+            {
+                MessageBox.Show(t.Exception.InnerException.Message , Text);
+                EventLogger.Error(t.Exception.InnerException.Message);
+                waitClue.LeaveWaitMode();
+            };
+
+            Action<Task<TreeNode[]>> onSucces = t =>
+            {
+                m_tvClients.Nodes.Clear();
+
+                m_tvClients.Nodes.AddRange(t.Result);
+                m_tvClients.ExpandAll();
+
+                waitClue.LeaveWaitMode();
+            };
+
+
+            var task = new Task<TreeNode[]>(load , TaskCreationOptions.LongRunning);
+            task.OnSuccess(onSucces);
+            task.OnError(onErr);
+
+            waitClue.EnterWaitMode();
+            task.Start();
+
+        }
+
+        void LoadAllClientsAsync()
         {
             Dbg.Assert(!InvokeRequired);
 
@@ -143,95 +210,38 @@ namespace DGD.HubGovernor.Clients
 
         void UnregisterHandlers()
         {
-            //AppContext.ClientsManager.ClientClosed -= ClientsManager_ClientClosed;
-            //AppContext.ClientsManager.ClientStarted -= ClientsManager_ClientStarted;
+            AppContext.ClientsManager.ClientClosed -= ClientsManager_ClientClosed;
+            AppContext.ClientsManager.ClientStarted -= ClientsManager_ClientStarted;
+            m_ndxerStatus.DatumReplaced -= ClientStatus_DatumReplaced;
         }
 
         void RegisterHandlers()
         {
-            //AppContext.ClientsManager.ClientClosed += ClientsManager_ClientClosed;
-            //AppContext.ClientsManager.ClientStarted += ClientsManager_ClientStarted;
+            AppContext.ClientsManager.ClientClosed += ClientsManager_ClientClosed;
+            AppContext.ClientsManager.ClientStarted += ClientsManager_ClientStarted;
+            m_ndxerStatus.DatumReplaced += ClientStatus_DatumReplaced;
         }
 
+        void ProcessClientStatus(ClientStatus_t status)
+        {
+            Dbg.Assert(!InvokeRequired);
 
-        //void LoadRunningClients()
-        //{
-        //    if (InvokeRequired)
-        //        Invoke(new Action(LoadRunningClients));
-        //    else
-        //    {
-        //        m_lvClients.Items.Clear();
+            var client = m_tvClients.SelectedNode.Tag as HubClient;
+            ManagementMode_t prfMgmnt = AppContext.ClientsManager.GetProfileManagementMode(client.ProfileID);
+            var prf = m_ndxerProfiles.Get(client.ProfileID) as UserProfile;
 
-        //        foreach(HubClient cl in AppContext.ClientsManager.RunningClients)
-        //        {
-        //            var lvi = new ListViewItem(ClientsManager.ClientStrID(cl.ID))
-        //            {
-        //                Tag = cl ,
-        //                ImageIndex = NDXIMG_RUNNING
-        //            };
+            if (prfMgmnt == ManagementMode_t.Auto)
+            {
+                if (MessageBox.Show(this ,
+                        $"La gestion du profil {prf.Name} sera changée en mode 'manuel'. Poursuivre ?" ,
+                        Text , MessageBoxButtons.YesNo ,
+                        MessageBoxIcon.Question) != DialogResult.Yes)
+                    return;
+            }
 
-        //            m_lvClients.Items.Add(lvi);
-        //        }
-        //    }
-        //}
-
-        //void LoadEnabledClients()
-        //{
-        //    if (InvokeRequired)
-        //        Invoke(new Action(LoadEnabledClients));
-        //    else
-        //    {
-        //        LoadRunningClients();
-
-        //        foreach (HubClient cl in AppContext.ClientsManager.EnabledClients)
-        //            if (!AppContext.ClientsManager.IsClientRunning(cl.ID))
-        //            {
-        //                var lvi = new ListViewItem(ClientsManager.ClientStrID(cl.ID))
-        //                {
-        //                    Tag = cl ,
-        //                    ImageIndex = NDXIMG_NOTRUNNING
-        //                };
-
-        //                m_lvClients.Items.Add(lvi);
-        //            }
-        //    }
-        //}
-
-
-        //void LoadAllClients()
-        //{
-        //    if (InvokeRequired)
-        //        Invoke(new Action(LoadAllClients));
-        //    else
-        //    {
-        //        m_lvClients.Items.Clear();
-
-        //        var runningClients = new List<ListViewItem>();
-        //        var otherClients = new List<ListViewItem>();
-
-        //        foreach (HubClient cl in AppContext.ClientsManager.AllClients)
-        //        {
-        //            var lvi = new ListViewItem(ClientsManager.ClientStrID(cl.ID))
-        //            {
-        //                Tag = cl
-        //            };
-
-        //            if (AppContext.ClientsManager.IsClientRunning(cl.ID))
-        //            {
-        //                lvi.ImageIndex = NDXIMG_RUNNING;
-        //                runningClients.Add(lvi);
-        //            }
-        //            else
-        //            {
-        //                lvi.ImageIndex = NDXIMG_NOTRUNNING;
-        //                otherClients.Add(lvi);
-        //            }
-        //        }
-
-        //        m_lvClients.Items.AddRange(runningClients.ToArray());
-        //        m_lvClients.Items.AddRange(otherClients.ToArray());
-        //    }
-        //}
+            //maj le status
+            AppContext.ClientsManager.SetClientStatus(client , status);
+        }
 
         static string GetComprehensiveTime(DateTime dt)
         {
@@ -244,7 +254,7 @@ namespace DGD.HubGovernor.Clients
             if (ts.Hours > 0)
                 return $"{ts.Hours} heure(s) et {ts.Minutes} Minute(s)";
 
-            if(ts.Minutes > 0)
+            if (ts.Minutes > 0)
                 return $"{ts.Minutes} Minute(s)";
 
             return "Quelques secondes";
@@ -263,15 +273,19 @@ namespace DGD.HubGovernor.Clients
 
         }
 
-        private void SetClientInfo(HubClient hubClient)
+        void SetClientInfo(HubClient hubClient)
         {
             if (InvokeRequired)
                 Invoke(new Action<HubClient>(SetClientInfo) , hubClient);
             else
             {
-                HubClientEnvironment clEnv =
-                    m_ndxerClientEnv.Source.Enumerate().Cast<HubClientEnvironment>().Where(env =>
-                    env.ClientID == hubClient.ID).Single();
+                var seq = from HubClientEnvironment hce in m_ndxerClientEnv.Source.Enumerate()
+                          where hce.ClientID == hubClient.ID
+                          orderby hce.CreationTime descending
+                          select hce;
+
+
+                HubClientEnvironment clEnv = seq.First();
 
                 var clStatus = m_ndxerStatus.Get(hubClient.ID) as ClientStatus;
 
@@ -286,9 +300,43 @@ namespace DGD.HubGovernor.Clients
                 m_lblOSVersion.Text = clEnv.OSVersion;
                 m_lblPhone.Text = hubClient.ContactPhone;
                 m_lblStatus.Text = ClientStatuses.GetStatusName(clStatus.Status);
-                m_lblUserName.Text = clEnv.UserName;                
+                m_lblUserName.Text = clEnv.UserName;
             }
         }
+
+        void UpdateStatusButtons()
+        {
+            Dbg.Assert(!InvokeRequired);
+
+            TreeNode selNode = m_tvClients.SelectedNode;
+
+            m_tsbBanishClient.Checked = m_tsbDisableClient.Checked = m_tsbEnableClient.Checked = false;
+
+            if (selNode != null && selNode.Parent != null)
+            {
+                var status = m_ndxerStatus.Get((selNode.Tag as HubClient).ID) as ClientStatus;
+
+                switch (status.Status)
+                {
+                    case ClientStatus_t.Enabled:
+                    m_tsbEnableClient.Checked = true;
+                    break;
+
+                    case ClientStatus_t.Disabled:
+                    m_tsbDisableClient.Checked = true;
+                    break;
+
+                    case ClientStatus_t.Banned:
+                    m_tsbBanishClient.Checked = true;
+                    break;
+
+                    default:
+                    Dbg.Assert(false);
+                    break;
+                }
+            }
+        }
+
 
         ////handlers
         private void Profiles_Click(object sender , EventArgs e)
@@ -302,94 +350,150 @@ namespace DGD.HubGovernor.Clients
             if (e.Node.Parent == null)
                 ClearClientInfo();
             else
-                SetClientInfo(e.Node.Tag as HubClient);
+            {
+                var client = e.Node.Tag as HubClient;
+
+                SetClientInfo(client);
+
+                m_tsbBanishClient.Enabled = m_tsbDisableClient.Enabled = m_tsbEnableClient.Enabled = true;
+                var clStatus = m_ndxerStatus.Get(client.ID) as ClientStatus;
+            }
+
+            UpdateStatusButtons();
         }
 
-        //private void Clients_Click(object sender , EventArgs e)
-        //{
-        //    var wind = new ClientsWindow();
-        //    wind.Show(Owner);
-        //}
+        private void RunningClientsOnly_Click(object sender , EventArgs e)
+        {
+            TreeNode selNode = m_tvClients.SelectedNode;
+                 
+            bool showAll = m_tsbRunningClientsOnly.Checked;
 
-        //private void ClientsManager_ClientStarted(uint clID)
-        //{
-        //    if (InvokeRequired)
-        //        Invoke(new Action<uint>(ClientsManager_ClientStarted) , clID);
-        //    else
-        //    {
-        //        using (var ndxer = new KeyIndexer(AppContext.TableManager.HubClients.DataProvider))
-        //        {
-        //            ndxer.Connect();
+            if (showAll)
+                LoadAllClientsAsync();
+            else
+                LoadRunningClientsAsync();
 
-        //            var client = ndxer.Get(clID) as HubClient;
+            if(m_tvClients.SelectedNode != selNode)
+            {
 
-        //            if (client != null)
-        //            {
-        //                var lvi = new ListViewItem(ClientsManager.ClientStrID(clID))
-        //                {
-        //                    Tag = client,
-        //                    ImageIndex = NDXIMG_RUNNING
-        //                };
-
-        //                m_lvClients.Items.Add(lvi);
-        //            }
-        //        }
-        //    }
-        //}
-
-        //private void ClientsManager_ClientClosed(uint clID)
-        //{
-        //    if (InvokeRequired)
-        //        Invoke(new Action<uint>(ClientsManager_ClientClosed) , clID);
-        //    else
-        //    {
-        //        ListViewItem lviClient = null;
-
-        //        foreach (ListViewItem lvi in m_lvClients.Items)
-        //        {
-        //            var cl = lvi.Tag as HubClient;
-
-        //            if (cl.ID == clID)
-        //            {
-        //                lviClient = lvi;
-        //                break;
-        //            }
-        //        }
+            }
 
 
-        //        if (lviClient != null)
-        //            m_lvClients.Items.Remove(lviClient);
-        //    }
-        //}
+            m_tsbRunningClientsOnly.Checked = !showAll;
+        }
 
-        //private void ClientsType_SelectedIndexChanged(object sender , EventArgs e)
-        //{
-        //    int selIndex = m_tscbClientsType.SelectedIndex;
+        private void EnableClient_Click(object sender , EventArgs e)
+        {
+            if (!(sender as ToolStripButton).Checked)
+                ProcessClientStatus(ClientStatus_t.Enabled);
+        }
 
-        //    switch(selIndex)
-        //    {
-        //        case NDXITEM_ALL:
-        //        LoadAllClients();
-        //        break;
+        private void DisableClient_Click(object sender , EventArgs e)
+        {
+            if (!(sender as ToolStripButton).Checked)
+                ProcessClientStatus(ClientStatus_t.Disabled);
+        }
 
-        //        case NDXITEM_ENABLED:
-        //        LoadEnabledClients();
-        //        break;
+        private void BanishClient_Click(object sender , EventArgs e)
+        {
+            if (!(sender as ToolStripButton).Checked)
+                ProcessClientStatus(ClientStatus_t.Banned);
+        }
 
-        //        case NDXITEM_RUNNING:
-        //        LoadRunningClients();
-        //        break;
-        //    }
-        //}
+        private void ClientsManager_ClientStarted(uint clID)
+        {
+            if (InvokeRequired)
+                Invoke(new Action<uint>(ClientsManager_ClientStarted) , clID);
+            else
+            {
+                TreeNode clNode = LocateClientNode(clID);
 
-        //private void Clients_SelectedIndexChanged(object sender , EventArgs e)
-        //{
-        //    var Sel = m_lvClients.SelectedItems;
+                if (clNode != null)
+                    clNode.ForeColor = Color.SteelBlue;
+                else
+                {
+                    var client = m_ndxerClients.Get(clID) as HubClient;
 
-        //    if (Sel.Count == 1)
-        //        SetClientInfo(Sel[0].Tag as HubClient);
-        //    else
-        //        ClearClientInfo();
-        //}
+                    if (client != null)
+                    {
+                        TreeNode root = null;
+
+                        foreach (TreeNode node in m_tvClients.Nodes)
+                            if ((node.Tag as UserProfile).ID == client.ProfileID)
+                            {
+                                root = node;
+                                break;
+                            }
+
+                        if (root == null)
+                        {
+                            var profile = m_ndxerProfiles.Get(client.ProfileID) as UserProfile;
+
+                            root = new TreeNode(profile.Name)
+                            {
+                                Tag = profile ,
+                                SelectedImageIndex = NDXIMG_PROFILE ,
+                                ImageIndex = NDXIMG_PROFILE
+                            };
+
+                            m_tvClients.Nodes.Add(root);
+                        }
+
+
+                        root.Nodes.Add(CreateClientNode(client));
+                        root.Expand();
+                    }
+                }
+            }
+        }
+
+        private void ClientsManager_ClientClosed(uint clID)
+        {
+            if (InvokeRequired)
+                Invoke(new Action<uint>(ClientsManager_ClientClosed) , clID);
+            else
+            {
+                TreeNode clNode = LocateClientNode(clID);
+
+                if (clNode != null)
+                {
+                    TreeNode selNode = m_tvClients.SelectedNode;
+
+
+                    if (m_tsbRunningClientsOnly.Checked)
+                    {
+                        TreeNode root = clNode.Parent;
+                        root.Nodes.Remove(clNode);
+
+                        if (root.Nodes.Count == 0)
+                            m_tvClients.Nodes.Remove(root);
+                    }
+                    else
+                        clNode.ForeColor = default(Color);
+
+                    if (selNode == clNode)
+                    {
+                        ClearClientInfo();
+                        UpdateStatusButtons();
+                    }
+                }
+            }
+        }
+
+        private void ClientStatus_DatumReplaced(IDataRow datum)
+        {
+            if (InvokeRequired)
+                Invoke(new Action<IDataRow>(ClientStatus_DatumReplaced) , datum);
+            else
+            {
+                TreeNode selNode = m_tvClients.SelectedNode;
+
+                if (selNode != null && selNode.Parent != null && (selNode.Tag as HubClient).ID == datum.ID)
+                {
+                    UpdateStatusButtons();
+                    m_lblStatus.Text = ClientStatuses.GetStatusName((datum as ClientStatus).Status);
+                }
+            }
+        }
     }
 }

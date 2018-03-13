@@ -3,6 +3,7 @@ using DGD.HubCore.DB;
 using DGD.HubCore.DLG;
 using DGD.HubCore.Net;
 using DGD.HubGovernor.Profiles;
+using easyLib.DB;
 using easyLib.Log;
 using System;
 using System.Collections.Generic;
@@ -15,8 +16,7 @@ namespace DGD.HubGovernor.Clients
 {
     sealed partial class ClientsManager: IDisposable
     {
-        const int LIVE_TIMEOUT = 10;
-        const int NEED_REFRESH_TIMEOUT = 5;
+        const int LIVE_TIMEOUT = 10;    //TODO: as opt
 
 
         class ClientData
@@ -30,7 +30,8 @@ namespace DGD.HubGovernor.Clients
             public DateTime ConnectionTime { get; set; }
             public DateTime LastSeenTime { get; set; }
             public int LiveTimeout { get; set; }
-            public uint LastHandledMessageID { get; set; }
+            public uint LastInMessageID { get; set; }
+            public uint LastOutMessageID { get; set; }
         }
 
         readonly Dictionary<uint , ClientData> m_runningClients;
@@ -338,7 +339,7 @@ namespace DGD.HubGovernor.Clients
 
         void ProcessConnectionReq(IEnumerable<Message> messages)
         {
-            EventLogger.Info("Traitement d’éventuelles requêtes d'inscription...");
+            EventLogger.Info("Traitement d’éventuelles requêtes de connexion...");
 
             IEnumerable<Message> reqs = messages.Where(m => m.ID > m_lastCxnReqMsgID);
 
@@ -477,17 +478,73 @@ namespace DGD.HubGovernor.Clients
 
         void ProcessRunningClients()
         {
-            //foreach(uint clID in m_runningClients.Keys)
-            //{
-            //    if(--m_runningClients[clID].LiveTimeout <= 0)
-            //    {
-            //        string srvDlgFile = AppPaths.GetLocalSrvDialogPath(clID);
-            //        uint reqID = DialogEngin.ReadSrvDialog(clID).
-            //    }
+            const int LT_TO_REFRESH = 0;
+            const int LT_TO_DIE = -3;
 
-            //}
+            var deadClient = new List<uint>();
+
+            foreach (uint clID in m_runningClients.Keys)
+            {
+                ClientData clData = m_runningClients[clID];
+
+                if (--clData.LiveTimeout <= LT_TO_DIE)
+                    deadClient.Add(clID);
+                else if(clData.LiveTimeout <= LT_TO_REFRESH)
+                {
+                    EventLogger.Info($"Envoi d'un message de synchronisation au client {clID:X}.");
+                    var msg = new Message(++clData.LastOutMessageID , 0, Message_t.Sync);
+                    DialogEngin.AppendSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) , msg);
+                    AddUpload(Names.GetClientDialogFile(clID));
+                }
+            }
+
+            foreach(uint id in deadClient)
+            {
+                EventLogger.Info($"Client {id:X} présumé déconnecté.");
+                m_runningClients.Remove(id);
+                ClientClosed?.Invoke(id);
+            }
         }
 
+        static void UpdateClientEnvironment(uint clID , ClientEnvironment clEnv)
+        {
+            using (IDatumProvider dp = AppContext.TableManager.ClientsEnvironment.DataProvider)
+            {
+                dp.Connect();
+
+                IEnumerable<HubClientEnvironment> seq = from HubClientEnvironment env in dp.Enumerate()
+                                                        where env.ClientID == clID
+                                                        select env;
+                if (seq.Any())
+                {
+                    HubClientEnvironment hubEnv = seq.First();
+
+                    foreach (HubClientEnvironment hce in seq.Skip(1))
+                        if (hubEnv.CreationTime < hce.CreationTime)
+                            hubEnv = hce;
+
+                    if (hubEnv.HubArchitecture == clEnv.HubArchitecture &&
+                            hubEnv.HubVersion == clEnv.HubVersion &&
+                            hubEnv.Is64BitOperatingSystem == clEnv.Is64BitOperatingSystem &&
+                            hubEnv.MachineName == clEnv.MachineName &&
+                            hubEnv.OSVersion == clEnv.OSVersion &&
+                            hubEnv.UserName == clEnv.UserName)
+                        return;
+                }
+
+                var newHubEnv = new HubClientEnvironment(AppContext.TableManager.ClientsEnvironment.CreateUniqID() ,
+                    clID);
+
+                newHubEnv.HubArchitecture = clEnv.HubArchitecture;
+                newHubEnv.HubVersion = clEnv.HubVersion;
+                newHubEnv.Is64BitOperatingSystem = clEnv.Is64BitOperatingSystem;
+                newHubEnv.MachineName = clEnv.MachineName;
+                newHubEnv.OSVersion = clEnv.OSVersion;
+                newHubEnv.UserName = clEnv.UserName;
+
+                dp.Insert(newHubEnv);
+            }
+        }
 
         //handelrs:
         private void Profiles_DatumDeleted(IDataRow row) => ProcessProfilesChange();

@@ -42,6 +42,7 @@ namespace easyLib
 
         public void Start(bool startNow = false)
         {
+            Assert(!IsDiposed);
             Assert(!IsRunning);
 
             lock (m_timer)
@@ -50,6 +51,8 @@ namespace easyLib
 
         public void Stop()
         {
+            Assert(!IsDiposed);
+
             lock (m_timer)
                 if (IsRunning)
                     IsRunning = !m_timer.Change(System.Threading.Timeout.Infinite , System.Threading.Timeout.Infinite);
@@ -57,6 +60,8 @@ namespace easyLib
 
         public void Restart(bool startNow = false)
         {
+            Assert(!IsDiposed);
+
             lock (m_timer)
             {
                 if(IsRunning)
@@ -73,10 +78,12 @@ namespace easyLib
                 {
                     if (!IsDiposed)
                     {
-                        m_timer.Change(System.Threading.Timeout.Infinite , System.Threading.Timeout.Infinite);
+                        TimeElapsed = null;                        
+                        IsRunning = false;
+                        m_timer.Change(System.Threading.Timeout.Infinite , System.Threading.Timeout.Infinite);                        
                         m_timer.Dispose();
-                        TimeElapsed = null;
                         IsDiposed = true;
+
                     }
                 }
         }

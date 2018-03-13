@@ -1,4 +1,5 @@
 ﻿using easyLib;
+using easyLib.Extensions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -227,6 +228,18 @@ namespace DGD.HubCore.DLG
 
         }
 
+        public static void AppendHubDialog(string filePath , uint clID , Message msg)
+        {
+            Assert(msg != null);
+
+            using (FileLocker.Lock(filePath))
+            {
+                IEnumerable<Message> prevMsgs = ReadHubDialog(filePath , clID);
+                WriteHubDialog(filePath , clID , prevMsgs.Add(msg));
+            }
+
+        }
+
         public static IEnumerable<Message> ReadHubDialog(string filePath, uint clID)
         {
             using (FileLocker.Lock(filePath))
@@ -268,14 +281,14 @@ namespace DGD.HubCore.DLG
             }
         }
 
-        public static void AppendSrvDialog(string filePath, ClientDialog clDlg)
+        public static void AppendSrvDialog(string filePath, Message msg)
         {
-            Assert(clDlg != null);
+            Assert(msg != null);
 
             using (FileLocker.Lock(filePath))
             {
-                ClientDialog dlg = ReadSrvDialog(filePath);
-                var newDlg = new ClientDialog(clDlg.ClientID , clDlg.ClientStatus , dlg.Messages.Concat(clDlg.Messages));
+                ClientDialog clDlg = ReadSrvDialog(filePath);
+                var newDlg = new ClientDialog(clDlg.ClientID , clDlg.ClientStatus , clDlg.Messages.Add(msg));
 
                 WriteSrvDialog(filePath , newDlg);
             }

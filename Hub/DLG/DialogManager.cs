@@ -81,33 +81,13 @@ namespace DGD.Hub.DLG
                 return;
             }            
 
-            //update last client msg id
-            IEnumerable<Message> clMsgs;
-            try
-            {
-                clMsgs = DialogEngin.ReadHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) ,
-                    m_clInfo.ClientID);
-            }
-            catch(Exception ex)
-            {
-                Dbg.Log(ex.Message);
-                clMsgs = Enumerable.Empty<Message>();
-            }
-
-            if (clMsgs.Any())
-                m_clientLastMsgID = clMsgs.Max(m => m.ID);
-
             //process only status part of the g file
             string tmpFile = Path.GetTempFileName();
 
             Action start = () =>
             {
-                //download gov file
                 var netEngin = new NetEngin(Program.Settings);
                 netEngin.Download(tmpFile , SettingsManager.GetServerDialogURI(m_clInfo.ClientID) , true);
-
-                //PostStartMessage();
-
             };
 
             Action onSuccess = () =>
@@ -117,12 +97,7 @@ namespace DGD.Hub.DLG
                 m_clStatus = clDlg.ClientStatus;
 
                 if (m_clStatus == ClientStatus_t.Enabled)
-                {
-                    m_dialogTimer.Start();
-                    m_updateTimer.Start(true);
-
-                    new StartHandler(m_clInfo.ClientID).Start();
-                }
+                    new StartHandler(m_clInfo.ClientID, StartResp).Start();
                 else if (m_clStatus == ClientStatus_t.Banned)
                 {
                     foreach (IDBTable tbl in Program.TablesManager.CriticalTables)
@@ -177,9 +152,9 @@ namespace DGD.Hub.DLG
             }
         }
 
-        public void Exit()
+        public void Exit(bool ignoreCloseNotification = false)
         {
-            Stop();
+            Stop(ignoreCloseNotification);
             System.Windows.Forms.Application.Exit();
         }
 
@@ -194,6 +169,21 @@ namespace DGD.Hub.DLG
 
 
         //private:
+        void StartResp(bool ok)
+        {
+            if (ok)
+            {
+                m_dialogTimer.Start();
+                m_updateTimer.Start(true);
+            }
+            else
+            {
+                System.Windows.Forms.Application.OpenForms[0].ShowError(
+                    "Le serveur a rejeté la demande de connexion. Veuillez réessayer ultérieurement.");
+                Exit();
+            }
+        }
+
         void ResumeResp(ResumeHandler.Result_t resp)
         {
             switch (resp)

@@ -10,7 +10,7 @@ namespace DGD.HubCore.DLG
         UnknonwnMsg = 0,
         NewConnection,  //data = ClientInfo, resp = {ok, rejected, InvalidID}
         Resume, //data = ClientID, resp = {OK, Rejected}
-        Ok, //data = ClientID
+        Ok, //data = ClientID pour cxn
         InvalidID,  //data = ClientID                
         InvalidProfile, //data = ClientID
         Rejected,   //data = ClientID        
@@ -18,8 +18,7 @@ namespace DGD.HubCore.DLG
         SetInfo,    //data = ClientInfo
         Start,  //data = clientID + clientEnv + start time , resp = ok
         Close,  //data = ClientID + close time, no resp
-        Refresh,    //data = clD, resp = running
-        Running,    // data = clID + current Time
+        Sync,    //data = client id in cxn nothing in dlg, resp = ok
     }
 
 
@@ -30,8 +29,8 @@ namespace DGD.HubCore.DLG
         Message()
         { }
 
-        public Message(uint msgId , uint prevMsgID , Message_t msg, byte[] data = null):
-            this(msgId, prevMsgID, msg, data, DateTime.Now)
+        public Message(uint msgId , uint reqID , Message_t msg, byte[] data = null):
+            this(msgId, reqID, msg, data, DateTime.Now)
         { }
 
         public Message(uint msgId, uint reqID, Message_t msg, byte[] data, DateTime timestamp)

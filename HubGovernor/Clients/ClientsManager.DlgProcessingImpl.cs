@@ -90,18 +90,52 @@ namespace DGD.HubGovernor.Clients
             EventLogger.Info("Réception d’une notification de démarrage " +
                     $"de la part du client {client.ContactName}");
 
+            //verifier le statut du client
+            var clStatus = m_ndxerClientsStatus.Get(clID) as ClientStatus;
+
+            if (clStatus.Status != ClientStatus_t.Enabled)
+            {
+                EventLogger.Info("Tentative de démarrage d’un client non autorisé. Requête rejetée.");
+
+                string dlgFile = AppPaths.GetLocalSrvDialogPath(clID);
+
+                try
+                {
+                    ClientDialog clDlg = DialogEngin.ReadSrvDialog(dlgFile);
+                    clDlg.ClientStatus = clStatus.Status;
+                    DialogEngin.WriteSrvDialog(dlgFile , clDlg);
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Error(ex.Message);
+
+                    var clDlg = new ClientDialog(clID , clStatus.Status , Enumerable.Empty<Message>());
+                    DialogEngin.WriteSrvDialog(dlgFile , clDlg);
+                }
+
+                return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , msg.Data);
+            }
+
+
 
             EventLogger.Info($"Client démarré le {dtStart.Date.ToShortDateString()} à {dtStart.ToLongTimeString()}");
 
             //verifier si l'env du client a changé
             UpdateClientEnvironment(clID , clEnv);
 
-            AddRunningClient(clID , dtStart);
+            //ajouter client dans running liste
+            var clData = new ClientData(dtStart);
+
+            //reset dlg file                
+            DialogEngin.WriteSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) ,
+                new ClientDialog(clID , clStatus.Status , Enumerable.Empty<Message>()));
+
+            m_runningClients[clID] = clData;
 
             //maj du last seen
-            var clStatus = m_ndxerClientsStatus.Get(clID) as ClientStatus;
             clStatus.LastSeen = dtStart;
             m_ndxerClientsStatus.Source.Replace(m_ndxerClientsStatus.IndexOf(clID) , clStatus);
+            ClientStarted?.Invoke(clID);
 
             return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , msg.Data);
         }
@@ -215,7 +249,7 @@ namespace DGD.HubGovernor.Clients
                 IEnumerable<Message> msgs = DialogEngin.ReadHubDialog(hubFilePath , clID);
 
                 if (msgs.Any())
-                    clData.LastHandledMessageID = msgs.Max(m => m.ID);
+                    clData.LastInMessageID = msgs.Max(m => m.ID);
             }
             catch (Exception ex)
             {
@@ -364,71 +398,7 @@ namespace DGD.HubGovernor.Clients
 
             EventLogger.Warning($"Reception d'un msg inconnu en provenance du client {ClientStrID(clientID)}.");
 
-            return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.UnknonwnMsg ,
-                BitConverter.GetBytes(clientID));
-        }
-
-        void AddRunningClient(uint clID , DateTime dtStart)
-        {
-            var clData = new ClientData(dtStart);
-            string hubFilePath = AppPaths.GetLocalClientDilogPath(clID);
-
-            try
-            {
-                IEnumerable<Message> msgs = DialogEngin.ReadHubDialog(hubFilePath , clID);
-
-                if (msgs.Any())
-                    clData.LastHandledMessageID = msgs.Max(m => m.ID);
-            }
-            catch (Exception ex)
-            {
-                DialogEngin.WriteHubDialog(hubFilePath , clID , Enumerable.Empty<Message>());
-                EventLogger.Error(ex.Message);
-            }
-
-
-            //TODO: traiter le cas ou un client de meme ID est en execution
-            m_runningClients[clID] = clData;
-        }
-
-        static void UpdateClientEnvironment(uint clID , ClientEnvironment clEnv)
-        {
-            using (IDatumProvider dp = AppContext.TableManager.ClientsEnvironment.DataProvider)
-            {
-                dp.Connect();
-
-                IEnumerable<HubClientEnvironment> seq = from HubClientEnvironment env in dp.Enumerate()
-                                                        where env.ClientID == clID
-                                                        select env;
-                if (seq.Any())
-                {
-                    HubClientEnvironment hubEnv = seq.First();
-
-                    foreach (HubClientEnvironment hce in seq.Skip(1))
-                        if (hubEnv.CreationTime < hce.CreationTime)
-                            hubEnv = hce;
-
-                    if (hubEnv.HubArchitecture == clEnv.HubArchitecture &&
-                            hubEnv.HubVersion == clEnv.HubVersion &&
-                            hubEnv.Is64BitOperatingSystem == clEnv.Is64BitOperatingSystem &&
-                            hubEnv.MachineName == clEnv.MachineName &&
-                            hubEnv.OSVersion == clEnv.OSVersion &&
-                            hubEnv.UserName == clEnv.UserName)
-                        return;
-                }
-
-                var newHubEnv = new HubClientEnvironment(AppContext.TableManager.ClientsEnvironment.CreateUniqID() ,
-                    clID);
-
-                newHubEnv.HubArchitecture = clEnv.HubArchitecture;
-                newHubEnv.HubVersion = clEnv.HubVersion;
-                newHubEnv.Is64BitOperatingSystem = clEnv.Is64BitOperatingSystem;
-                newHubEnv.MachineName = clEnv.MachineName;
-                newHubEnv.OSVersion = clEnv.OSVersion;
-                newHubEnv.UserName = clEnv.UserName;
-
-                dp.Insert(newHubEnv);
-            }
+            return null;
         }
     }
 }

@@ -653,13 +653,15 @@
             // 
             // m_tsbRunningClientsOnly
             // 
+            this.m_tsbRunningClientsOnly.Checked = true;
+            this.m_tsbRunningClientsOnly.CheckState = System.Windows.Forms.CheckState.Checked;
             this.m_tsbRunningClientsOnly.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.m_tsbRunningClientsOnly.Enabled = false;
             this.m_tsbRunningClientsOnly.Image = global::DGD.HubGovernor.Properties.Resources.profile_clients_16;
             this.m_tsbRunningClientsOnly.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.m_tsbRunningClientsOnly.Name = "m_tsbRunningClientsOnly";
             this.m_tsbRunningClientsOnly.Size = new System.Drawing.Size(23, 22);
             this.m_tsbRunningClientsOnly.Text = "Afficher uniquement les clients en ligne";
+            this.m_tsbRunningClientsOnly.Click += new System.EventHandler(this.RunningClientsOnly_Click);
             // 
             // toolStripSeparator2
             // 
@@ -675,6 +677,7 @@
             this.m_tsbEnableClient.Name = "m_tsbEnableClient";
             this.m_tsbEnableClient.Size = new System.Drawing.Size(23, 22);
             this.m_tsbEnableClient.Text = "Définir comme client actif";
+            this.m_tsbEnableClient.Click += new System.EventHandler(this.EnableClient_Click);
             // 
             // m_tsbDisableClient
             // 
@@ -685,6 +688,7 @@
             this.m_tsbDisableClient.Name = "m_tsbDisableClient";
             this.m_tsbDisableClient.Size = new System.Drawing.Size(23, 22);
             this.m_tsbDisableClient.Text = "Désactiver le client";
+            this.m_tsbDisableClient.Click += new System.EventHandler(this.DisableClient_Click);
             // 
             // m_tsbBanishClient
             // 
@@ -695,6 +699,7 @@
             this.m_tsbBanishClient.Name = "m_tsbBanishClient";
             this.m_tsbBanishClient.Size = new System.Drawing.Size(23, 22);
             this.m_tsbBanishClient.Text = "Bannir le client";
+            this.m_tsbBanishClient.Click += new System.EventHandler(this.BanishClient_Click);
             // 
             // toolStripSeparator3
             // 

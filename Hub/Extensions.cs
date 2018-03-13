@@ -11,6 +11,25 @@ namespace DGD.Hub
 {
     static class Extensions
     {
+        public static void ShowError(this Form frm, string msg)
+        {
+            if (frm.InvokeRequired)
+                frm.Invoke(new Action<Form , string>(ShowError) , frm , msg);
+            else
+            {
+
+                while (frm.Owner != null)
+                    frm = frm.Owner;
+                
+
+                MessageBox.Show(frm ,
+                    msg ,
+                    null ,
+                    MessageBoxButtons.OK ,
+                    MessageBoxIcon.Error);
+            }
+        }
+
         public static void AdjustColumnsSize(this ListView listView)
         {
             Assert(listView != null);

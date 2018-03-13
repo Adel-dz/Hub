@@ -17,21 +17,25 @@ namespace DGD.Hub.DLG
     {
         const int TIMER_INTERVAL = 30 * 1000;
         const int MAX_ATTEMPTS = 10;
-
-        readonly easyLib.Timer m_timer;
-        readonly uint m_clID;
+                
+        readonly Timer m_timer;
+        readonly Action<bool> m_callBack;
+        readonly uint m_clID;        
         byte[] m_msgData;
         uint m_reqID;
         int m_cnxAttempts;
 
 
-        public StartHandler(uint clID)
+        public StartHandler(uint clID , Action<bool> callBack)
         {
+            Dbg.Assert(callBack != null);
+
             m_clID = clID;
+            m_callBack = callBack;
             m_timer = new Timer(TIMER_INTERVAL);
             m_timer.TimeElapsed += ProcessResp;
         }
-            
+
 
         public void Start()
         {
@@ -83,7 +87,7 @@ namespace DGD.Hub.DLG
 
                 Message req = new Message(++m_reqID , 0 , Message_t.Start , m_msgData);
                 DialogEngin.WriteConnectionsReq(tmpFile , msgsCnx.Add(req));
-                netEngin.Upload(SettingsManager.ConnectionReqURI, tmpFile , true);
+                netEngin.Upload(SettingsManager.ConnectionReqURI , tmpFile , true);
                 m_cnxAttempts = 0;
                 Dbg.Log("Posting start msg done.");
             }
@@ -104,13 +108,14 @@ namespace DGD.Hub.DLG
             Dbg.Log("Processing start notification resp...");
 
             string tmpFile = Path.GetTempFileName();
+            var netEngin = new NetEngin(Program.Settings);
 
             try
             {
-                new NetEngin(Program.Settings).Download(tmpFile , SettingsManager.ConnectionRespURI , true);
+                netEngin.Download(tmpFile , SettingsManager.ConnectionRespURI , true);
 
                 IEnumerable<Message> resps = from msg in DialogEngin.ReadConnectionsResp(tmpFile)
-                                             where msg.MessageCode == Message_t.Ok && msg.ReqID >= m_reqID
+                                             where msg.ReqID >= m_reqID
                                              select msg;
 
                 if (resps.Any())
@@ -123,12 +128,27 @@ namespace DGD.Hub.DLG
                         var reader = new RawDataReader(ms , Encoding.UTF8);
                         uint clID = reader.ReadUInt();
 
-                        Dbg.Assert(resp.MessageCode == Message_t.Ok);
-
                         if (clID == m_clID)
                         {
-                            Dbg.Log("Starting notification done. :-)");
-                            return;
+                            switch (resp.MessageCode)
+                            {
+                                case Message_t.Ok:
+
+                                //reset dlg file
+                                string dlgFile = SettingsManager.GetClientDialogFilePath(m_clID);
+                                DialogEngin.WriteHubDialog(dlgFile , m_clID , Enumerable.Empty<Message>());
+
+                                netEngin.Upload(SettingsManager.GetClientDialogURI(m_clID) , dlgFile , true);
+
+                                m_callBack.Invoke(true);
+                                Dbg.Log("Starting notification done. :-)");
+                                return;
+
+                                case Message_t.Rejected:
+                                m_callBack.Invoke(false);
+                                Dbg.Log("Starting rejected. :-(");
+                                return;
+                            }
                         }
                     }
 

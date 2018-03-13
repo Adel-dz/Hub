@@ -126,7 +126,19 @@ namespace DGD.Hub.DLG
                     switch (resp.MessageCode)
                     {
                         case Message_t.Ok:
-                        m_callback(Result_t.Ok);
+                        //reset dlg file
+                        try
+                        {
+                            string dlgFile = SettingsManager.GetClientDialogFilePath(m_clientID);
+                            DialogEngin.WriteHubDialog(dlgFile , m_clientID , Enumerable.Empty<Message>());
+                            netEngin.Upload(SettingsManager.GetClientDialogURI(m_clientID) , dlgFile , true);
+                            m_callback(Result_t.Ok);
+                        }
+                        catch(Exception ex)
+                        {
+                            Dbg.Log(ex.Message);
+                            PostReqAsync();
+                        }                        
                         break;
 
                         case Message_t.InvalidID:
