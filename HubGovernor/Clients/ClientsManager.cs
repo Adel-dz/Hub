@@ -257,7 +257,6 @@ namespace DGD.HubGovernor.Clients
         public static string ClientStrID(uint clID) => clID.ToString("X");
 
         //private:                
-
         void Initialize()
         {
             EventLogger.Info("Réinitialisation des fichiers sur le serveur...");

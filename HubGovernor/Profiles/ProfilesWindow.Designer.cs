@@ -158,6 +158,7 @@
             // 
             m_tsbHelp.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             m_tsbHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbHelp.Enabled = false;
             m_tsbHelp.Image = global::DGD.HubGovernor.Properties.Resources.help_16;
             m_tsbHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
             m_tsbHelp.Name = "m_tsbHelp";

@@ -133,6 +133,16 @@ namespace DGD.HubGovernor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap chat_16 {
+            get {
+                object obj = ResourceManager.GetObject("chat_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap clear_16 {
             get {
                 object obj = ResourceManager.GetObject("clear_16", resourceCulture);
@@ -266,6 +276,16 @@ namespace DGD.HubGovernor.Properties {
         internal static System.Drawing.Bitmap help_16 {
             get {
                 object obj = ResourceManager.GetObject("help_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap history_16 {
+            get {
+                object obj = ResourceManager.GetObject("history_16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

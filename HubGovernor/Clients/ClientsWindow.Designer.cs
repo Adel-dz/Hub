@@ -32,22 +32,16 @@
             System.Windows.Forms.SplitContainer m_splitter;
             System.Windows.Forms.ImageList m_ilSmall;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ClientsWindow));
-            System.Windows.Forms.Label m_lblContactNameLabel;
-            System.Windows.Forms.Label m_lblPhoneLabel;
-            System.Windows.Forms.Label m_lblEMailLabel;
-            System.Windows.Forms.Label m_lblMachineNameLabel;
             System.Windows.Forms.GroupBox m_grpClientInfo;
             System.Windows.Forms.TableLayoutPanel m_tblPanelClient;
             System.Windows.Forms.Label m_lblStatusLabel;
             System.Windows.Forms.Label m_lblLastActivityLabel;
             System.Windows.Forms.Label m_lblCreationTimeLabel;
+            System.Windows.Forms.Label m_lblEMailLabel;
+            System.Windows.Forms.Label m_lblPhoneLabel;
+            System.Windows.Forms.Label m_lblContactNameLabel;
+            System.Windows.Forms.Label m_lblMachineNameLabel;
             this.m_tvClients = new System.Windows.Forms.TreeView();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.m_lblContactName = new System.Windows.Forms.Label();
-            this.m_lblPhone = new System.Windows.Forms.Label();
-            this.m_lblEMail = new System.Windows.Forms.Label();
-            this.m_lblMachineName = new System.Windows.Forms.Label();
             this.m_lblStatus = new System.Windows.Forms.Label();
             this.m_lblLastActivity = new System.Windows.Forms.Label();
             this.m_lblCreationTime = new System.Windows.Forms.Label();
@@ -56,26 +50,32 @@
             this.m_tsbDisableClient = new System.Windows.Forms.ToolStripButton();
             this.m_tsbBanishClient = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.m_lblEMail = new System.Windows.Forms.Label();
+            this.m_lblPhone = new System.Windows.Forms.Label();
+            this.m_lblContactName = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.m_lblMachineName = new System.Windows.Forms.Label();
             m_splitter = new System.Windows.Forms.SplitContainer();
             m_ilSmall = new System.Windows.Forms.ImageList(this.components);
-            m_lblContactNameLabel = new System.Windows.Forms.Label();
-            m_lblPhoneLabel = new System.Windows.Forms.Label();
-            m_lblEMailLabel = new System.Windows.Forms.Label();
-            m_lblMachineNameLabel = new System.Windows.Forms.Label();
             m_grpClientInfo = new System.Windows.Forms.GroupBox();
             m_tblPanelClient = new System.Windows.Forms.TableLayoutPanel();
             m_lblStatusLabel = new System.Windows.Forms.Label();
             m_lblLastActivityLabel = new System.Windows.Forms.Label();
             m_lblCreationTimeLabel = new System.Windows.Forms.Label();
+            m_lblEMailLabel = new System.Windows.Forms.Label();
+            m_lblPhoneLabel = new System.Windows.Forms.Label();
+            m_lblContactNameLabel = new System.Windows.Forms.Label();
+            m_lblMachineNameLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(m_splitter)).BeginInit();
             m_splitter.Panel1.SuspendLayout();
             m_splitter.Panel2.SuspendLayout();
             m_splitter.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
             m_grpClientInfo.SuspendLayout();
             m_tblPanelClient.SuspendLayout();
             this.m_toolStrip.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // m_splitter
@@ -117,139 +117,6 @@
             m_ilSmall.TransparentColor = System.Drawing.Color.Transparent;
             m_ilSmall.Images.SetKeyName(0, "profile_16.png");
             m_ilSmall.Images.SetKeyName(1, "client_16.png");
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.tableLayoutPanel2);
-            this.groupBox2.Location = new System.Drawing.Point(14, 127);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(409, 118);
-            this.groupBox2.TabIndex = 2;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = " Contact ";
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 116F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Controls.Add(m_lblContactNameLabel, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.m_lblContactName, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(m_lblPhoneLabel, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.m_lblPhone, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(m_lblEMailLabel, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.m_lblEMail, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(m_lblMachineNameLabel, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.m_lblMachineName, 1, 3);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(7, 16);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 4;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(394, 86);
-            this.tableLayoutPanel2.TabIndex = 3;
-            // 
-            // m_lblContactNameLabel
-            // 
-            m_lblContactNameLabel.AutoSize = true;
-            m_lblContactNameLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            m_lblContactNameLabel.Location = new System.Drawing.Point(3, 3);
-            m_lblContactNameLabel.Margin = new System.Windows.Forms.Padding(3);
-            m_lblContactNameLabel.Name = "m_lblContactNameLabel";
-            m_lblContactNameLabel.Size = new System.Drawing.Size(110, 14);
-            m_lblContactNameLabel.TabIndex = 0;
-            m_lblContactNameLabel.Text = "Nom:";
-            m_lblContactNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // m_lblContactName
-            // 
-            this.m_lblContactName.AutoSize = true;
-            this.m_lblContactName.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.m_lblContactName.Location = new System.Drawing.Point(119, 3);
-            this.m_lblContactName.Margin = new System.Windows.Forms.Padding(3);
-            this.m_lblContactName.Name = "m_lblContactName";
-            this.m_lblContactName.Size = new System.Drawing.Size(272, 14);
-            this.m_lblContactName.TabIndex = 1;
-            this.m_lblContactName.Text = "-";
-            this.m_lblContactName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // m_lblPhoneLabel
-            // 
-            m_lblPhoneLabel.AutoSize = true;
-            m_lblPhoneLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            m_lblPhoneLabel.Location = new System.Drawing.Point(3, 23);
-            m_lblPhoneLabel.Margin = new System.Windows.Forms.Padding(3);
-            m_lblPhoneLabel.Name = "m_lblPhoneLabel";
-            m_lblPhoneLabel.Size = new System.Drawing.Size(110, 14);
-            m_lblPhoneLabel.TabIndex = 2;
-            m_lblPhoneLabel.Text = "Tél.:";
-            m_lblPhoneLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // m_lblPhone
-            // 
-            this.m_lblPhone.AutoSize = true;
-            this.m_lblPhone.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.m_lblPhone.Location = new System.Drawing.Point(119, 23);
-            this.m_lblPhone.Margin = new System.Windows.Forms.Padding(3);
-            this.m_lblPhone.Name = "m_lblPhone";
-            this.m_lblPhone.Size = new System.Drawing.Size(272, 14);
-            this.m_lblPhone.TabIndex = 3;
-            this.m_lblPhone.Text = "-";
-            this.m_lblPhone.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // m_lblEMailLabel
-            // 
-            m_lblEMailLabel.AutoSize = true;
-            m_lblEMailLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            m_lblEMailLabel.Location = new System.Drawing.Point(3, 43);
-            m_lblEMailLabel.Margin = new System.Windows.Forms.Padding(3);
-            m_lblEMailLabel.Name = "m_lblEMailLabel";
-            m_lblEMailLabel.Size = new System.Drawing.Size(110, 14);
-            m_lblEMailLabel.TabIndex = 4;
-            m_lblEMailLabel.Text = "e-mail:";
-            m_lblEMailLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // m_lblEMail
-            // 
-            this.m_lblEMail.AutoSize = true;
-            this.m_lblEMail.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.m_lblEMail.Location = new System.Drawing.Point(119, 43);
-            this.m_lblEMail.Margin = new System.Windows.Forms.Padding(3);
-            this.m_lblEMail.Name = "m_lblEMail";
-            this.m_lblEMail.Size = new System.Drawing.Size(272, 14);
-            this.m_lblEMail.TabIndex = 5;
-            this.m_lblEMail.Text = "-";
-            this.m_lblEMail.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // m_lblMachineNameLabel
-            // 
-            m_lblMachineNameLabel.AutoSize = true;
-            m_lblMachineNameLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            m_lblMachineNameLabel.Location = new System.Drawing.Point(3, 63);
-            m_lblMachineNameLabel.Margin = new System.Windows.Forms.Padding(3);
-            m_lblMachineNameLabel.Name = "m_lblMachineNameLabel";
-            m_lblMachineNameLabel.Size = new System.Drawing.Size(110, 20);
-            m_lblMachineNameLabel.TabIndex = 6;
-            m_lblMachineNameLabel.Text = "Nom de la machine:";
-            m_lblMachineNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // m_lblMachineName
-            // 
-            this.m_lblMachineName.AutoSize = true;
-            this.m_lblMachineName.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.m_lblMachineName.Location = new System.Drawing.Point(119, 63);
-            this.m_lblMachineName.Margin = new System.Windows.Forms.Padding(3);
-            this.m_lblMachineName.Name = "m_lblMachineName";
-            this.m_lblMachineName.Size = new System.Drawing.Size(272, 20);
-            this.m_lblMachineName.TabIndex = 7;
-            this.m_lblMachineName.Text = "-";
-            this.m_lblMachineName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // m_grpClientInfo
             // 
@@ -413,6 +280,139 @@
             this.toolStripButton4.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton4.Text = "toolStripButton4";
             // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 116F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Controls.Add(m_lblContactNameLabel, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.m_lblContactName, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(m_lblPhoneLabel, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.m_lblPhone, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(m_lblEMailLabel, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.m_lblEMail, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(m_lblMachineNameLabel, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.m_lblMachineName, 1, 3);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(7, 16);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 4;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(394, 86);
+            this.tableLayoutPanel2.TabIndex = 3;
+            // 
+            // m_lblEMail
+            // 
+            this.m_lblEMail.AutoSize = true;
+            this.m_lblEMail.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.m_lblEMail.Location = new System.Drawing.Point(119, 43);
+            this.m_lblEMail.Margin = new System.Windows.Forms.Padding(3);
+            this.m_lblEMail.Name = "m_lblEMail";
+            this.m_lblEMail.Size = new System.Drawing.Size(272, 14);
+            this.m_lblEMail.TabIndex = 5;
+            this.m_lblEMail.Text = "-";
+            this.m_lblEMail.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // m_lblEMailLabel
+            // 
+            m_lblEMailLabel.AutoSize = true;
+            m_lblEMailLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            m_lblEMailLabel.Location = new System.Drawing.Point(3, 43);
+            m_lblEMailLabel.Margin = new System.Windows.Forms.Padding(3);
+            m_lblEMailLabel.Name = "m_lblEMailLabel";
+            m_lblEMailLabel.Size = new System.Drawing.Size(110, 14);
+            m_lblEMailLabel.TabIndex = 4;
+            m_lblEMailLabel.Text = "e-mail:";
+            m_lblEMailLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // m_lblPhone
+            // 
+            this.m_lblPhone.AutoSize = true;
+            this.m_lblPhone.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.m_lblPhone.Location = new System.Drawing.Point(119, 23);
+            this.m_lblPhone.Margin = new System.Windows.Forms.Padding(3);
+            this.m_lblPhone.Name = "m_lblPhone";
+            this.m_lblPhone.Size = new System.Drawing.Size(272, 14);
+            this.m_lblPhone.TabIndex = 3;
+            this.m_lblPhone.Text = "-";
+            this.m_lblPhone.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // m_lblPhoneLabel
+            // 
+            m_lblPhoneLabel.AutoSize = true;
+            m_lblPhoneLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            m_lblPhoneLabel.Location = new System.Drawing.Point(3, 23);
+            m_lblPhoneLabel.Margin = new System.Windows.Forms.Padding(3);
+            m_lblPhoneLabel.Name = "m_lblPhoneLabel";
+            m_lblPhoneLabel.Size = new System.Drawing.Size(110, 14);
+            m_lblPhoneLabel.TabIndex = 2;
+            m_lblPhoneLabel.Text = "Tél.:";
+            m_lblPhoneLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // m_lblContactName
+            // 
+            this.m_lblContactName.AutoSize = true;
+            this.m_lblContactName.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.m_lblContactName.Location = new System.Drawing.Point(119, 3);
+            this.m_lblContactName.Margin = new System.Windows.Forms.Padding(3);
+            this.m_lblContactName.Name = "m_lblContactName";
+            this.m_lblContactName.Size = new System.Drawing.Size(272, 14);
+            this.m_lblContactName.TabIndex = 1;
+            this.m_lblContactName.Text = "-";
+            this.m_lblContactName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // m_lblContactNameLabel
+            // 
+            m_lblContactNameLabel.AutoSize = true;
+            m_lblContactNameLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            m_lblContactNameLabel.Location = new System.Drawing.Point(3, 3);
+            m_lblContactNameLabel.Margin = new System.Windows.Forms.Padding(3);
+            m_lblContactNameLabel.Name = "m_lblContactNameLabel";
+            m_lblContactNameLabel.Size = new System.Drawing.Size(110, 14);
+            m_lblContactNameLabel.TabIndex = 0;
+            m_lblContactNameLabel.Text = "Nom:";
+            m_lblContactNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.tableLayoutPanel2);
+            this.groupBox2.Location = new System.Drawing.Point(14, 127);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(409, 118);
+            this.groupBox2.TabIndex = 2;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = " Contact ";
+            // 
+            // m_lblMachineName
+            // 
+            this.m_lblMachineName.AutoSize = true;
+            this.m_lblMachineName.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.m_lblMachineName.Location = new System.Drawing.Point(119, 63);
+            this.m_lblMachineName.Margin = new System.Windows.Forms.Padding(3);
+            this.m_lblMachineName.Name = "m_lblMachineName";
+            this.m_lblMachineName.Size = new System.Drawing.Size(272, 20);
+            this.m_lblMachineName.TabIndex = 7;
+            this.m_lblMachineName.Text = "-";
+            this.m_lblMachineName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // m_lblMachineNameLabel
+            // 
+            m_lblMachineNameLabel.AutoSize = true;
+            m_lblMachineNameLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            m_lblMachineNameLabel.Location = new System.Drawing.Point(3, 63);
+            m_lblMachineNameLabel.Margin = new System.Windows.Forms.Padding(3);
+            m_lblMachineNameLabel.Name = "m_lblMachineNameLabel";
+            m_lblMachineNameLabel.Size = new System.Drawing.Size(110, 20);
+            m_lblMachineNameLabel.TabIndex = 6;
+            m_lblMachineNameLabel.Text = "Nom de la machine:";
+            m_lblMachineNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // ClientsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -430,14 +430,14 @@
             m_splitter.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(m_splitter)).EndInit();
             m_splitter.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
-            this.tableLayoutPanel2.PerformLayout();
             m_grpClientInfo.ResumeLayout(false);
             m_tblPanelClient.ResumeLayout(false);
             m_tblPanelClient.PerformLayout();
             this.m_toolStrip.ResumeLayout(false);
             this.m_toolStrip.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -447,12 +447,6 @@
 
         private System.Windows.Forms.ToolStrip m_toolStrip;
         private System.Windows.Forms.TreeView m_tvClients;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Label m_lblContactName;
-        private System.Windows.Forms.Label m_lblPhone;
-        private System.Windows.Forms.Label m_lblEMail;
-        private System.Windows.Forms.Label m_lblMachineName;
         private System.Windows.Forms.Label m_lblStatus;
         private System.Windows.Forms.Label m_lblLastActivity;
         private System.Windows.Forms.Label m_lblCreationTime;
@@ -460,5 +454,11 @@
         private System.Windows.Forms.ToolStripButton m_tsbDisableClient;
         private System.Windows.Forms.ToolStripButton m_tsbBanishClient;
         private System.Windows.Forms.ToolStripButton toolStripButton4;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.Label m_lblContactName;
+        private System.Windows.Forms.Label m_lblPhone;
+        private System.Windows.Forms.Label m_lblEMail;
+        private System.Windows.Forms.Label m_lblMachineName;
     }
 }
