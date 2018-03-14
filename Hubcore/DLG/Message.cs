@@ -8,7 +8,7 @@ namespace DGD.HubCore.DLG
     public enum Message_t : byte
     {
         UnknonwnMsg = 0,
-        NewConnection,  //data = ClientInfo, resp = {ok, rejected, InvalidID}
+        NewConnection,  //data = ClientInfo + ClientEnv, resp = {ok, rejected, InvalidID}
         Resume, //data = ClientID, resp = {OK, Rejected}
         Ok, //data = ClientID pour cxn
         InvalidID,  //data = ClientID                

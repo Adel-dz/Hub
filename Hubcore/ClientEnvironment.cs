@@ -16,7 +16,7 @@ namespace DGD.HubCore
     }
 
 
-    public sealed class ClientEnvironment : IClientEnvironment
+    public sealed class ClientEnvironment : IClientEnvironment, IStorable
     {
         public string UserName { get; set; } = "";
         public string MachineName { get; set; } = "";

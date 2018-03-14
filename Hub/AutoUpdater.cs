@@ -102,9 +102,9 @@ namespace DGD.Hub
                 IUpdateManifest updateManifest = UpdateEngin.ReadUpdateManifest(tmpFile);
 
                 Version curVer = Assembly.GetExecutingAssembly().GetName().Version;
-                Version ver = updateManifest.Versions[Program.AppArchitecture];
+                Version ver = updateManifest.GetAppVersion(Program.AppArchitecture);
 
-                if (curVer.CompareTo(ver) >= 0)
+                if (ver == null || curVer.CompareTo(ver) >= 0)
                 {
                     Log.LogEngin.PushFlash("Vous disposez déjà de la dernière version de l’application.");
                     return;

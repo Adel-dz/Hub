@@ -39,7 +39,8 @@ namespace DGD.HubGovernor.Clients
         readonly KeyIndexer m_ndxerProfiles;
         readonly KeyIndexer m_ndxerClients;
         readonly KeyIndexer m_ndxerClientsStatus;
-        readonly KeyIndexer m_ndxerProfilesMgmnt;        
+        readonly KeyIndexer m_ndxerProfilesMgmnt;
+        readonly KeyIndexer m_ndxerClientsEnv;
         readonly List<string> m_pendingUploads = new List<string>();
         readonly List<string> m_pendingDownloads = new List<string>();
         readonly Dictionary<Message_t , Func<Message , uint , Message>> m_msgProcessors;
@@ -56,17 +57,12 @@ namespace DGD.HubGovernor.Clients
         {
             m_netTimer = new Timer(obj => ProcessTimer() , null , Timeout.Infinite , Timeout.Infinite);
 
-            m_ndxerProfiles = new KeyIndexer(AppContext.TableManager.Profiles.DataProvider);
-            m_ndxerProfiles.Connect();
+            m_ndxerProfiles = AppContext.AccessPath.GetKeyIndexer(InternalTablesID.USER_PROFILE);
+            m_ndxerClients = AppContext.AccessPath.GetKeyIndexer(InternalTablesID.HUB_CLIENT);
+            m_ndxerClientsStatus = AppContext.AccessPath.GetKeyIndexer(InternalTablesID.CLIENT_STATUS);
+            m_ndxerProfilesMgmnt = AppContext.AccessPath.GetKeyIndexer(InternalTablesID.PROFILE_MGMNT_MODE);
+            m_ndxerClientsEnv = AppContext.AccessPath.GetKeyIndexer(InternalTablesID.CLIENT_ENV);
 
-            m_ndxerClients = new KeyIndexer(AppContext.TableManager.HubClients.DataProvider);
-            m_ndxerClients.Connect();
-
-            m_ndxerClientsStatus = new KeyIndexer(AppContext.TableManager.ClientsStatus.DataProvider);
-            m_ndxerClientsStatus.Connect();
-
-            m_ndxerProfilesMgmnt = new KeyIndexer(AppContext.TableManager.ProfileManagementMode.DataProvider);
-            m_ndxerProfilesMgmnt.Connect();
 
             m_runningClients = new Dictionary<uint , ClientData>();
 
@@ -244,13 +240,7 @@ namespace DGD.HubGovernor.Clients
             if (!IsDisposed)
             {
                 UnregisterHandlers();
-
-                m_ndxerProfiles.Close();
-                m_ndxerClients.Close();
-                m_ndxerClientsStatus.Close();
-                m_ndxerProfilesMgmnt.Close();
                 m_netTimer.Dispose();
-
                 IsDisposed = true;
             }
         }
@@ -329,7 +319,7 @@ namespace DGD.HubGovernor.Clients
 
             DialogEngin.WriteProfiles(filePath , seq);
 
-            AddUpload(filePath);
+            AddUpload(Names.ProfilesFile);
         }
 
         void ProcessDialog(ClientDialog clientDialog)
@@ -355,7 +345,7 @@ namespace DGD.HubGovernor.Clients
 
             string respFile = AppPaths.LocalConnectionRespPath;
             DialogEngin.AppendConnectionsResp(respFile , lst);
-            AddUpload(respFile);
+            AddUpload(Names.ConnectionRespFile);
         }
 
         void RegisterHandlers()
@@ -378,82 +368,97 @@ namespace DGD.HubGovernor.Clients
 
         void ProcessUploads()
         {
-            string[] files = null;
+            List<string> files = null;
 
             lock (m_pendingUploads)
                 if (m_pendingUploads.Count > 0)
                 {
-                    string dlgFolder = AppPaths.LocalDialogFolderPath;
-
-                    files = (from file in m_pendingUploads
-                             select Path.Combine(dlgFolder , file)).ToArray();
+                    files = m_pendingUploads.ToList();
                     m_pendingUploads.Clear();
                 }
 
 
             if (files != null)
-                try
-                {
-                    EventLogger.Info($"Transfert de {files.Length} fichier(s) vers le serveur...");
-                    new NetEngin(AppContext.Settings.AppSettings).Upload(AppPaths.RemoteDialogDirUri , files);
-                }
-                catch (Exception ex)
-                {
-                    EventLogger.Error(ex.Message);
+            {
+                EventLogger.Info($"Transfert de {files.Count} fichier(s) vers le serveur...");
 
-                    foreach (string file in files)
-                        AddUpload(file);
+                string dlgFolder = AppPaths.LocalDialogFolderPath;
+                var netEngin = new NetEngin(AppContext.Settings.AppSettings);
+
+                for (int i = files.Count - 1; i >= 0; --i)
+                {
+                    string localDlgDir = AppPaths.LocalDialogFolderPath;
+                    string fileName = files[i];
+                    string srcPath = Path.Combine(localDlgDir , fileName);
+                    var destURI = new Uri(AppPaths.RemoteDialogDirUri , fileName);
+                    
+
+                    try
+                    {
+                        netEngin.Upload(destURI , srcPath);
+                        files.RemoveAt(i);
+                    }
+                    catch (Exception ex)
+                    {
+                        EventLogger.Error(ex.Message);
+                        continue;
+                    }
                 }
+
+                foreach (string file in files)
+                    AddUpload(file);
+            }
         }
 
         void ProcessDownloads()
         {
-            Dbg.Log("Processing downloads...");
+            Dbg.Log("Processing downloads...");            
 
-            var netEngin = new NetEngin(AppContext.Settings.AppSettings);
-
-            string[] files = null;
-
+            List<string> files = null;
 
             lock (m_pendingDownloads)
                 if (m_pendingDownloads.Count > 0)
                 {
-                    files = m_pendingDownloads.ToArray();
+                    files = m_pendingDownloads.ToList();
                     m_pendingDownloads.Clear();
                 }
 
             if (files != null)
             {
+                EventLogger.Info($"Réception de {files.Count} fichier(s) à partir du serveur");
+
                 Uri remoteDlgDir = AppPaths.RemoteDialogDirUri;
+                string localDlgFolder = AppPaths.LocalDialogFolderPath;
+                string cxnReqFile = Names.ConnectionReqFile;
+                var netEngin = new NetEngin(AppContext.Settings.AppSettings);
 
-                Uri[] uris = (from file in files
-                              select new Uri(remoteDlgDir , file)).ToArray();
-
-                try
+                for (int i = files.Count - 1; i >= 0; --i)
                 {
-                    EventLogger.Info($"Réception de {files.Length} fichier(s) à partir du serveur");
+                    string fileName = files[i];
+                    string destPath = Path.Combine(localDlgFolder , fileName);
+                    var srcURI = new Uri(remoteDlgDir , fileName);
+                                        
 
-                    netEngin.Download(AppPaths.LocalDialogFolderPath , uris);
-                    string dlgFolderPath = AppPaths.LocalDialogFolderPath;
-
-                    string cxnReqFile = Names.ConnectionReqFile;
-
-                    foreach (string file in files)
+                    try
                     {
-                        if (string.Compare(file , cxnReqFile , true) == 0)
-                            ProcessConnectionReq(DialogEngin.ReadConnectionsReq(AppPaths.LocalConnectionReqPath));
-                        else
-                            ProcessDialog(DialogEngin.ReadSrvDialog(Path.Combine(dlgFolderPath , file)));
+                        netEngin.Download(destPath , srcURI);
+                        files.RemoveAt(i);
+                    }
+                    catch (Exception ex)
+                    {
+                        EventLogger.Error(ex.Message);
+                        continue;
                     }
 
+                    if (string.Compare(fileName , cxnReqFile , true) == 0)
+                        ProcessConnectionReq(DialogEngin.ReadConnectionsReq(AppPaths.LocalConnectionReqPath));
+                    else
+                        ProcessDialog(DialogEngin.ReadSrvDialog(Path.Combine(localDlgFolder , fileName)));
                 }
-                catch (Exception ex)
-                {
-                    EventLogger.Error(ex.Message);
 
-                    foreach (string file in files)
-                        AddDownload(file);
-                }
+
+                foreach (string file in files)
+                    AddDownload(file);
             }
 
             //allways need to be downlaoded
@@ -489,16 +494,16 @@ namespace DGD.HubGovernor.Clients
 
                 if (--clData.LiveTimeout <= LT_TO_DIE)
                     deadClient.Add(clID);
-                else if(clData.LiveTimeout <= LT_TO_REFRESH)
+                else if (clData.LiveTimeout <= LT_TO_REFRESH)
                 {
                     EventLogger.Info($"Envoi d'un message de synchronisation au client {clID:X}.");
-                    var msg = new Message(++clData.LastOutMessageID , 0, Message_t.Sync);
+                    var msg = new Message(++clData.LastOutMessageID , 0 , Message_t.Sync);
                     DialogEngin.AppendSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) , msg);
                     AddUpload(Names.GetClientDialogFile(clID));
                 }
             }
 
-            foreach(uint id in deadClient)
+            foreach (uint id in deadClient)
             {
                 EventLogger.Info($"Client {id:X} présumé déconnecté.");
                 m_runningClients.Remove(id);

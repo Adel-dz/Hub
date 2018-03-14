@@ -15,32 +15,32 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_04D586CDCFBC4D2BB77B19F22738E0F3"
+        "MsmKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
+        "MsmKey" = "8:_B1CAD10EF995E7930CB27FBF45B8EC7C"
+        "OwnerKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_B6BF4A155058F8F3508777B1ACDB8745"
-        "OwnerKey" = "8:_04D586CDCFBC4D2BB77B19F22738E0F3"
+        "OwnerKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_D964E8FFFB822E26AFA676A608F0F5DC"
-        "OwnerKey" = "8:_04D586CDCFBC4D2BB77B19F22738E0F3"
+        "MsmKey" = "8:_BD5948F9F16840BBA504F7A0C4ECFE14"
+        "OwnerKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_F491211269066CACA62924F3915CB864"
-        "OwnerKey" = "8:_04D586CDCFBC4D2BB77B19F22738E0F3"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F491211269066CACA62924F3915CB864"
-        "OwnerKey" = "8:_D964E8FFFB822E26AFA676A608F0F5DC"
+        "MsmKey" = "8:_BD5948F9F16840BBA504F7A0C4ECFE14"
+        "OwnerKey" = "8:_B1CAD10EF995E7930CB27FBF45B8EC7C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -52,19 +52,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_04D586CDCFBC4D2BB77B19F22738E0F3"
+        "OwnerKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D964E8FFFB822E26AFA676A608F0F5DC"
+        "OwnerKey" = "8:_B1CAD10EF995E7930CB27FBF45B8EC7C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_F491211269066CACA62924F3915CB864"
+        "OwnerKey" = "8:_BD5948F9F16840BBA504F7A0C4ECFE14"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -162,6 +162,37 @@
         }
         "File"
         {
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B1CAD10EF995E7930CB27FBF45B8EC7C"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.3.6647.25986, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_B1CAD10EF995E7930CB27FBF45B8EC7C"
+                    {
+                    "Name" = "8:Hubcore.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Hubcore.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_114A8C0A7E7C4E8EA4AB4AD535913F2E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B6BF4A155058F8F3508777B1ACDB8745"
             {
             "AssemblyRegister" = "3:1"
@@ -193,45 +224,14 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D964E8FFFB822E26AFA676A608F0F5DC"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_BD5948F9F16840BBA504F7A0C4ECFE14"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Hubcore, Version=1.0.6643.16974, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.3.6647.25986, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_D964E8FFFB822E26AFA676A608F0F5DC"
-                    {
-                    "Name" = "8:Hubcore.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:Hubcore.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_114A8C0A7E7C4E8EA4AB4AD535913F2E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F491211269066CACA62924F3915CB864"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ezLib, Version=1.0.6643.16974, Culture=neutral, processorArchitecture=x86"
-                "ScatterAssemblies"
-                {
-                    "_F491211269066CACA62924F3915CB864"
+                    "_BD5948F9F16840BBA504F7A0C4ECFE14"
                     {
                     "Name" = "8:ezLib.dll"
                     "Attributes" = "3:512"
@@ -311,15 +311,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Hub de la Valeur en Douane"
-        "ProductCode" = "8:{48CBD851-A672-4196-8A8B-D656EAAFB381}"
-        "PackageCode" = "8:{C08856E2-BE2A-4FDE-BD58-B561840EBD0F}"
+        "ProductCode" = "8:{092C8C8D-55A6-42AD-80FE-80C788569225}"
+        "PackageCode" = "8:{3E8DED3A-731E-4500-8552-F61061533152}"
         "UpgradeCode" = "8:{09E42667-45AD-4BDE-8CBB-57A72FB06158}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.1.6643"
+        "ProductVersion" = "8:0.3.6647"
         "Manufacturer" = "8:Douane Algérienne"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -329,7 +329,7 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:"
-        "ARPPRODUCTICON" = "8:_04D586CDCFBC4D2BB77B19F22738E0F3"
+        "ARPPRODUCTICON" = "8:_7D35B06CE69A400A8C4846740E33B15B"
         "ARPIconIndex" = "3:32512"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
@@ -440,10 +440,10 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:32512"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_04D586CDCFBC4D2BB77B19F22738E0F3"
+            "Target" = "8:_7D35B06CE69A400A8C4846740E33B15B"
             "Folder" = "8:_699A05F2F64843488F81FADAABD8F8AB"
             "WorkingFolder" = "8:_114A8C0A7E7C4E8EA4AB4AD535913F2E"
-            "Icon" = "8:_04D586CDCFBC4D2BB77B19F22738E0F3"
+            "Icon" = "8:_7D35B06CE69A400A8C4846740E33B15B"
             "Feature" = "8:"
             }
         }
@@ -845,9 +845,9 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_04D586CDCFBC4D2BB77B19F22738E0F3"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_7D35B06CE69A400A8C4846740E33B15B"
             {
-            "SourcePath" = "8:..\\Hub\\obj\\x86\\Release\\Hub.exe"
+            "SourcePath" = "8:..\\Hub\\obj\\Release\\Hub.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_114A8C0A7E7C4E8EA4AB4AD535913F2E"
@@ -865,7 +865,7 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             "ProjectOutputGroupRegister" = "3:1"
-            "OutputConfiguration" = "8:Release|x86"
+            "OutputConfiguration" = "8:Release|Any CPU"
             "OutputGroupCanonicalName" = "8:Built"
             "OutputProjectGuid" = "8:{81B1DA5F-186B-4AB6-9AAC-1102A58B4A44}"
             "ShowKeyOutput" = "11:TRUE"

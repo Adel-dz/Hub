@@ -1,4 +1,5 @@
-﻿using DGD.HubCore.DLG;
+﻿using DGD.HubCore;
+using DGD.HubCore.DLG;
 using DGD.HubCore.Net;
 using easyLib;
 using easyLib.Extensions;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -205,16 +207,22 @@ namespace DGD.Hub.DLG
                         Program.Settings.ClientInfo = m_clInfo;
                         SetProgressMessage("Enregistrement terminé.");
 
-                        //maj des fichiers h et g
-                        Uri[] uris =
-                            {
-                                SettingsManager.GetClientDialogURI(m_clInfo.ClientID) ,
-                                SettingsManager.GetServerDialogURI(m_clInfo.ClientID)
-                            };
+                        //creation des fichier dlg
+                        string dlgFile = SettingsManager.GetClientDialogFilePath(clID);
+                        DialogEngin.WriteHubDialog(dlgFile , clID , Enumerable.Empty<HubCore.DLG.Message>());
+                        DialogEngin.WriteSrvDialog(SettingsManager.GetSrvDialogFilePath(clID) ,
+                            new ClientDialog(clID , ClientStatus_t.Enabled , Enumerable.Empty<System.Windows.Forms.Message>());
 
-                        netEngin.Download(SettingsManager.DialogFolder,uris, true);
-                        //netEngin.Download(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) , SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , true);
-                        //netEngin.Download(SettingsManager.GetSrvDialogFilePath(m_clInfo.ClientID) , SettingsManager.GetServerDialogURI(m_clInfo.ClientID) , true);
+
+
+                        try
+                        {
+                            netEngin.Upload(SettingsManager.GetClientDialogURI(clID) , dlgFile , true);
+                        }
+                        catch(Exception ex)
+                        {
+                            Dbg.Log(ex.Message);
+                        }
 
                         ShowMessage("Votre enregistrement est maintenant terminé. " +
                             "Vous pouvez commencer à utiliser l’application.");
@@ -296,7 +304,13 @@ namespace DGD.Hub.DLG
                 List<HubCore.DLG.Message> msgs = DialogEngin.ReadConnectionsReq(tmpFile).ToList();
                 m_msgID = msgs.Count == 0 ? 1 : msgs.Max(m => m.ID) + 1;
 
-                var msg = new HubCore.DLG.Message(m_msgID , 0 , Message_t.NewConnection , m_clInfo.GetBytes());
+                var ms = new MemoryStream();
+                byte[] ciBytes = m_clInfo.GetBytes();
+                byte[] ceBytes = GetEnvironment().GetBytes();
+                ms.Write(ciBytes , 0 , ciBytes.Length);
+                ms.Write(ceBytes , 0 , ceBytes.Length);
+
+                var msg = new HubCore.DLG.Message(m_msgID , 0 , Message_t.NewConnection , ms.ToArray());
                 msgs.Add(msg);
 
                 DialogEngin.WriteConnectionsReq(tmpFile , msgs);
@@ -305,6 +319,19 @@ namespace DGD.Hub.DLG
 
                 SetProgressMessage("Attente de la réponse du serveur...");
             }
+        }
+
+        ClientEnvironment GetEnvironment()
+        {
+            var clEnv = new ClientEnvironment();
+            clEnv.HubArchitecture = Program.AppArchitecture;
+            clEnv.HubVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            clEnv.Is64BitOperatingSystem = Environment.Is64BitOperatingSystem;
+            clEnv.MachineName = Environment.MachineName;
+            clEnv.OSVersion = Environment.OSVersion.VersionString;
+            clEnv.UserName = Environment.UserName;
+
+            return clEnv;
         }
 
         //handlers:
