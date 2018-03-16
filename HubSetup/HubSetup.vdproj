@@ -46,12 +46,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B6BF4A155058F8F3508777B1ACDB8745"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -65,6 +59,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_BD5948F9F16840BBA504F7A0C4ECFE14"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_B6BF4A155058F8F3508777B1ACDB8745"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -166,7 +166,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.3.6647.25986, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.6.6649.35239, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_B1CAD10EF995E7930CB27FBF45B8EC7C"
@@ -228,7 +228,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.3.6647.25986, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.4.6647.37838, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_BD5948F9F16840BBA504F7A0C4ECFE14"
@@ -311,15 +311,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Hub de la Valeur en Douane"
-        "ProductCode" = "8:{092C8C8D-55A6-42AD-80FE-80C788569225}"
-        "PackageCode" = "8:{3E8DED3A-731E-4500-8552-F61061533152}"
+        "ProductCode" = "8:{81311535-FF9D-48FB-9858-2EC81C57D37D}"
+        "PackageCode" = "8:{06FDB2B8-91FA-4D08-8436-DD917EA6E11C}"
         "UpgradeCode" = "8:{09E42667-45AD-4BDE-8CBB-57A72FB06158}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.3.6647"
+        "ProductVersion" = "8:0.6.6649"
         "Manufacturer" = "8:Douane Algérienne"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

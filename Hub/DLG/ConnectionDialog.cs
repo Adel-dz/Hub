@@ -210,11 +210,7 @@ namespace DGD.Hub.DLG
                         //creation des fichier dlg
                         string dlgFile = SettingsManager.GetClientDialogFilePath(clID);
                         DialogEngin.WriteHubDialog(dlgFile , clID , Enumerable.Empty<HubCore.DLG.Message>());
-                        DialogEngin.WriteSrvDialog(SettingsManager.GetSrvDialogFilePath(clID) ,
-                            new ClientDialog(clID , ClientStatus_t.Enabled , Enumerable.Empty<System.Windows.Forms.Message>());
-
-
-
+         
                         try
                         {
                             netEngin.Upload(SettingsManager.GetClientDialogURI(clID) , dlgFile , true);

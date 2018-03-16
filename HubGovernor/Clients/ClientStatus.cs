@@ -1,26 +1,81 @@
 ﻿using DGD.HubCore.DB;
 using DGD.HubCore.DLG;
+using easyLib;
 using System;
 
 namespace DGD.HubGovernor.Clients
 {
-    sealed class ClientStatus : ClientStatusRow
+    public interface IClientStatus: IDataRow
     {
-        public ClientStatus(uint idClient, ClientStatus_t status, DateTime lastSeen):
-            base(idClient, status, lastSeen)
-        { }
+        uint ClientID { get; }
+        ClientStatus_t Status { get; }
+        DateTime LastSeen { get; }
+        uint ReceivedMsgCount { get; }
+        uint SentMsgCount { get; }
+    }
 
-        public ClientStatus(uint idClient , ClientStatus_t status) : 
-            this(idClient , status , DateTime.Now)
-        { }
 
-
+    sealed class ClientStatus: DataRow, IClientStatus
+    {
         public ClientStatus()
         { }
 
-        public static int Size => sizeof(uint) + sizeof(byte) + sizeof(long);
+        public ClientStatus(uint idClient , ClientStatus_t status) :
+            this(idClient , status , DateTime.Now)
+        { }
 
-        public override string ToString() =>
-            $"(ID:{ID}, Status:{ClientStatuses.GetStatusName(Status)}, LastSeen:{LastSeen}";
+        public ClientStatus(uint idClient , ClientStatus_t status , DateTime seen) :
+            base(idClient)
+        {
+            Status = status;
+            LastSeen = seen;
+        }
+
+
+        public uint ClientID => ID;
+        public ClientStatus_t Status { get; set; }
+        public DateTime LastSeen { get; set; }
+        public uint ReceivedMsgCount { get; set; }
+        public uint SentMsgCount { get; set; }
+
+        public static int Size => (sizeof(uint) * 3) + sizeof(byte) + sizeof(long);
+        
+
+        //protected:
+        protected override void DoRead(IReader reader)
+        {
+            byte st = reader.ReadByte();
+
+            if (st == (byte)ClientStatus_t.Unknown ||
+                    !Enum.IsDefined(typeof(ClientStatus_t) , st))
+                throw new CorruptedStreamException();
+
+            Status = (ClientStatus_t)st;
+            LastSeen = reader.ReadTime();
+            ReceivedMsgCount = reader.ReadUInt();
+            SentMsgCount = reader.ReadUInt();
+        }
+
+        protected override void DoWrite(IWriter writer)
+        {
+            Dbg.Assert(Status != ClientStatus_t.Unknown);
+
+            writer.Write((byte)Status);
+            writer.Write(LastSeen);
+            writer.Write(ReceivedMsgCount);
+            writer.Write(SentMsgCount);
+        }
+
+        protected override string[] GetContent()
+        {
+            return new[]
+            {
+                ID.ToString("X"),
+                ClientStatuses.GetStatusName(Status),
+                LastSeen.ToString(),
+                ReceivedMsgCount.ToString(),
+                SentMsgCount.ToString()
+            };
+        }
     }
 }

@@ -80,7 +80,6 @@
   <ItemGroup>
     <Compile Include="ClientEnvironment.cs" />
     <Compile Include="DB\ClientEnvironmentRow.cs" />
-    <Compile Include="DB\ClientStatusRow.cs" />
     <Compile Include="DB\DatumFactory.cs" />
     <Compile Include="DB\DBKeyIndexer.cs" />
     <Compile Include="DB\CountryRow.cs" />

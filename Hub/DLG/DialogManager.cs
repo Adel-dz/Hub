@@ -18,15 +18,16 @@ namespace DGD.Hub.DLG
 {
     sealed partial class DialogManager: IDisposable
     {
+        readonly object m_lock = new object();
         readonly Timer m_dialogTimer;
         readonly Timer m_updateTimer;
-        readonly Dictionary<Message_t , Func<Message , Message>> m_msgHandlersTable;
+        readonly Dictionary<Message_t , Action<Message>> m_msgHandlersTable;
         ClientInfo m_clInfo;
         ClientStatus_t m_clStatus = ClientStatus_t.Unknown;
         uint m_srvLastMsgID;
         uint m_clientLastMsgID;
         bool m_needUpload;
-
+                
 
         public DialogManager()
         {
@@ -36,9 +37,9 @@ namespace DGD.Hub.DLG
             m_updateTimer = new Timer(SettingsManager.UpdateTimerInterval);
             m_updateTimer.TimeElapsed += ProcessUpdateTimer;
 
-            m_msgHandlersTable = new Dictionary<Message_t , Func<Message , Message>>
+            m_msgHandlersTable = new Dictionary<Message_t , Action<Message>>
             {
-                {Message_t.UnknonwnMsg, DefaultProcessing }
+                {Message_t.Sync, SyncHandler },         
             };
         }
 
@@ -79,7 +80,7 @@ namespace DGD.Hub.DLG
                 }
 
                 return;
-            }            
+            }
 
             //process only status part of the g file
             string tmpFile = Path.GetTempFileName();
@@ -97,7 +98,7 @@ namespace DGD.Hub.DLG
                 m_clStatus = clDlg.ClientStatus;
 
                 if (m_clStatus == ClientStatus_t.Enabled)
-                    new StartHandler(m_clInfo.ClientID, StartResp).Start();
+                    new StartHandler(m_clInfo.ClientID , StartResp).Start();
                 else if (m_clStatus == ClientStatus_t.Banned)
                 {
                     foreach (IDBTable tbl in Program.TablesManager.CriticalTables)
@@ -121,14 +122,18 @@ namespace DGD.Hub.DLG
             {
                 Dbg.Log(t.Exception.InnerException.Message);
 
-                System.Windows.Forms.MessageBox.Show(
-                    "Impossible de se connecter au serveur distant. Veuillez réessayer ultérieurement." ,
-                    null ,
-                    System.Windows.Forms.MessageBoxButtons.OK ,
-                    System.Windows.Forms.MessageBoxIcon.Error);
+                //assume client enabled
+                m_clStatus = ClientStatus_t.Enabled;
+                new StartHandler(m_clInfo.ClientID , StartResp).Start();
 
-                File.Delete(tmpFile);
-                Exit();
+                //System.Windows.Forms.MessageBox.Show(
+                //    "Impossible de se connecter au serveur distant. Veuillez réessayer ultérieurement." ,
+                //    null ,
+                //    System.Windows.Forms.MessageBoxButtons.OK ,
+                //    System.Windows.Forms.MessageBoxIcon.Error);
+
+                //File.Delete(tmpFile);
+                //Exit();
             };
 
             var task = new Task(start , TaskCreationOptions.LongRunning);
@@ -136,6 +141,19 @@ namespace DGD.Hub.DLG
             task.OnError(onErr);
 
             task.Start();
+        }
+
+        public void PostMessage(Message_t msgCode , byte[] data = null , uint reqID = 0)
+        {
+            lock (m_lock)
+            {
+                Message msg = new Message(++m_clientLastMsgID , reqID , msgCode , data);
+
+                DialogEngin.AppendHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) ,
+                    m_clInfo.ClientID , msg);
+
+                m_needUpload = true;
+            }
         }
 
         public void Stop(bool ignoreCloseNotification = false)
@@ -146,7 +164,10 @@ namespace DGD.Hub.DLG
                 m_dialogTimer.Stop();
 
                 if (m_clInfo != null && !ignoreCloseNotification)
-                    new CloseHandler(m_clInfo.ClientID).Start();
+                {
+                    var thread = new System.Threading.Thread(PostCloseMessage);
+                    thread.Start();
+                }                 
 
                 IsRunning = false;
             }
@@ -345,45 +366,30 @@ namespace DGD.Hub.DLG
 
                 Dbg.Assert(m_clStatus == ClientStatus_t.Enabled);
 
+                uint id = m_srvLastMsgID;
+
                 var msgs = from msg in clDlg.Messages
-                           where msg.ID >= m_srvLastMsgID
+                           where msg.ID > id
                            select msg;
 
-                var respList = new List<Message>();
-
-                foreach (Message msg in msgs)
+                if (msgs.Any())
                 {
-                    Func<Message , Message> msgHandler;
+                    m_srvLastMsgID = msgs.Max(m => m.ID);
 
-                    if (!m_msgHandlersTable.TryGetValue(msg.MessageCode , out msgHandler))
-                        msgHandler = DefaultProcessing;
+                    Action<Message> msgHandler;
 
-                    Message resp = msgHandler(msg);
+                    foreach (Message msg in msgs)
+                        if (m_msgHandlersTable.TryGetValue(msg.MessageCode , out msgHandler))
+                            msgHandler.Invoke(msg);                    
 
-                    if (resp != null)
-                        respList.Add(resp);
-
-                    m_srvLastMsgID = Math.Max(m_srvLastMsgID , msg.ID);
+                    if (m_needUpload)
+                    {
+                        string clFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
+                        new NetEngin(Program.Settings).Upload(SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , clFilePath , true);
+                        m_needUpload = false;
+                    }
                 }
 
-                string clFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
-
-                if (respList.Count > 0)
-                {
-                    DialogEngin.AppendHubDialog(clFilePath , m_clInfo.ClientID , respList);
-                    m_needUpload = true;
-                }
-
-                if (m_needUpload)
-                {
-                    new NetEngin(Program.Settings).Upload(SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , clFilePath , true);
-                    m_needUpload = false;
-                }
-
-                //update g file
-                string srvFilePath = SettingsManager.GetSrvDialogFilePath(m_clInfo.ClientID);
-                File.Delete(srvFilePath);
-                File.Move(tmpFile , srvFilePath);
                 m_dialogTimer.Start();
             }
             catch (Exception ex)
@@ -413,7 +419,7 @@ namespace DGD.Hub.DLG
                 {
                     LogEngin.PushFlash(ex.Message);
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -423,6 +429,21 @@ namespace DGD.Hub.DLG
             {
                 m_updateTimer.Start();
             }
+        }
+
+        void PostCloseMessage()
+        {
+            Dbg.Log("Posting closing notification...");
+
+            var req = new Message(++m_clientLastMsgID , 0 , Message_t.Close);
+            string dlgFile = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
+            DialogEngin.AppendHubDialog(dlgFile , m_clInfo.ClientID , req);
+
+            try
+            {
+                new NetEngin(Program.Settings).Upload(SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , dlgFile);
+            }
+            catch { }
         }
     }
 }

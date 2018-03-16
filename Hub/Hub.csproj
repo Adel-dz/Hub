@@ -149,7 +149,7 @@
       <DependentUpon>ConnectionDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="DLG\DialogManager.cs" />
-    <Compile Include="DLG\DialogManager.MsgProcessImpl.cs" />
+    <Compile Include="DLG\DialogManager.MsgImpl.cs" />
     <Compile Include="DLG\ProfileDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -179,7 +179,6 @@
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="NetEngin.cs" />
     <Compile Include="Opts\SettingsView.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -16,40 +16,20 @@ namespace DGD.HubGovernor.Clients
 {
     partial class ClientsManager
     {
-        Message ProcessCloseMessage(Message msg)
+        Message ProcessCloseMessage(Message msg , uint clID)
         {
             EventLogger.Info("Réception d'une notification de fermeture.");
 
             Dbg.Assert(msg.MessageCode == Message_t.Close);
 
-            m_lastCxnReqMsgID = msg.ID;
+            EventLogger.Info($"Réception d’une notification de fermeture de la part du client {clID:X}");
 
-            var reader = new RawDataReader(new MemoryStream(msg.Data) , Encoding.UTF8);
-            uint clID = reader.ReadUInt();
 
-            var client = m_ndxerClients.Get(clID) as HubClient;
-
-            if (client == null)
-            {
-                EventLogger.Warning("Réception d’une notification de démarrage " +
-                    $"de la part d’un client inexistant ({clID}).");
-
-                return null;
-            }
-
-            EventLogger.Info($"Réception d’une notification de fermeture de la part du client {client.ContactName}");
-
-            //maj du dic des clients actifs
-            DateTime dt = reader.ReadTime();
-
+            DateTime dt = DateTime.Now;
             EventLogger.Info($"client arrêté le {dt.ToShortDateString()} à {dt.ToLongTimeString()}");
 
-
-            var clData = new ClientData(dt);
-            string hubFilePath = AppPaths.GetLocalClientDilogPath(clID);
-
-            //TODO: traiter le cas ou un client de meme ID est en execution
-            m_runningClients.Remove(clID);
+            lock (m_runningClients)
+                m_runningClients.Remove(clID);
 
             ClientClosed?.Invoke(clID);
 
@@ -61,8 +41,6 @@ namespace DGD.HubGovernor.Clients
             EventLogger.Info("Réception d'une notification de démarrage.");
 
             Dbg.Assert(msg.MessageCode == Message_t.Start);
-
-            m_lastCxnReqMsgID = msg.ID;
 
             var reader = new RawDataReader(new MemoryStream(msg.Data) , Encoding.UTF8);
             uint clID = reader.ReadUInt();
@@ -84,8 +62,9 @@ namespace DGD.HubGovernor.Clients
                 DialogEngin.WriteSrvDialog(srvDlgFile , clDlg);
 
                 AddUpload(Path.GetFileName(srvDlgFile));
-                return null;
+                return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , msg.Data);
             }
+
 
             EventLogger.Info("Réception d’une notification de démarrage " +
                     $"de la part du client {client.ContactName}");
@@ -96,26 +75,25 @@ namespace DGD.HubGovernor.Clients
             if (clStatus.Status != ClientStatus_t.Enabled)
             {
                 EventLogger.Info("Tentative de démarrage d’un client non autorisé. Requête rejetée.");
-
-                string dlgFile = AppPaths.GetLocalSrvDialogPath(clID);
-
-                try
-                {
-                    ClientDialog clDlg = DialogEngin.ReadSrvDialog(dlgFile);
-                    clDlg.ClientStatus = clStatus.Status;
-                    DialogEngin.WriteSrvDialog(dlgFile , clDlg);
-                }
-                catch (Exception ex)
-                {
-                    EventLogger.Error(ex.Message);
-
-                    var clDlg = new ClientDialog(clID , clStatus.Status , Enumerable.Empty<Message>());
-                    DialogEngin.WriteSrvDialog(dlgFile , clDlg);
-                }
-
                 return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , msg.Data);
             }
 
+
+            //reset dlg files                
+            DialogEngin.WriteHubDialog(AppPaths.GetLocalClientDilogPath(clID) , clID , Enumerable.Empty<Message>());
+            DialogEngin.WriteSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) ,
+                new ClientDialog(clID , clStatus.Status , Enumerable.Empty<Message>()));
+
+            try
+            {
+                new NetEngin(AppContext.Settings.AppSettings).Upload(AppPaths.RemoteDialogDirUri ,
+                    new string[] { AppPaths.GetLocalClientDilogPath(clID) , AppPaths.GetLocalSrvDialogPath(clID) });
+            }
+            catch (Exception ex)
+            {
+                EventLogger.Error(ex.Message);
+                return null;    // let the cleint retry req.
+            }
 
 
             EventLogger.Info($"Client démarré le {dtStart.Date.ToShortDateString()} à {dtStart.ToLongTimeString()}");
@@ -126,13 +104,8 @@ namespace DGD.HubGovernor.Clients
             //ajouter client dans running liste
             var clData = new ClientData(dtStart);
 
-            //reset dlg files                
-            DialogEngin.WriteSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) ,
-                new ClientDialog(clID , clStatus.Status , Enumerable.Empty<Message>()));
-
-            DialogEngin.WriteHubDialog(AppPaths.GetLocalClientDilogPath(clID) , clID , Enumerable.Empty<Message>());
-
-            m_runningClients[clID] = clData;
+            lock (m_runningClients)
+                m_runningClients[clID] = clData;
 
             //maj du last seen
             clStatus.LastSeen = dtStart;
@@ -147,8 +120,6 @@ namespace DGD.HubGovernor.Clients
             Dbg.Assert(msg.MessageCode == Message_t.Resume);
 
             EventLogger.Info("Réception d’une requête de reprise.");
-
-            m_lastCxnReqMsgID = msg.ID;
 
             //verfier que le client existe
             uint clID = BitConverter.ToUInt32(msg.Data , 0);
@@ -177,7 +148,7 @@ namespace DGD.HubGovernor.Clients
             //sinon
             //      bannir le client actif
             //      acvtiver le client en pause
-            var curClient = GetProfileActiveClient(prf.ID) as HubClient;
+            var curClient = GetProfileEnabledClient(prf.ID) as HubClient;
 
             if (curClient != null)
             {
@@ -193,73 +164,51 @@ namespace DGD.HubGovernor.Clients
                 EventLogger.Info($"Le client demandeur est plus ancien. Bannissement du client actif ({curClient.ContactName})...");
 
                 //maj de la table des statuts
-                var curClStatus = new ClientStatus(curClient.ID , ClientStatus_t.Banned);
+                var curClStatus = m_ndxerClientsStatus.Get(curClient.ID) as ClientStatus;
+                curClStatus.Status = ClientStatus_t.Banned;
                 int ndxCurClient = m_ndxerClientsStatus.IndexOf(curClStatus.ID);
                 m_ndxerClientsStatus.Source.Replace(ndxCurClient , curClStatus);
 
                 //maj du fichier distant g
                 string curClFilePath = AppPaths.GetLocalSrvDialogPath(curClient.ID);
-                try
-                {
-                    ClientDialog curClDlg = DialogEngin.ReadSrvDialog(curClFilePath);
-                    curClDlg.ClientStatus = ClientStatus_t.Banned;
-                    DialogEngin.WriteSrvDialog(curClFilePath , curClDlg);
-                }
-                catch (Exception ex)
-                {
-                    EventLogger.Error(ex.Message);
-
-                    var curClDlg = new ClientDialog(curClient.ID , ClientStatus_t.Banned , Enumerable.Empty<Message>());
-                    DialogEngin.WriteSrvDialog(curClFilePath , curClDlg);
-                }
-
+                var curClDlg = new ClientDialog(curClient.ID , ClientStatus_t.Banned , Enumerable.Empty<Message>());
+                DialogEngin.WriteSrvDialog(curClFilePath , curClDlg);
                 AddUpload(Names.GetSrvDialogFile(curClient.ID));
             }
 
 
+
             //activation du client demandeur            
 
+            //reset dlg files
+            DialogEngin.WriteHubDialog(AppPaths.GetLocalClientDilogPath(clID) , clID , Enumerable.Empty<Message>());
+            DialogEngin.WriteSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) ,
+                new ClientDialog(clID , ClientStatus_t.Enabled , Enumerable.Empty<Message>()));
+
+            try
+            {
+                new NetEngin(AppContext.Settings.AppSettings).Upload(AppPaths.RemoteDialogDirUri ,
+                    new string[] { AppPaths.GetLocalClientDilogPath(clID) , AppPaths.GetLocalSrvDialogPath(clID) });
+            }
+            catch (Exception ex)
+            {
+                EventLogger.Error(ex.Message);
+                return null;    // let the cleint retry req.
+            }
+
+
             //maj de la table des statuts
-            var clStatus = new ClientStatus(clID , ClientStatus_t.Enabled);
+            var clStatus = m_ndxerClientsStatus.Get(clID) as ClientStatus;
+            clStatus.Status = ClientStatus_t.Enabled;
+
             int ndxClient = m_ndxerClientsStatus.IndexOf(clID);
             m_ndxerClientsStatus.Source.Replace(ndxClient , clStatus);
 
-            //maj du fichier g
-            string clFilePath = AppPaths.GetLocalSrvDialogPath(clID);
-
-            try
-            {
-                ClientDialog clDlg = DialogEngin.ReadSrvDialog(clFilePath);
-                clDlg.ClientStatus = ClientStatus_t.Enabled;
-                DialogEngin.WriteSrvDialog(clFilePath , clDlg);
-            }
-            catch (Exception ex)
-            {
-                EventLogger.Error(ex.Message);
-                var clDlg = new ClientDialog(clID , ClientStatus_t.Enabled , Enumerable.Empty<Message>());
-                DialogEngin.WriteSrvDialog(clFilePath , clDlg);
-            }
-
-            AddUpload(Names.GetSrvDialogFile(clID));
-
             //maj du dic des clients actifs
             var clData = new ClientData(DateTime.Now);
-            string hubFilePath = AppPaths.GetLocalClientDilogPath(clID);
 
-            try
-            {
-                IEnumerable<Message> msgs = DialogEngin.ReadHubDialog(hubFilePath , clID);
-
-                if (msgs.Any())
-                    clData.LastInMessageID = msgs.Max(m => m.ID);
-            }
-            catch (Exception ex)
-            {
-                DialogEngin.WriteHubDialog(hubFilePath , clID , Enumerable.Empty<Message>());
-                EventLogger.Error(ex.Message);
-            }
-
-            m_runningClients[clID] = clData;
+            lock (m_runningClients)
+                m_runningClients[clID] = clData;
 
             ClientStarted?.Invoke(clID);
 
@@ -288,9 +237,6 @@ namespace DGD.HubGovernor.Clients
 
             EventLogger.Info(reqLog);
 
-            m_lastCxnReqMsgID = msg.ID;
-
-
 
             //verifier que le profil existe
             if (profile == null)
@@ -315,6 +261,7 @@ namespace DGD.HubGovernor.Clients
                 return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.InvalidID , data);
             }
 
+
             //verifier que le profile est en mode auto 
             ManagementMode_t prfMgmntMode = GetProfileManagementMode(clInfo.ProfileID);
 
@@ -330,7 +277,7 @@ namespace DGD.HubGovernor.Clients
 
 
             //desactiver l'ancien client actif si il existe
-            var oldClient = GetProfileActiveClient(clInfo.ProfileID);
+            var oldClient = GetProfileEnabledClient(clInfo.ProfileID);
 
             if (oldClient != null)
             {
@@ -348,18 +295,34 @@ namespace DGD.HubGovernor.Clients
 
 
                 //maj la table des status clients                
-                var oldClStatus = new ClientStatus(oldClient.ID , ClientStatus_t.Disabled);
+                var oldClStatus = m_ndxerClientsStatus.Get(oldClient.ID) as ClientStatus;
+                oldClStatus.Status = ClientStatus_t.Disabled;
                 int ndx = m_ndxerClientsStatus.IndexOf(oldClStatus.ID);
                 m_ndxerClientsStatus.Source.Replace(ndx , oldClStatus);
 
 
-                //maj des fichiers de dialogue
+                //maj des fichiers de dialogue de old client
                 string filePath = AppPaths.GetLocalSrvDialogPath(oldClient.ID);
-
-                ClientDialog clDlg = DialogEngin.ReadSrvDialog(filePath);
-                clDlg.ClientStatus = ClientStatus_t.Disabled;
+                ClientDialog clDlg = new ClientDialog(oldClient.ID , ClientStatus_t.Disabled , Enumerable.Empty<Message>());
                 DialogEngin.WriteSrvDialog(filePath , clDlg);
                 AddUpload(Names.GetSrvDialogFile(oldClient.ID));
+            }
+
+
+            //creer le fichier dialogue 
+            string srvDlgPath = AppPaths.GetLocalSrvDialogPath(clInfo.ClientID);
+            DialogEngin.WriteSrvDialog(srvDlgPath , new ClientDialog(clInfo.ClientID ,
+                 ClientStatus_t.Enabled , Enumerable.Empty<Message>()));
+
+            try
+            {
+                new NetEngin(AppContext.Settings.AppSettings).Upload(AppPaths.RemoteDialogDirUri ,
+                    new string[] { AppPaths.GetLocalClientDilogPath(clInfo.ClientID) , AppPaths.GetLocalSrvDialogPath(clInfo.ClientID) });
+            }
+            catch (Exception ex)
+            {
+                EventLogger.Error(ex.Message);
+                return null;    // let the cleint retry req.
             }
 
 
@@ -381,17 +344,12 @@ namespace DGD.HubGovernor.Clients
             //maj du client env
             UpdateClientEnvironment(clInfo.ClientID , clEnv);
 
-            //creer le fichier dialogue 
-            string srvDlgPath = AppPaths.GetLocalSrvDialogPath(clInfo.ClientID);
-            DialogEngin.WriteSrvDialog(srvDlgPath , new ClientDialog(clInfo.ClientID ,
-                 ClientStatus_t.Enabled , Enumerable.Empty<Message>()));
-
-            new NetEngin(AppContext.Settings.AppSettings).Upload(AppPaths.GetRemoteClientDialogUri(clInfo.ClientID) ,
-                srvDlgPath);
 
             //maj du dict des clients actifs
             var clData = new ClientData(DateTime.Now);
-            m_runningClients[clInfo.ClientID] = clData;
+
+            lock (m_runningClients)
+                m_runningClients[clInfo.ClientID] = clData;
 
             ClientStarted?.Invoke(clInfo.ClientID);
 
@@ -409,5 +367,7 @@ namespace DGD.HubGovernor.Clients
 
             return null;
         }
+
+        Message ProcessNullMessage(Message msg , uint clientID) => null;
     }
 }

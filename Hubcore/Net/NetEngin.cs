@@ -14,7 +14,7 @@ namespace DGD.HubCore.Net
 {
     public class NetEngin
     {
-        static readonly int[] m_waitTimes = { 2 , 3 , 5 , 7 , 11 , 13 , 17 , 19 , 23 , 29 };
+        static readonly int[] m_waitTimes = { 2 , 3 , 5 };// , 7 , 11 , 13 , 17 , 19 , 23 , 29 };
         readonly ICredential m_credential;
 
         public NetEngin(ICredential credential)

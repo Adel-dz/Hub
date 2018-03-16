@@ -294,6 +294,19 @@ namespace DGD.HubCore.DLG
             }
         }
 
+        public static void AppendSrvDialog(string filePath , IEnumerable<Message> msgs)
+        {
+            Assert(msgs != null);
+
+            using (FileLocker.Lock(filePath))
+            {
+                ClientDialog clDlg = ReadSrvDialog(filePath);
+                var newDlg = new ClientDialog(clDlg.ClientID , clDlg.ClientStatus , clDlg.Messages.Concat(msgs));
+
+                WriteSrvDialog(filePath , newDlg);
+            }
+        }
+
         public static ClientDialog ReadSrvDialog(string filePath)
         {
             using (FileLocker.Lock(filePath))

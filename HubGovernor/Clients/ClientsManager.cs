@@ -16,22 +16,21 @@ namespace DGD.HubGovernor.Clients
 {
     sealed partial class ClientsManager: IDisposable
     {
-        const int LIVE_TIMEOUT = 10;    //TODO: as opt
+        const int MAX_TTL = 10;    //TODO: as opt
 
 
         class ClientData
         {
             public ClientData(DateTime cxnTime)
             {
-                ConnectionTime = LastSeenTime = cxnTime;
-                LiveTimeout = LIVE_TIMEOUT;
+                ConnectionTime = cxnTime;
+                LiveTimeout = MAX_TTL;
             }
 
             public DateTime ConnectionTime { get; set; }
-            public DateTime LastSeenTime { get; set; }
             public int LiveTimeout { get; set; }
-            public uint LastInMessageID { get; set; }
-            public uint LastOutMessageID { get; set; }
+            public uint LastClientMessageID { get; set; }
+            public uint LastSrvMessageID { get; set; }
         }
 
         readonly Dictionary<uint , ClientData> m_runningClients;
@@ -71,7 +70,12 @@ namespace DGD.HubGovernor.Clients
                 { Message_t.NewConnection, ProcessNewConnectionReq },
                 { Message_t.Resume, ProcessResumeConnectionReq },
                 { Message_t.Start, ProcessStartMessage },
-                { Message_t.Close, ProcessCloseMessage }
+            };
+
+            m_msgProcessors = new Dictionary<Message_t , Func<Message , uint , Message>>
+            {
+                { Message_t.Close, ProcessCloseMessage },
+                {Message_t.Null, ProcessNullMessage }
             };
 
             RegisterHandlers();
@@ -98,10 +102,13 @@ namespace DGD.HubGovernor.Clients
         {
             get
             {
-                var clients = from clID in m_runningClients.Keys
-                              select m_ndxerClients.Get(clID) as HubClient;
+                lock (m_runningClients)
+                {
+                    var clients = from clID in m_runningClients.Keys
+                                  select m_ndxerClients.Get(clID) as HubClient;
 
-                return clients;
+                    return clients.ToArray();
+                }
             }
         }
 
@@ -143,7 +150,11 @@ namespace DGD.HubGovernor.Clients
             }
         }
 
-        public bool IsClientRunning(uint clID) => m_runningClients.Keys.Contains(clID);
+        public bool IsClientRunning(uint clID)
+        {
+            lock (m_runningClients)
+                return m_runningClients.Keys.Contains(clID);
+        }
 
         public ClientStatus_t GetClientStatus(uint idClient)
         {
@@ -158,43 +169,64 @@ namespace DGD.HubGovernor.Clients
             //basculer le mode de gestion des profil vers manuel
             SetProfileManagementMode(client.ProfileID , ManagementMode_t.Manual);
 
-            string filePath = AppPaths.GetLocalSrvDialogPath(client.ID);
-            ClientDialog clDlg = DialogEngin.ReadSrvDialog(filePath);
-
             //desactiver le client
-            HubClient oldClient = GetProfileActiveClient(client.ProfileID);
+            HubClient oldClient = GetProfileEnabledClient(client.ProfileID);
 
             if (status == ClientStatus_t.Enabled && oldClient != null && oldClient.ID != client.ID)
             {
                 EventLogger.Info($"Désactivation du client {oldClient.ContactName}...");
 
                 //maj la table des status clients
+                var oldClStatus = m_ndxerClientsStatus.Get(oldClient.ID) as ClientStatus;
                 int ndx = m_ndxerClientsStatus.IndexOf(oldClient.ID);
 
-                Dbg.Assert(ndx >= 0);
-
-                string oldClFilePath = AppPaths.GetLocalSrvDialogPath(oldClient.ID);
-                ClientDialog oldClDlg = DialogEngin.ReadSrvDialog(oldClFilePath);
-
-                var oldClStatus = new ClientStatus(oldClient.ID , ClientStatus_t.Disabled);
+                oldClStatus.Status = ClientStatus_t.Disabled;
                 m_ndxerClientsStatus.Source.Replace(ndx , oldClStatus);
 
-                oldClDlg.ClientStatus = ClientStatus_t.Disabled;
-                DialogEngin.WriteSrvDialog(oldClFilePath , oldClDlg);
-                AddUpload(Names.GetSrvDialogFile(oldClient.ID));
+                string oldClFilePath = AppPaths.GetLocalSrvDialogPath(oldClient.ID);
+
+                try
+                {
+                    ClientDialog oldClDlg = DialogEngin.ReadSrvDialog(oldClFilePath);
+                    oldClDlg.ClientStatus = ClientStatus_t.Disabled;
+                    DialogEngin.WriteSrvDialog(oldClFilePath , oldClDlg);
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Warning(ex.Message);
+                    DialogEngin.WriteSrvDialog(oldClFilePath ,
+                        new ClientDialog(oldClient.ID , ClientStatus_t.Disabled , Enumerable.Empty<Message>()));
+                }
+                finally
+                {
+                    AddUpload(Names.GetSrvDialogFile(oldClient.ID));
+                }
             }
 
 
             //maj la table des statuts clients
             int ndxStatus = m_ndxerClientsStatus.IndexOf(client.ID);
-
-            Dbg.Assert(ndxStatus >= 0);
-            var clStatus = new ClientStatus(client.ID , status);
+            var clStatus = m_ndxerClientsStatus.Get(client.ID) as ClientStatus;
+            clStatus.Status = status;
             m_ndxerClientsStatus.Source.Replace(ndxStatus , clStatus);
 
-            clDlg.ClientStatus = status;
-            DialogEngin.WriteSrvDialog(filePath , clDlg);
-            AddUpload(Names.GetSrvDialogFile(client.ID));
+            string filePath = AppPaths.GetLocalSrvDialogPath(client.ID);
+            try
+            {
+                ClientDialog clDlg = DialogEngin.ReadSrvDialog(filePath);
+                clDlg.ClientStatus = status;
+                DialogEngin.WriteSrvDialog(filePath , clDlg);
+            }
+            catch (Exception ex)
+            {
+                EventLogger.Warning(ex.Message);
+                DialogEngin.WriteSrvDialog(filePath ,
+                    new ClientDialog(client.ID , status , Enumerable.Empty<Message>()));
+            }
+            finally
+            {
+                AddUpload(Names.GetSrvDialogFile(client.ID));
+            }
         }
 
         public IEnumerable<HubClient> GetProfileClients(uint idProfile)
@@ -205,7 +237,7 @@ namespace DGD.HubGovernor.Clients
                     select cl).ToArray();
         }
 
-        public HubClient GetProfileActiveClient(uint idProfile)
+        public HubClient GetProfileEnabledClient(uint idProfile)
         {
             return (from hc in GetProfileClients(idProfile)
                     where (m_ndxerClientsStatus.Get(hc.ID) as ClientStatus).Status == ClientStatus_t.Enabled
@@ -247,7 +279,7 @@ namespace DGD.HubGovernor.Clients
 
         public static string ClientStrID(uint clID) => clID.ToString("X");
 
-        //private:                
+        //private:                        
         void Initialize()
         {
             EventLogger.Info("Réinitialisation des fichiers sur le serveur...");
@@ -322,30 +354,84 @@ namespace DGD.HubGovernor.Clients
             AddUpload(Names.ProfilesFile);
         }
 
-        void ProcessDialog(ClientDialog clientDialog)
+        void ProcessDialog(uint clientID , IEnumerable<Message> msgs)
         {
-            throw new NotImplementedException();
+            ClientData clData;
+
+            lock (m_runningClients)
+                if (!m_runningClients.TryGetValue(clientID , out clData))
+                    return;
+
+            uint id = clData.LastClientMessageID;
+
+            var seq = from msg in msgs
+                      where msg.ID > id
+                      select msg;
+
+
+            if (seq.Any())
+            {
+                uint lastSrvMsgID = clData.LastSrvMessageID;
+                uint lastClMsgID = clData.LastClientMessageID;
+                var respList = new List<Message>(seq.Count());
+
+                var clStatus = m_ndxerClientsStatus.Get(clientID) as ClientStatus;
+                clStatus.LastSeen = DateTime.Now;
+                clData.LiveTimeout = MAX_TTL;
+                clData.LastClientMessageID = seq.Max(m => m.ID);
+
+                foreach (Message msg in seq)
+                {
+                    Dbg.Log($"Processing dialog msg {msg.ID}...");
+                    Message resp = m_msgProcessors[msg.MessageCode](msg , clientID);
+
+                    if (resp != null)
+                        respList.Add(resp);
+                }
+
+
+                if (respList.Count > 0)
+                {
+                    DialogEngin.AppendSrvDialog(AppPaths.GetLocalSrvDialogPath(clientID) , respList);
+                    AddDownload(Names.GetSrvDialogFile(clientID));
+                }
+
+
+
+                Dbg.Assert(clData.LastClientMessageID >= lastClMsgID);
+                clStatus.ReceivedMsgCount += clData.LastClientMessageID - lastClMsgID;
+
+                Dbg.Assert(clData.LastSrvMessageID >= lastSrvMsgID);
+                clStatus.SentMsgCount += clData.LastSrvMessageID - lastSrvMsgID;
+
+                m_ndxerClientsStatus.Source.Replace(m_ndxerClientsStatus.IndexOf(clientID) , clStatus);
+            }
         }
 
         void ProcessConnectionReq(IEnumerable<Message> messages)
         {
-            EventLogger.Info("Traitement d’éventuelles requêtes de connexion...");
+            uint id = m_lastCxnReqMsgID;
+            IEnumerable<Message> reqs = messages.Where(m => m.ID > id);
 
-            IEnumerable<Message> reqs = messages.Where(m => m.ID > m_lastCxnReqMsgID);
-
-            var lst = new List<Message>();
-
-            foreach (Message req in reqs)
+            if (reqs.Any())
             {
-                Message resp = m_cxnReqProcessors[req.MessageCode](req);
+                var respList = new List<Message>();
 
-                if (resp != null)
-                    lst.Add(resp);
+                m_lastCxnReqMsgID = reqs.Max(m => m.ID);
+
+                foreach (Message req in reqs)
+                {
+                    Dbg.Log($"Processing connection msg {req.ID} ...");
+                    Message resp = m_cxnReqProcessors[req.MessageCode](req);
+
+                    if (resp != null)
+                        respList.Add(resp);
+                }
+
+                string respFile = AppPaths.LocalConnectionRespPath;
+                DialogEngin.AppendConnectionsResp(respFile , respList);
+                AddUpload(Names.ConnectionRespFile);
             }
-
-            string respFile = AppPaths.LocalConnectionRespPath;
-            DialogEngin.AppendConnectionsResp(respFile , lst);
-            AddUpload(Names.ConnectionRespFile);
         }
 
         void RegisterHandlers()
@@ -380,8 +466,6 @@ namespace DGD.HubGovernor.Clients
 
             if (files != null)
             {
-                EventLogger.Info($"Transfert de {files.Count} fichier(s) vers le serveur...");
-
                 string dlgFolder = AppPaths.LocalDialogFolderPath;
                 var netEngin = new NetEngin(AppContext.Settings.AppSettings);
 
@@ -391,7 +475,7 @@ namespace DGD.HubGovernor.Clients
                     string fileName = files[i];
                     string srcPath = Path.Combine(localDlgDir , fileName);
                     var destURI = new Uri(AppPaths.RemoteDialogDirUri , fileName);
-                    
+
 
                     try
                     {
@@ -412,8 +496,6 @@ namespace DGD.HubGovernor.Clients
 
         void ProcessDownloads()
         {
-            Dbg.Log("Processing downloads...");            
-
             List<string> files = null;
 
             lock (m_pendingDownloads)
@@ -425,8 +507,6 @@ namespace DGD.HubGovernor.Clients
 
             if (files != null)
             {
-                EventLogger.Info($"Réception de {files.Count} fichier(s) à partir du serveur");
-
                 Uri remoteDlgDir = AppPaths.RemoteDialogDirUri;
                 string localDlgFolder = AppPaths.LocalDialogFolderPath;
                 string cxnReqFile = Names.ConnectionReqFile;
@@ -437,12 +517,11 @@ namespace DGD.HubGovernor.Clients
                     string fileName = files[i];
                     string destPath = Path.Combine(localDlgFolder , fileName);
                     var srcURI = new Uri(remoteDlgDir , fileName);
-                                        
+
 
                     try
                     {
                         netEngin.Download(destPath , srcURI);
-                        files.RemoveAt(i);
                     }
                     catch (Exception ex)
                     {
@@ -451,9 +530,32 @@ namespace DGD.HubGovernor.Clients
                     }
 
                     if (string.Compare(fileName , cxnReqFile , true) == 0)
-                        ProcessConnectionReq(DialogEngin.ReadConnectionsReq(AppPaths.LocalConnectionReqPath));
+
+                        try
+                        {
+                            ProcessConnectionReq(DialogEngin.ReadConnectionsReq(AppPaths.LocalConnectionReqPath));
+                        }
+                        catch (Exception ex)
+                        {
+                            EventLogger.Warning(ex.Message);
+                        }
                     else
-                        ProcessDialog(DialogEngin.ReadSrvDialog(Path.Combine(localDlgFolder , fileName)));
+                    {
+                        uint clID = uint.Parse(Path.GetFileNameWithoutExtension(fileName) ,
+                            System.Globalization.NumberStyles.AllowHexSpecifier);
+
+                        try
+                        {
+                            ProcessDialog(clID , DialogEngin.ReadHubDialog(Path.Combine(localDlgFolder , fileName) , clID));
+                        }
+                        catch (Exception ex)
+                        {
+                            EventLogger.Warning(ex.Message);
+                            continue;
+                        }
+                    }
+
+                    files.RemoveAt(i);
                 }
 
 
@@ -483,73 +585,137 @@ namespace DGD.HubGovernor.Clients
 
         void ProcessRunningClients()
         {
-            const int LT_TO_REFRESH = 0;
-            const int LT_TO_DIE = -3;
+            const int TTL_REFRESH = 0;
+            const int TTL_DIE = -3;
 
-            var deadClient = new List<uint>();
+            var deadClients = new List<uint>();
 
-            foreach (uint clID in m_runningClients.Keys)
-            {
-                ClientData clData = m_runningClients[clID];
 
-                if (--clData.LiveTimeout <= LT_TO_DIE)
-                    deadClient.Add(clID);
-                else if (clData.LiveTimeout <= LT_TO_REFRESH)
+            lock (m_runningClients) //normalemnt non necessaire
+                foreach (uint clID in m_runningClients.Keys)
                 {
-                    EventLogger.Info($"Envoi d'un message de synchronisation au client {clID:X}.");
-                    var msg = new Message(++clData.LastOutMessageID , 0 , Message_t.Sync);
-                    DialogEngin.AppendSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) , msg);
-                    AddUpload(Names.GetClientDialogFile(clID));
-                }
-            }
+                    ClientData clData = m_runningClients[clID];
 
-            foreach (uint id in deadClient)
+                    if (--clData.LiveTimeout <= TTL_DIE)
+                        deadClients.Add(clID);
+                    else if (clData.LiveTimeout <= TTL_REFRESH)
+                    {
+                        EventLogger.Info($"Envoi d'un message de synchronisation au client {clID:X}.");
+                        var msg = new Message(++clData.LastSrvMessageID , 0 , Message_t.Sync); //delegate status update to processdialog method
+                        DialogEngin.AppendSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) , msg);
+                        AddUpload(Names.GetSrvDialogFile(clID));
+                    }
+                }
+
+            foreach (uint id in deadClients)
             {
                 EventLogger.Info($"Client {id:X} présumé déconnecté.");
-                m_runningClients.Remove(id);
+
+                lock (m_runningClients)
+                    m_runningClients.Remove(id);
+
                 ClientClosed?.Invoke(id);
             }
+
+            lock (m_runningClients)
+                foreach (uint clID in m_runningClients.Keys)
+                    AddDownload(Names.GetClientDialogFile(clID));
         }
 
-        static void UpdateClientEnvironment(uint clID , ClientEnvironment clEnv)
+        void UpdateClientEnvironment(uint clID , ClientEnvironment clEnv)
         {
-            using (IDatumProvider dp = AppContext.TableManager.ClientsEnvironment.DataProvider)
+            IEnumerable<HubClientEnvironment> seq =
+                from HubClientEnvironment env in m_ndxerClientsEnv.Source.Enumerate()
+                where env.ClientID == clID
+                select env;
+
+            if (seq.Any())
             {
-                dp.Connect();
+                HubClientEnvironment hubEnv = seq.First();
 
-                IEnumerable<HubClientEnvironment> seq = from HubClientEnvironment env in dp.Enumerate()
-                                                        where env.ClientID == clID
-                                                        select env;
-                if (seq.Any())
-                {
-                    HubClientEnvironment hubEnv = seq.First();
+                foreach (HubClientEnvironment hce in seq.Skip(1))
+                    if (hubEnv.CreationTime < hce.CreationTime)
+                        hubEnv = hce;
 
-                    foreach (HubClientEnvironment hce in seq.Skip(1))
-                        if (hubEnv.CreationTime < hce.CreationTime)
-                            hubEnv = hce;
-
-                    if (hubEnv.HubArchitecture == clEnv.HubArchitecture &&
-                            hubEnv.HubVersion == clEnv.HubVersion &&
-                            hubEnv.Is64BitOperatingSystem == clEnv.Is64BitOperatingSystem &&
-                            hubEnv.MachineName == clEnv.MachineName &&
-                            hubEnv.OSVersion == clEnv.OSVersion &&
-                            hubEnv.UserName == clEnv.UserName)
-                        return;
-                }
-
-                var newHubEnv = new HubClientEnvironment(AppContext.TableManager.ClientsEnvironment.CreateUniqID() ,
-                    clID);
-
-                newHubEnv.HubArchitecture = clEnv.HubArchitecture;
-                newHubEnv.HubVersion = clEnv.HubVersion;
-                newHubEnv.Is64BitOperatingSystem = clEnv.Is64BitOperatingSystem;
-                newHubEnv.MachineName = clEnv.MachineName;
-                newHubEnv.OSVersion = clEnv.OSVersion;
-                newHubEnv.UserName = clEnv.UserName;
-
-                dp.Insert(newHubEnv);
+                if (hubEnv.HubArchitecture == clEnv.HubArchitecture &&
+                        hubEnv.HubVersion == clEnv.HubVersion &&
+                        hubEnv.Is64BitOperatingSystem == clEnv.Is64BitOperatingSystem &&
+                        hubEnv.MachineName == clEnv.MachineName &&
+                        hubEnv.OSVersion == clEnv.OSVersion &&
+                        hubEnv.UserName == clEnv.UserName)
+                    return;
             }
+
+            var newHubEnv = new HubClientEnvironment(AppContext.TableManager.ClientsEnvironment.CreateUniqID() ,
+                clID);
+
+            newHubEnv.HubArchitecture = clEnv.HubArchitecture;
+            newHubEnv.HubVersion = clEnv.HubVersion;
+            newHubEnv.Is64BitOperatingSystem = clEnv.Is64BitOperatingSystem;
+            newHubEnv.MachineName = clEnv.MachineName;
+            newHubEnv.OSVersion = clEnv.OSVersion;
+            newHubEnv.UserName = clEnv.UserName;
+
+            m_ndxerClientsEnv.Source.Insert(newHubEnv);
         }
+
+        //void UpdateClientLastSeen(uint clID , DateTime dt)
+        //{
+        //    var clStatus = m_ndxerClientsStatus.Get(clID) as ClientStatus;
+        //    clStatus.LastSeen = dt;
+        //    m_ndxerClientsStatus.Source.Replace(m_ndxerClientsStatus.IndexOf(clID) , clStatus);
+        //}
+
+        //bool ValidateClient(uint clID)
+        //{
+        //    var client = m_ndxerClients.Get(clID) as HubClient;
+
+        //    string srvDlgFilePath = AppPaths.GetLocalSrvDialogPath(clID);
+
+        //    if (client == null)
+        //    {
+        //        EventLogger.Warning($"Client {clID:X} non enregistré. bannissement...");
+
+        //        DialogEngin.WriteSrvDialog(srvDlgFilePath ,
+        //            new ClientDialog(clID , ClientStatus_t.Banned , Enumerable.Empty<Message>()));
+
+        //        AddUpload(Names.GetSrvDialogFile(clID));
+        //        return false;
+        //    }
+
+
+        //    //check statut
+        //    var clStatus = m_ndxerClientsStatus.Get(clID) as ClientStatus;
+
+        //    if (clStatus.Status != ClientStatus_t.Enabled)
+        //    {
+        //        try
+        //        {
+        //            ClientDialog clDlg = DialogEngin.ReadSrvDialog(srvDlgFilePath);
+
+        //            if (clDlg.ClientStatus != clStatus.Status)
+        //            {
+        //                clDlg.ClientStatus = clStatus.Status;
+        //                DialogEngin.WriteSrvDialog(srvDlgFilePath , clDlg);
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            EventLogger.Warning(ex.Message);
+        //            DialogEngin.WriteSrvDialog(srvDlgFilePath ,
+        //                new ClientDialog(clID , clStatus.Status , Enumerable.Empty<Message>()));
+        //        }
+        //        finally
+        //        {
+        //            AddUpload(Names.GetSrvDialogFile(clID));
+        //        }
+
+        //        return true;
+        //    }
+
+        //    return true;
+        //}
+
 
         //handelrs:
         private void Profiles_DatumDeleted(IDataRow row) => ProcessProfilesChange();

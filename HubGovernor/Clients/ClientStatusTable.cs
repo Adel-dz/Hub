@@ -21,7 +21,9 @@ namespace DGD.HubGovernor.Clients
             {
                 new IntegerColumn("ID Client"),
                 new TextColumn("Statut"),
-                new TimeColumn("Vu pour la dernière fois")
+                new TimeColumn("Vu pour la dernière fois"),
+                new IntegerColumn("Nbre. de messages reçus"),
+                new IntegerColumn("Nbre. de messageq envoyés")
             };
         }
     }
