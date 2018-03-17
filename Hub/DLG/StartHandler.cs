@@ -15,7 +15,7 @@ namespace DGD.Hub.DLG
 {
     sealed class StartHandler
     {
-        const int TIMER_INTERVAL = 30 * 1000;
+        const int TIMER_INTERVAL = 10 * 1000;
         const int MAX_ATTEMPTS = 10;
                 
         readonly Timer m_timer;
@@ -133,13 +133,6 @@ namespace DGD.Hub.DLG
                             switch (resp.MessageCode)
                             {
                                 case Message_t.Ok:
-
-                                //reset dlg file
-                                string dlgFile = SettingsManager.GetClientDialogFilePath(m_clID);
-                                DialogEngin.WriteHubDialog(dlgFile , m_clID , Enumerable.Empty<Message>());
-
-                                netEngin.Upload(SettingsManager.GetClientDialogURI(m_clID) , dlgFile , true);
-
                                 m_callBack.Invoke(true);
                                 Dbg.Log("Starting notification done. :-)");
                                 return;

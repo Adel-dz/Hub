@@ -26,7 +26,7 @@ namespace DGD.HubGovernor.Opts
         public string ServerURL { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
-        public int DialogTimerInterval { get; set; } = 5000;
+        public int DialogTimerInterval { get; set; } = 10 * 1000;
         public int DialogInitializationInterval { get; set; } = 10000;
         
         public void Save(BinaryWriter writer)

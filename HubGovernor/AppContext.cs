@@ -29,6 +29,8 @@ namespace DGD.HubGovernor
             m_clientsManager = new ClientsManager();
         }
 
+
+        public static bool IsDisposed { get; private set; }
         public static TableManager TableManager => m_tableManager;        
         public static Settings Settings => m_settings;
         public static DataAccessPath AccessPath => m_accessPath;
@@ -55,12 +57,17 @@ namespace DGD.HubGovernor
 
         public static void Dispose()
         {
-            m_clientsManager.Dispose();
-            m_ioListener.Dispose();
-            m_accessPath.Dispose();
-            m_tableManager.Dispose();           
+            if (!IsDisposed)
+            {
+                m_clientsManager.Dispose();
+                m_ioListener.Dispose();
+                m_accessPath.Dispose();
+                m_tableManager.Dispose();
 
-            m_settings.Save();
+                m_settings.Save();
+
+                IsDisposed = true;
+            }
         }
 
 

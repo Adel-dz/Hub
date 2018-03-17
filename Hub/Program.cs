@@ -37,41 +37,37 @@ namespace DGD.Hub
             bool created;
             Mutex mtx = null;
 
+            mtx = new Mutex(true , @"Global\HUB_BoumekouezKhaled" , out created);
+
+            if (!created)
+                return;
             try
             {
-                mtx = new Mutex(true , @"Global\HUB_BoumekouezKhaled" , out created);
-
-                if (created)
+                using (m_settings = new SettingsManager())
+                using (m_tblManager = new TablesManager())
+                using (m_dlgManager = new DLG.DialogManager())
                 {
-                    using (m_settings = new SettingsManager())
-                    using (m_tblManager = new TablesManager())
-                    using (m_dlgManager = new DLG.DialogManager())
-                    {
-                        if (!Directory.Exists(SettingsManager.AppDataFolder))
-                            Directory.CreateDirectory(SettingsManager.AppDataFolder);
+                    if (!Directory.Exists(SettingsManager.AppDataFolder))
+                        Directory.CreateDirectory(SettingsManager.AppDataFolder);
 
-                        if (!Directory.Exists(SettingsManager.UserDataFolder))
-                            Directory.CreateDirectory(SettingsManager.UserDataFolder);
+                    if (!Directory.Exists(SettingsManager.UserDataFolder))
+                        Directory.CreateDirectory(SettingsManager.UserDataFolder);
 
-                        if (!Directory.Exists(SettingsManager.TablesFolder))
-                            Directory.CreateDirectory(SettingsManager.TablesFolder);
+                    if (!Directory.Exists(SettingsManager.TablesFolder))
+                        Directory.CreateDirectory(SettingsManager.TablesFolder);
 
-                        if (!Directory.Exists(SettingsManager.DialogFolder))
-                            Directory.CreateDirectory(SettingsManager.DialogFolder);
+                    if (!Directory.Exists(SettingsManager.DialogFolder))
+                        Directory.CreateDirectory(SettingsManager.DialogFolder);
 
 
-                        Application.EnableVisualStyles();
-                        Application.SetCompatibleTextRenderingDefault(false);
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
 
-                        Application.Run(new MainWindow());
-                    }
-
-                    Log.LogEngin.Dispose();
+                    Application.Run(new MainWindow());
                 }
-                else
-                {
-                    Dbg.Log("App already running!");
-                }
+
+                Log.LogEngin.Dispose();
+
             }
             catch (Exception ex)
             {

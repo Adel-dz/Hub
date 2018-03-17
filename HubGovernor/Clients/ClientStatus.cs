@@ -10,8 +10,8 @@ namespace DGD.HubGovernor.Clients
         uint ClientID { get; }
         ClientStatus_t Status { get; }
         DateTime LastSeen { get; }
-        uint ReceivedMsgCount { get; }
         uint SentMsgCount { get; }
+        uint ReceivedMsgCount { get; }
     }
 
 
@@ -35,8 +35,8 @@ namespace DGD.HubGovernor.Clients
         public uint ClientID => ID;
         public ClientStatus_t Status { get; set; }
         public DateTime LastSeen { get; set; }
-        public uint ReceivedMsgCount { get; set; }
         public uint SentMsgCount { get; set; }
+        public uint ReceivedMsgCount { get; set; }
 
         public static int Size => (sizeof(uint) * 3) + sizeof(byte) + sizeof(long);
         
@@ -52,8 +52,8 @@ namespace DGD.HubGovernor.Clients
 
             Status = (ClientStatus_t)st;
             LastSeen = reader.ReadTime();
-            ReceivedMsgCount = reader.ReadUInt();
             SentMsgCount = reader.ReadUInt();
+            ReceivedMsgCount = reader.ReadUInt();
         }
 
         protected override void DoWrite(IWriter writer)
@@ -62,8 +62,8 @@ namespace DGD.HubGovernor.Clients
 
             writer.Write((byte)Status);
             writer.Write(LastSeen);
-            writer.Write(ReceivedMsgCount);
             writer.Write(SentMsgCount);
+            writer.Write(ReceivedMsgCount);
         }
 
         protected override string[] GetContent()
@@ -73,8 +73,8 @@ namespace DGD.HubGovernor.Clients
                 ID.ToString("X"),
                 ClientStatuses.GetStatusName(Status),
                 LastSeen.ToString(),
-                ReceivedMsgCount.ToString(),
-                SentMsgCount.ToString()
+                SentMsgCount.ToString(),
+                ReceivedMsgCount.ToString()
             };
         }
     }

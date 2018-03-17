@@ -18,7 +18,7 @@ namespace DGD.HubCore.DLG
         SetInfo,    //in dlg, data = ClientInfo, no resp
         Start,  //in cnx, data = clientID + clientEnv + start time , resp = {ok, rejected}
         Close,  //in dlg, no data, no resp
-        Sync,    //in cnx dlg, data = clientid in cxn no data in dlg, resp = null
+        Sync,    //in cnx dlg, data = clientid + srvMsgID + clientMsgID in cxn no data in dlg, resp = null in dlg
         Null, //in cnx dlg, no data, no resp
     }
 

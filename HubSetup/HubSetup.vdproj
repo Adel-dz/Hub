@@ -15,14 +15,14 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_380D2096F8237562F0B4AE3F53C2A4D7"
+        "OwnerKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_B1CAD10EF995E7930CB27FBF45B8EC7C"
-        "OwnerKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
+        "MsmKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -33,14 +33,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_BD5948F9F16840BBA504F7A0C4ECFE14"
+        "MsmKey" = "8:_D927DA59ED9749E988776CECE320C758"
         "OwnerKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_BD5948F9F16840BBA504F7A0C4ECFE14"
-        "OwnerKey" = "8:_B1CAD10EF995E7930CB27FBF45B8EC7C"
+        "MsmKey" = "8:_D927DA59ED9749E988776CECE320C758"
+        "OwnerKey" = "8:_380D2096F8237562F0B4AE3F53C2A4D7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -52,13 +52,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B1CAD10EF995E7930CB27FBF45B8EC7C"
+        "OwnerKey" = "8:_380D2096F8237562F0B4AE3F53C2A4D7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_BD5948F9F16840BBA504F7A0C4ECFE14"
+        "OwnerKey" = "8:_D927DA59ED9749E988776CECE320C758"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -162,14 +162,14 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B1CAD10EF995E7930CB27FBF45B8EC7C"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_380D2096F8237562F0B4AE3F53C2A4D7"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.6.6649.35239, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.7.6650.19676, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_B1CAD10EF995E7930CB27FBF45B8EC7C"
+                    "_380D2096F8237562F0B4AE3F53C2A4D7"
                     {
                     "Name" = "8:Hubcore.dll"
                     "Attributes" = "3:512"
@@ -224,14 +224,14 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_BD5948F9F16840BBA504F7A0C4ECFE14"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D927DA59ED9749E988776CECE320C758"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.4.6647.37838, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.4.6647.42870, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_BD5948F9F16840BBA504F7A0C4ECFE14"
+                    "_D927DA59ED9749E988776CECE320C758"
                     {
                     "Name" = "8:ezLib.dll"
                     "Attributes" = "3:512"
@@ -311,15 +311,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Hub de la Valeur en Douane"
-        "ProductCode" = "8:{81311535-FF9D-48FB-9858-2EC81C57D37D}"
-        "PackageCode" = "8:{06FDB2B8-91FA-4D08-8436-DD917EA6E11C}"
+        "ProductCode" = "8:{EC02B3A5-E12C-4C85-AF6E-93CCBE737D61}"
+        "PackageCode" = "8:{B3C1AFCB-C3AC-4ED3-90C2-8D3ED660C44F}"
         "UpgradeCode" = "8:{09E42667-45AD-4BDE-8CBB-57A72FB06158}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.6.6649"
+        "ProductVersion" = "8:0.7.6650"
         "Manufacturer" = "8:Douane Algérienne"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

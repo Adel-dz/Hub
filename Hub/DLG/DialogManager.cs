@@ -18,6 +18,7 @@ namespace DGD.Hub.DLG
 {
     sealed partial class DialogManager: IDisposable
     {
+        const int TTL_MAX = 10;
         readonly object m_lock = new object();
         readonly Timer m_dialogTimer;
         readonly Timer m_updateTimer;
@@ -26,8 +27,9 @@ namespace DGD.Hub.DLG
         ClientStatus_t m_clStatus = ClientStatus_t.Unknown;
         uint m_srvLastMsgID;
         uint m_clientLastMsgID;
+        int m_timeToLive = TTL_MAX;
         bool m_needUpload;
-                
+
 
         public DialogManager()
         {
@@ -39,7 +41,8 @@ namespace DGD.Hub.DLG
 
             m_msgHandlersTable = new Dictionary<Message_t , Action<Message>>
             {
-                {Message_t.Sync, SyncHandler },         
+                {Message_t.Sync, SyncHandler },
+                {Message_t.Null, NullHandler }
             };
         }
 
@@ -167,7 +170,7 @@ namespace DGD.Hub.DLG
                 {
                     var thread = new System.Threading.Thread(PostCloseMessage);
                     thread.Start();
-                }                 
+                }
 
                 IsRunning = false;
             }
@@ -194,6 +197,9 @@ namespace DGD.Hub.DLG
         {
             if (ok)
             {
+                DialogEngin.WriteHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) , 
+                    m_clInfo.ClientID , Enumerable.Empty<Message>());
+
                 m_dialogTimer.Start();
                 m_updateTimer.Start(true);
             }
@@ -222,6 +228,9 @@ namespace DGD.Hub.DLG
                 break;
 
                 case ResumeHandler.Result_t.Ok:
+                DialogEngin.WriteHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) , 
+                    m_clInfo.ClientID , Enumerable.Empty<Message>());
+
                 m_dialogTimer.Start();
                 m_updateTimer.Start(true);
                 break;
@@ -295,6 +304,8 @@ namespace DGD.Hub.DLG
                 }
 
                 m_clInfo = Program.Settings.ClientInfo;
+                DialogEngin.WriteHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) ,
+                    m_clInfo.ClientID , Enumerable.Empty<Message>());
             }
 
             return true;
@@ -380,7 +391,7 @@ namespace DGD.Hub.DLG
 
                     foreach (Message msg in msgs)
                         if (m_msgHandlersTable.TryGetValue(msg.MessageCode , out msgHandler))
-                            msgHandler.Invoke(msg);                    
+                            msgHandler.Invoke(msg);
 
                     if (m_needUpload)
                     {
@@ -388,7 +399,12 @@ namespace DGD.Hub.DLG
                         new NetEngin(Program.Settings).Upload(SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , clFilePath , true);
                         m_needUpload = false;
                     }
+
+                    m_timeToLive = TTL_MAX;
                 }
+
+                if (--m_timeToLive <= 0)
+                    PostSyncMessage();
 
                 m_dialogTimer.Start();
             }
@@ -444,6 +460,44 @@ namespace DGD.Hub.DLG
                 new NetEngin(Program.Settings).Upload(SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , dlgFile);
             }
             catch { }
+        }
+
+        void PostSyncMessage()
+        {
+            Action post = () =>
+            {
+                var netEngin = new NetEngin(Program.Settings);
+                string tmpFile = Path.GetTempFileName();
+                var ms = new MemoryStream();
+                var writer = new RawDataWriter(ms , Encoding.UTF8);
+                writer.Write(m_clInfo.ClientID);
+                writer.Write(m_srvLastMsgID);
+                writer.Write(m_clientLastMsgID);
+                byte[] msgData = ms.ToArray();
+
+                try
+                {
+                    netEngin.Download(tmpFile , SettingsManager.ConnectionReqURI);
+                    var seq = DialogEngin.ReadConnectionsReq(tmpFile);
+                    uint msgID = 0;
+
+                    if (seq.Any())
+                        msgID = seq.Max(m => m.ID);
+
+                    var msg = new Message(msgID + 1 , 0 , Message_t.Sync , msgData);
+                    DialogEngin.AppendConnectionsReq(tmpFile , new Message[] { msg });
+                    netEngin.Upload(SettingsManager.ConnectionReqURI , tmpFile);
+                }
+                catch { }
+                finally
+                {
+                    File.Delete(tmpFile);
+                }
+            };
+
+
+            var task = new Task(post , TaskCreationOptions.LongRunning);
+            task.Start();
         }
     }
 }

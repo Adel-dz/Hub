@@ -14,25 +14,25 @@ namespace DGD.HubGovernor
         {
             Mutex mtx = null;
 
+            bool mtxOwned;
+            mtx = new Mutex(true , @"Global\GOVERNOR_BoumekouezKhaled" , out mtxOwned);
+
+            if (!mtxOwned)
+                return;
             try
             {
-                bool mtxOwned;
-                mtx = new Mutex(true , @"Global\GOVERNOR_BoumekouezKhaled" , out mtxOwned);
+                AppPaths.CheckFolders();
 
-                if (mtxOwned)
-                {
-                    AppPaths.CheckFolders();
+                AppContext.Init();
 
-                    AppContext.Init();
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new MainWindow());
 
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);
-                    Application.Run(new MainWindow());
-                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Une erreur fatale c’est produite:\n{ex.Message}\nCliquez sur OK pour fermer l'apliaction." , 
+                MessageBox.Show($"Une erreur fatale c’est produite:\n{ex.Message}\nCliquez sur OK pour fermer l'apliaction." ,
                     null , MessageBoxButtons.OK , MessageBoxIcon.Error);
             }
             finally

@@ -70,6 +70,7 @@ namespace DGD.HubGovernor.Clients
                 { Message_t.NewConnection, ProcessNewConnectionReq },
                 { Message_t.Resume, ProcessResumeConnectionReq },
                 { Message_t.Start, ProcessStartMessage },
+                {Message_t.Sync, ProcessSyncMessage }
             };
 
             m_msgProcessors = new Dictionary<Message_t , Func<Message , uint , Message>>
@@ -382,7 +383,7 @@ namespace DGD.HubGovernor.Clients
 
                 foreach (Message msg in seq)
                 {
-                    Dbg.Log($"Processing dialog msg {msg.ID}...");
+                    Dbg.Log($"Processing dialog msg {msg.ID}: {msg.MessageCode}...");
                     Message resp = m_msgProcessors[msg.MessageCode](msg , clientID);
 
                     if (resp != null)
@@ -399,10 +400,10 @@ namespace DGD.HubGovernor.Clients
 
 
                 Dbg.Assert(clData.LastClientMessageID >= lastClMsgID);
-                clStatus.ReceivedMsgCount += clData.LastClientMessageID - lastClMsgID;
+                clStatus.SentMsgCount += clData.LastClientMessageID - lastClMsgID;
 
                 Dbg.Assert(clData.LastSrvMessageID >= lastSrvMsgID);
-                clStatus.SentMsgCount += clData.LastSrvMessageID - lastSrvMsgID;
+                clStatus.ReceivedMsgCount += clData.LastSrvMessageID - lastSrvMsgID;
 
                 m_ndxerClientsStatus.Source.Replace(m_ndxerClientsStatus.IndexOf(clientID) , clStatus);
             }

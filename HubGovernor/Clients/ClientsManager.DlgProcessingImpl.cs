@@ -313,6 +313,8 @@ namespace DGD.HubGovernor.Clients
             string srvDlgPath = AppPaths.GetLocalSrvDialogPath(clInfo.ClientID);
             DialogEngin.WriteSrvDialog(srvDlgPath , new ClientDialog(clInfo.ClientID ,
                  ClientStatus_t.Enabled , Enumerable.Empty<Message>()));
+            DialogEngin.WriteHubDialog(AppPaths.GetLocalClientDilogPath(clInfo.ClientID) ,
+                clInfo.ClientID , Enumerable.Empty<Message>());
 
             try
             {
@@ -369,5 +371,77 @@ namespace DGD.HubGovernor.Clients
         }
 
         Message ProcessNullMessage(Message msg , uint clientID) => null;
+
+        Message ProcessSyncMessage(Message msg)
+        {
+            Dbg.Assert(msg.MessageCode == Message_t.Sync);
+
+            var ms = new MemoryStream(msg.Data);
+            var reader = new RawDataReader(ms , Encoding.UTF8);
+            uint clID = reader.ReadUInt();
+            uint srvMsgID = reader.ReadUInt();
+            uint clMsgId = reader.ReadUInt();
+
+            EventLogger.Info($"Reception d'un message de synchronisation du client {clID:X}.");
+
+            ClientData clData;
+
+            lock (m_runningClients)
+                m_runningClients.TryGetValue(clID , out clData);
+
+            if(clData != null)
+            {
+                clData.LiveTimeout = MAX_TTL;
+                var resp = new Message(++clData.LastSrvMessageID , 0 , Message_t.Null);
+
+                DialogEngin.AppendSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) , resp);
+                AddUpload(Names.GetSrvDialogFile(clID));
+
+                //maj status
+                var clStatus = m_ndxerClientsStatus.Get(clID) as ClientStatus;
+                clStatus.LastSeen = DateTime.Now;
+                ++clStatus.ReceivedMsgCount;
+                m_ndxerClientsStatus.Source.Replace(m_ndxerClientsStatus.IndexOf(clID) , clStatus);
+
+                return null;
+            }
+
+            var client = m_ndxerClients.Get(clID) as HubClient;
+
+            if(client == null)
+            {
+                EventLogger.Warning("Réception d’une demande de synchronisation " +
+                    $"de la part d’un client inexistant ({clID}). Bannissement du client.");
+
+                //maj du fichier gov
+                string srvDlgFile = AppPaths.GetLocalSrvDialogPath(clID);
+
+                //le client n'existe pas => son fichier gov n'existe pas
+                var clDlg = new ClientDialog(clID , ClientStatus_t.Banned , Enumerable.Empty<Message>());
+                DialogEngin.WriteSrvDialog(srvDlgFile , clDlg);
+
+                AddUpload(Path.GetFileName(srvDlgFile));
+                return null;
+            }
+
+
+            var status = m_ndxerClientsStatus.Get(clID) as ClientStatus;                        
+            var respMsg = new Message(++srvMsgID , 0 , Message_t.Null);
+            var dlg = new ClientDialog(clID , status.Status , new Message[] { respMsg });
+            DialogEngin.WriteSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) , dlg); 
+            AddUpload(Names.GetSrvDialogFile(clID));
+
+            if(status.Status == ClientStatus_t.Enabled)
+            {
+                clData = new ClientData(DateTime.Now);
+                clData.LastClientMessageID = clMsgId;
+                clData.LastSrvMessageID = srvMsgID;
+
+                lock (m_runningClients)
+                    m_runningClients[clID] = clData;
+            }
+
+            return null;
+        }
     }
 }

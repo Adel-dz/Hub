@@ -304,36 +304,31 @@ namespace DGD.HubGovernor.Clients
             }
         }
 
-        void UpdateStatusButtons()
+        void UpdateStatusButtons(ClientStatus_t status)
         {
             Dbg.Assert(!InvokeRequired);
 
-            TreeNode selNode = m_tvClients.SelectedNode;
+
 
             m_tsbBanishClient.Checked = m_tsbDisableClient.Checked = m_tsbEnableClient.Checked = false;
 
-            if (selNode != null && selNode.Parent != null)
+            m_tsbBanishClient.Enabled = m_tsbDisableClient.Enabled =
+                m_tsbEnableClient.Enabled = status != ClientStatus_t.Unknown;                
+
+
+            switch (status)
             {
-                var status = m_ndxerStatus.Get((selNode.Tag as HubClient).ID) as ClientStatus;
+                case ClientStatus_t.Enabled:
+                m_tsbEnableClient.Checked = true;
+                break;
 
-                switch (status.Status)
-                {
-                    case ClientStatus_t.Enabled:
-                    m_tsbEnableClient.Checked = true;
-                    break;
+                case ClientStatus_t.Disabled:
+                m_tsbDisableClient.Checked = true;
+                break;
 
-                    case ClientStatus_t.Disabled:
-                    m_tsbDisableClient.Checked = true;
-                    break;
-
-                    case ClientStatus_t.Banned:
-                    m_tsbBanishClient.Checked = true;
-                    break;
-
-                    default:
-                    Dbg.Assert(false);
-                    break;
-                }
+                case ClientStatus_t.Banned:
+                m_tsbBanishClient.Checked = true;
+                break;
             }
         }
 
@@ -348,24 +343,25 @@ namespace DGD.HubGovernor.Clients
         private void Clients_AfterSelect(object sender , TreeViewEventArgs e)
         {
             if (e.Node.Parent == null)
+            {
                 ClearClientInfo();
+                UpdateStatusButtons(ClientStatus_t.Unknown);
+            }
             else
             {
                 var client = e.Node.Tag as HubClient;
-
                 SetClientInfo(client);
 
-                m_tsbBanishClient.Enabled = m_tsbDisableClient.Enabled = m_tsbEnableClient.Enabled = true;
                 var clStatus = m_ndxerStatus.Get(client.ID) as ClientStatus;
+
+                UpdateStatusButtons(clStatus.Status);
             }
 
-            UpdateStatusButtons();
+            
         }
 
         private void RunningClientsOnly_Click(object sender , EventArgs e)
         {
-            TreeNode selNode = m_tvClients.SelectedNode;
-                 
             bool showAll = m_tsbRunningClientsOnly.Checked;
 
             if (showAll)
@@ -373,10 +369,9 @@ namespace DGD.HubGovernor.Clients
             else
                 LoadRunningClientsAsync();
 
-            if(m_tvClients.SelectedNode != selNode)
-            {
-
-            }
+            m_tvClients.SelectedNode = null;
+            ClearClientInfo();
+            UpdateStatusButtons(ClientStatus_t.Unknown);
 
 
             m_tsbRunningClientsOnly.Checked = !showAll;
@@ -406,6 +401,7 @@ namespace DGD.HubGovernor.Clients
                 Invoke(new Action<uint>(ClientsManager_ClientStarted) , clID);
             else
             {
+                TreeNode selNode = m_tvClients.SelectedNode;
                 TreeNode clNode = LocateClientNode(clID);
 
                 if (clNode != null)
@@ -442,6 +438,9 @@ namespace DGD.HubGovernor.Clients
 
                         root.Nodes.Add(CreateClientNode(client));
                         root.Expand();
+
+                        if (selNode != null)
+                            m_tvClients.SelectedNode = selNode;
                     }
                 }
             }
@@ -474,7 +473,7 @@ namespace DGD.HubGovernor.Clients
                     if (selNode == clNode)
                     {
                         ClearClientInfo();
-                        UpdateStatusButtons();
+                        UpdateStatusButtons(ClientStatus_t.Unknown);
                     }
                 }
             }
@@ -483,15 +482,17 @@ namespace DGD.HubGovernor.Clients
         private void ClientStatus_DatumReplaced(IDataRow datum)
         {
             if (InvokeRequired)
-                Invoke(new Action<IDataRow>(ClientStatus_DatumReplaced) , datum);
+                BeginInvoke(new Action<IDataRow>(ClientStatus_DatumReplaced) , datum);
             else
             {
                 TreeNode selNode = m_tvClients.SelectedNode;
 
                 if (selNode != null && selNode.Parent != null && (selNode.Tag as HubClient).ID == datum.ID)
                 {
-                    UpdateStatusButtons();
-                    m_lblStatus.Text = ClientStatuses.GetStatusName((datum as ClientStatus).Status);
+                    var clStatus = datum as ClientStatus;
+                    UpdateStatusButtons(clStatus.Status);                    
+                    m_lblStatus.Text = ClientStatuses.GetStatusName(clStatus.Status);
+                    m_lblLastActivity.Text = GetComprehensiveTime(clStatus.LastSeen);
                 }
             }
         }
