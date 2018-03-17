@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace DGD.Hub
 {
@@ -11,8 +12,20 @@ namespace DGD.Hub
 
         public string Message
         {
-            get { return m_lblMessage.Text; }
-            set { m_lblMessage.Text = value; }
-        }       
+            get
+            {
+                if (InvokeRequired)
+                    return Invoke(new Func<string>(() => m_lblMessage.Text)) as string;
+
+                return m_lblMessage.Text;
+            }
+            set
+            {
+                if (InvokeRequired)
+                    Invoke(new Action(() => m_lblMessage.Text = value));
+                else
+                    m_lblMessage.Text = value;
+            }
+        }
     }
 }

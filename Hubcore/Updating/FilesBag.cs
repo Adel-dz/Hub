@@ -221,6 +221,47 @@ namespace DGD.HubCore.Updating
             }
         }
 
+        public static IEnumerable<string> GetContent(string filePath)
+        {
+            using (FileStream fs = File.OpenRead(filePath))
+            using (var gzs = new GZipStream(fs , CompressionMode.Decompress))
+            {
+                var reader = new RawDataReader(gzs , Encoding.UTF8);
+
+                foreach (byte b in Signature)
+                    if (b != reader.ReadByte())
+                        throw new CorruptedFileException(filePath);
+
+                int nbDir = reader.ReadInt();
+                var folders = new List<string>(nbDir);
+
+                for (int i = 0; i < nbDir; ++i)
+                {
+                    string dir = reader.ReadString();
+                    folders.Add(dir);
+                }
+
+
+                int nbFile = reader.ReadInt();
+                var files = new List<string>(nbFile);
+
+                for (int i = 0; i < nbFile; ++i)
+                {
+                    string file = reader.ReadString();
+                    int ndxDir = reader.ReadInt();
+
+                    if (ndxDir != NDX_CUR_FOLDER)
+                        file = Path.Combine(folders[ndxDir] , file);
+
+                    files.Add(file);
+                    long fileLen = reader.ReadLong();
+                    reader.Skip((int)fileLen);
+                }
+
+                return files;
+            }
+        }
+
 
         //private:
         static byte[] Signature => Encoding.UTF8.GetBytes(SIGNATURE);
@@ -239,7 +280,8 @@ namespace DGD.HubCore.Updating
 
                 while(fileLen > 0)
                 {
-                    byte[] buffer = reader.ReadBytes(SZ_BUFFER);
+                    int sz = Math.Min(SZ_BUFFER , (int)fileLen);
+                    byte[] buffer = reader.ReadBytes(sz);
                     writer.Write(buffer);
                     fileLen -= buffer.Length;
                 }

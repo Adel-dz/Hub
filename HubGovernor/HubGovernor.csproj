@@ -377,6 +377,12 @@
       <DependentUpon>AppUpdateDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Updating\AppUpdateTable.cs" />
+    <Compile Include="Updating\AppUpdateViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Updating\AppUpdateViewer.Designer.cs">
+      <DependentUpon>AppUpdateViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Updating\TableUpdateViewer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -510,6 +516,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Updating\AppUpdateDialog.resx">
       <DependentUpon>AppUpdateDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Updating\AppUpdateViewer.resx">
+      <DependentUpon>AppUpdateViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Updating\TableUpdateViewer.resx">
       <DependentUpon>TableUpdateViewer.cs</DependentUpon>
@@ -659,6 +668,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Governor_app_ico.ico" />
+    <None Include="Resources\Extract_16.png" />
     <None Include="Resources\chat_16.png" />
     <None Include="Resources\history_16.png" />
     <None Include="Resources\folder_Open_16.png" />

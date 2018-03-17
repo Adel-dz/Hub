@@ -256,6 +256,7 @@
             this.m_lvAppUpdates.TabIndex = 1;
             this.m_lvAppUpdates.UseCompatibleStateImageBehavior = false;
             this.m_lvAppUpdates.View = System.Windows.Forms.View.Details;
+            this.m_lvAppUpdates.ItemActivate += new System.EventHandler(this.AppUpdates_ItemActivate);
             // 
             // m_colID
             // 

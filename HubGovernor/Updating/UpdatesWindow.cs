@@ -497,5 +497,13 @@ namespace DGD.HubGovernor.Updating
                     }
             }
         }
+
+        private void AppUpdates_ItemActivate(object sender , EventArgs e)
+        {
+            var item = m_lvAppUpdates.SelectedItems[0].Tag as AppUpdate;
+
+            var viewer = new AppUpdateViewer(item);
+            viewer.Show(Owner);
+        }
     }
 }
