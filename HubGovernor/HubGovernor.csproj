@@ -668,6 +668,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Governor_app_ico.ico" />
+    <None Include="Resources\reset_16.png" />
     <None Include="Resources\Extract_16.png" />
     <None Include="Resources\chat_16.png" />
     <None Include="Resources\history_16.png" />

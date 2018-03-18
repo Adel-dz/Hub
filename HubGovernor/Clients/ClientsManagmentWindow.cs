@@ -311,27 +311,26 @@ namespace DGD.HubGovernor.Clients
             Dbg.Assert(!InvokeRequired);
 
 
-
             m_tsbBanishClient.Checked = m_tsbDisableClient.Checked = m_tsbEnableClient.Checked = false;
 
-            m_tsbBanishClient.Enabled = m_tsbDisableClient.Enabled =
-                m_tsbEnableClient.Enabled = status != ClientStatus_t.Unknown;                
+            m_tsbReset.Enabled = m_tsbBanishClient.Enabled = m_tsbDisableClient.Enabled =
+                m_tsbEnableClient.Enabled = status != ClientStatus_t.Unknown;
 
+            if (status != ClientStatus_t.Unknown)
+                switch (status)
+                {
+                    case ClientStatus_t.Enabled:
+                    m_tsbEnableClient.Checked = true;
+                    break;
 
-            switch (status)
-            {
-                case ClientStatus_t.Enabled:
-                m_tsbEnableClient.Checked = true;
-                break;
+                    case ClientStatus_t.Disabled:
+                    m_tsbDisableClient.Checked = true;
+                    break;
 
-                case ClientStatus_t.Disabled:
-                m_tsbDisableClient.Checked = true;
-                break;
-
-                case ClientStatus_t.Banned:
-                m_tsbBanishClient.Checked = true;
-                break;
-            }
+                    case ClientStatus_t.Banned:
+                    m_tsbBanishClient.Checked = true;
+                    break;
+                }
         }
 
 
@@ -348,6 +347,7 @@ namespace DGD.HubGovernor.Clients
             {
                 ClearClientInfo();
                 UpdateStatusButtons(ClientStatus_t.Unknown);
+
             }
             else
             {
@@ -359,7 +359,7 @@ namespace DGD.HubGovernor.Clients
                 UpdateStatusButtons(clStatus.Status);
             }
 
-            
+
         }
 
         private void RunningClientsOnly_Click(object sender , EventArgs e)
@@ -492,7 +492,7 @@ namespace DGD.HubGovernor.Clients
                 if (selNode != null && selNode.Parent != null && (selNode.Tag as HubClient).ID == datum.ID)
                 {
                     var clStatus = datum as ClientStatus;
-                    UpdateStatusButtons(clStatus.Status);                    
+                    UpdateStatusButtons(clStatus.Status);
                     m_lblStatus.Text = ClientStatuses.GetStatusName(clStatus.Status);
                     m_lblLastActivity.Text = GetComprehensiveTime(clStatus.LastSeen);
                 }
@@ -507,11 +507,11 @@ namespace DGD.HubGovernor.Clients
             {
                 TreeNode node = LocateClientNode(row.ID);
 
-                if(node != null)
+                if (node != null)
                 {
                     node.Tag = row;
 
-                    if(m_tvClients.SelectedNode == node)
+                    if (m_tvClients.SelectedNode == node)
                     {
                         var clStatus = m_ndxerStatus.Get(row.ID) as ClientStatus;
 

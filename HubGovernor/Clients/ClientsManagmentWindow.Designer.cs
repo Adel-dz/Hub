@@ -54,6 +54,7 @@
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+            System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
             System.Windows.Forms.ToolStripButton m_tsbOptions;
@@ -79,6 +80,7 @@
             this.m_tsbEnableClient = new System.Windows.Forms.ToolStripButton();
             this.m_tsbDisableClient = new System.Windows.Forms.ToolStripButton();
             this.m_tsbBanishClient = new System.Windows.Forms.ToolStripButton();
+            this.m_tsbReset = new System.Windows.Forms.ToolStripButton();
             this.m_tsbShowActivityHistory = new System.Windows.Forms.ToolStripButton();
             this.m_tsbChat = new System.Windows.Forms.ToolStripButton();
             this.m_sslClientsCount = new System.Windows.Forms.ToolStripStatusLabel();
@@ -107,6 +109,7 @@
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             m_tsbOptions = new System.Windows.Forms.ToolStripButton();
@@ -625,6 +628,8 @@
             this.m_tsbDisableClient,
             this.m_tsbBanishClient,
             toolStripSeparator3,
+            this.m_tsbReset,
+            toolStripSeparator6,
             this.m_tsbShowActivityHistory,
             toolStripSeparator4,
             this.m_tsbChat,
@@ -705,6 +710,21 @@
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
             toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
+            // m_tsbReset
+            // 
+            this.m_tsbReset.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.m_tsbReset.Enabled = false;
+            this.m_tsbReset.Image = global::DGD.HubGovernor.Properties.Resources.reset_16;
+            this.m_tsbReset.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.m_tsbReset.Name = "m_tsbReset";
+            this.m_tsbReset.Size = new System.Drawing.Size(23, 22);
+            this.m_tsbReset.Text = "Réinitialisation du client";
+            // 
+            // toolStripSeparator6
+            // 
+            toolStripSeparator6.Name = "toolStripSeparator6";
+            toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
             // 
             // m_tsbShowActivityHistory
             // 
@@ -843,5 +863,6 @@
         private System.Windows.Forms.Label m_lblOSArchitecture;
         private System.Windows.Forms.Label m_lblHubArchitecture;
         private System.Windows.Forms.Label m_lblHubVersion;
+        private System.Windows.Forms.ToolStripButton m_tsbReset;
     }
 }
