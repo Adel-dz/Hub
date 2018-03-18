@@ -127,8 +127,10 @@ namespace DGD.Hub.DLG
                     Exit();
                     return;
                 }
-                else
+                else if (m_clStatus == ClientStatus_t.Disabled)
                     new ResumeHandler(ResumeResp , m_clInfo.ClientID).Start();
+                else
+                    ResetRegistration();
 
                 File.Delete(tmpFile);
             };
@@ -161,6 +163,10 @@ namespace DGD.Hub.DLG
             appUpdateTask.Start();
         }
 
+        void ResetRegistration()
+        {
+
+        }
 
         public void PostMessage(Message_t msgCode , byte[] data = null , uint reqID = 0)
         {
