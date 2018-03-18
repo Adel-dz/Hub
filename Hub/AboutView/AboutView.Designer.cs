@@ -28,31 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.PictureBox pictureBox1;
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutView));
             System.Windows.Forms.PictureBox m_pbLogo;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutView));
             System.Windows.Forms.PictureBox m_pbTitle;
             this.m_lblVersion = new System.Windows.Forms.Label();
             this.m_lblDataGeneration = new System.Windows.Forms.Label();
             this.m_lblUpdateKey = new System.Windows.Forms.Label();
-            pictureBox1 = new System.Windows.Forms.PictureBox();
             m_pbLogo = new System.Windows.Forms.PictureBox();
             m_pbTitle = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(m_pbLogo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(m_pbTitle)).BeginInit();
             this.SuspendLayout();
-            // 
-            // pictureBox1
-            // 
-            pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            pictureBox1.Location = new System.Drawing.Point(127, 113);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new System.Drawing.Size(182, 50);
-            pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            pictureBox1.TabIndex = 4;
-            pictureBox1.TabStop = false;
             // 
             // m_pbLogo
             // 
@@ -109,7 +95,7 @@
             this.m_lblUpdateKey.Name = "m_lblUpdateKey";
             this.m_lblUpdateKey.Size = new System.Drawing.Size(609, 23);
             this.m_lblUpdateKey.TabIndex = 5;
-            this.m_lblUpdateKey.Text = "Version des données:";
+            this.m_lblUpdateKey.Text = "Clé de mise à jours:";
             this.m_lblUpdateKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // AboutView
@@ -118,7 +104,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
             this.Controls.Add(this.m_lblUpdateKey);
-            this.Controls.Add(pictureBox1);
             this.Controls.Add(m_pbLogo);
             this.Controls.Add(this.m_lblDataGeneration);
             this.Controls.Add(this.m_lblVersion);
@@ -126,7 +111,6 @@
             this.ForeColor = System.Drawing.SystemColors.WindowText;
             this.Name = "AboutView";
             this.Size = new System.Drawing.Size(848, 531);
-            ((System.ComponentModel.ISupportInitialize)(pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(m_pbLogo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(m_pbTitle)).EndInit();
             this.ResumeLayout(false);
