@@ -195,9 +195,6 @@ namespace DGD.Hub
             AutoUpdater.CanDownlaodAppUpdate += AutoUpdater_CanDownlaodAppUpdate;
             AutoUpdater.CanRunAppUpdate += AutoUpdater_CanRunAppUpdate;
 
-            var task = new Task(AutoUpdater.UpdateApp , TaskCreationOptions.LongRunning);
-            task.Start();
-
             Program.DialogManager.Start();
         }
 

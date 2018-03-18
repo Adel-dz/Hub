@@ -84,6 +84,9 @@ namespace DGD.Hub.DLG
                     m_dialogTimer.Start();
                     m_updateTimer.Start(true);
                     m_dialogRunning = true;
+
+                    var updateTask = new Task(AutoUpdater.UpdateApp , TaskCreationOptions.LongRunning);
+                    updateTask.Start();
                 }
 
                 return;
@@ -153,8 +156,11 @@ namespace DGD.Hub.DLG
             task.OnError(onErr);
 
             task.Start();
+
+            var appUpdateTask = new Task(AutoUpdater.UpdateApp , TaskCreationOptions.LongRunning);
+            appUpdateTask.Start();
         }
-                
+
 
         public void PostMessage(Message_t msgCode , byte[] data = null , uint reqID = 0)
         {
