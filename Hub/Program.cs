@@ -14,6 +14,7 @@ namespace DGD.Hub
         static TablesManager m_tblManager;
         static SettingsManager m_settings;
         static DLG.DialogManager m_dlgManager;
+        static MainWindow m_mainWindow;
 
         public static TablesManager TablesManager => m_tblManager;
         public static SettingsManager Settings => m_settings;
@@ -27,6 +28,26 @@ namespace DGD.Hub
 #else
             AppArchitecture_t.Win7SP1;
 #endif
+
+        public static DialogResult ShowMessage(string msg, string caption = null, 
+            MessageBoxButtons btn = MessageBoxButtons.OK, MessageBoxIcon icon = MessageBoxIcon.None)
+        {
+            if (m_mainWindow == null)
+                return DialogResult.None;
+
+            Func<DialogResult> showMsg = () =>
+            {
+                if (caption == null)
+                    caption = m_mainWindow.Text;
+
+                return MessageBox.Show(m_mainWindow, msg, caption,btn, icon);
+            };
+
+            if (m_mainWindow.InvokeRequired)
+                return (DialogResult)m_mainWindow.Invoke(showMsg);
+
+            return showMsg();
+        }
 
         //private:
 
@@ -63,7 +84,9 @@ namespace DGD.Hub
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
 
-                    Application.Run(new MainWindow());
+                    m_mainWindow = new MainWindow();
+                    Application.Run(m_mainWindow);
+                    m_mainWindow = null;
                 }
 
                 Log.LogEngin.Dispose();
