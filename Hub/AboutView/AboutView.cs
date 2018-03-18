@@ -11,7 +11,7 @@ namespace DGD.Hub.AboutView
         {
             InitializeComponent();
 
-            m_lblVersion.Text = $"Version: {Assembly.GetExecutingAssembly().GetName().Version}";
+            m_lblVersion.Text = $"Version: {Assembly.GetExecutingAssembly().GetName().Version}";            
 
             System.Diagnostics.Trace.WriteLine($"Hub version: {Assembly.GetExecutingAssembly().GetName().Version}");
         }
@@ -23,6 +23,7 @@ namespace DGD.Hub.AboutView
             parent.Controls.Add(this);
             Dock = DockStyle.Fill;
             m_lblDataGeneration.Text = $"Version des données: {Program.Settings.DataGeneration}";
+            m_lblUpdateKey.Text = $"Clé de mise à jour: {Program.Settings.UpdateKey}";
             Show();
         }
 

@@ -34,6 +34,7 @@
             System.Windows.Forms.PictureBox m_pbTitle;
             this.m_lblVersion = new System.Windows.Forms.Label();
             this.m_lblDataGeneration = new System.Windows.Forms.Label();
+            this.m_lblUpdateKey = new System.Windows.Forms.Label();
             pictureBox1 = new System.Windows.Forms.PictureBox();
             m_pbLogo = new System.Windows.Forms.PictureBox();
             m_pbTitle = new System.Windows.Forms.PictureBox();
@@ -60,9 +61,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             m_pbLogo.Image = ((System.Drawing.Image)(resources.GetObject("m_pbLogo.Image")));
             m_pbLogo.InitialImage = global::DGD.Hub.Properties.Resources.logo_douane_529_754;
-            m_pbLogo.Location = new System.Drawing.Point(115, 173);
+            m_pbLogo.Location = new System.Drawing.Point(115, 183);
             m_pbLogo.Name = "m_pbLogo";
-            m_pbLogo.Size = new System.Drawing.Size(618, 328);
+            m_pbLogo.Size = new System.Drawing.Size(618, 318);
             m_pbLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             m_pbLogo.TabIndex = 3;
             m_pbLogo.TabStop = false;
@@ -95,16 +96,28 @@
             this.m_lblDataGeneration.ForeColor = System.Drawing.Color.Blue;
             this.m_lblDataGeneration.Location = new System.Drawing.Point(124, 133);
             this.m_lblDataGeneration.Name = "m_lblDataGeneration";
-            this.m_lblDataGeneration.Size = new System.Drawing.Size(609, 23);
+            this.m_lblDataGeneration.Size = new System.Drawing.Size(609, 19);
             this.m_lblDataGeneration.TabIndex = 2;
             this.m_lblDataGeneration.Text = "Version des données:";
             this.m_lblDataGeneration.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // m_lblUpdateKey
+            // 
+            this.m_lblUpdateKey.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.m_lblUpdateKey.ForeColor = System.Drawing.Color.Blue;
+            this.m_lblUpdateKey.Location = new System.Drawing.Point(124, 154);
+            this.m_lblUpdateKey.Name = "m_lblUpdateKey";
+            this.m_lblUpdateKey.Size = new System.Drawing.Size(609, 23);
+            this.m_lblUpdateKey.TabIndex = 5;
+            this.m_lblUpdateKey.Text = "Version des données:";
+            this.m_lblUpdateKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // AboutView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
+            this.Controls.Add(this.m_lblUpdateKey);
             this.Controls.Add(pictureBox1);
             this.Controls.Add(m_pbLogo);
             this.Controls.Add(this.m_lblDataGeneration);
@@ -125,5 +138,6 @@
 
         private System.Windows.Forms.Label m_lblVersion;
         private System.Windows.Forms.Label m_lblDataGeneration;
+        private System.Windows.Forms.Label m_lblUpdateKey;
     }
 }

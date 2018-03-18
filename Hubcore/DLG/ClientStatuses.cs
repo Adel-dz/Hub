@@ -8,7 +8,8 @@ namespace DGD.HubCore.DLG
         Unknown = 0,
         Enabled,
         Disabled,
-        Banned
+        Banned,
+        Pending
     }
 
 
@@ -19,7 +20,8 @@ namespace DGD.HubCore.DLG
             "",
             "Activé",
             "Désactivé" ,
-            "Banni"
+            "Banni",
+            "En attente de réinitialisation"
         };
 
         public static IEnumerable<ClientStatus_t> Statuses

@@ -281,6 +281,7 @@ namespace DGD.HubGovernor.Clients
 
         public static string ClientStrID(uint clID) => clID.ToString("X");
 
+
         //private:                        
         void Initialize()
         {
@@ -344,7 +345,7 @@ namespace DGD.HubGovernor.Clients
 
         void ProcessProfilesChange()
         {
-            EventLogger.Info("Mise à jour des profils au niveau du serveur...");
+            EventLogger.Info("Mise à jour des profils au niveau du serveur.");
 
             string filePath = AppPaths.LocalProfilesPath;
 
@@ -660,66 +661,8 @@ namespace DGD.HubGovernor.Clients
 
             m_ndxerClientsEnv.Source.Insert(newHubEnv);
         }
-
-        //void UpdateClientLastSeen(uint clID , DateTime dt)
-        //{
-        //    var clStatus = m_ndxerClientsStatus.Get(clID) as ClientStatus;
-        //    clStatus.LastSeen = dt;
-        //    m_ndxerClientsStatus.Source.Replace(m_ndxerClientsStatus.IndexOf(clID) , clStatus);
-        //}
-
-        //bool ValidateClient(uint clID)
-        //{
-        //    var client = m_ndxerClients.Get(clID) as HubClient;
-
-        //    string srvDlgFilePath = AppPaths.GetLocalSrvDialogPath(clID);
-
-        //    if (client == null)
-        //    {
-        //        EventLogger.Warning($"Client {clID:X} non enregistré. bannissement...");
-
-        //        DialogEngin.WriteSrvDialog(srvDlgFilePath ,
-        //            new ClientDialog(clID , ClientStatus_t.Banned , Enumerable.Empty<Message>()));
-
-        //        AddUpload(Names.GetSrvDialogFile(clID));
-        //        return false;
-        //    }
-
-
-        //    //check statut
-        //    var clStatus = m_ndxerClientsStatus.Get(clID) as ClientStatus;
-
-        //    if (clStatus.Status != ClientStatus_t.Enabled)
-        //    {
-        //        try
-        //        {
-        //            ClientDialog clDlg = DialogEngin.ReadSrvDialog(srvDlgFilePath);
-
-        //            if (clDlg.ClientStatus != clStatus.Status)
-        //            {
-        //                clDlg.ClientStatus = clStatus.Status;
-        //                DialogEngin.WriteSrvDialog(srvDlgFilePath , clDlg);
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            EventLogger.Warning(ex.Message);
-        //            DialogEngin.WriteSrvDialog(srvDlgFilePath ,
-        //                new ClientDialog(clID , clStatus.Status , Enumerable.Empty<Message>()));
-        //        }
-        //        finally
-        //        {
-        //            AddUpload(Names.GetSrvDialogFile(clID));
-        //        }
-
-        //        return true;
-        //    }
-
-        //    return true;
-        //}
-
-
-        //handelrs:
+        
+        //handelrs:        
         private void Profiles_DatumDeleted(IDataRow row) => ProcessProfilesChange();
         private void Profiles_DatumReplaced(IDataRow row) => ProcessProfilesChange();
         private void Profiles_DatumInserted(IDataRow row) => ProcessProfilesChange();
