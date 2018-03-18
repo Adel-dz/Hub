@@ -58,6 +58,12 @@ namespace DGD.Hub.DB
 
 
         public ITablesCollection Tables => m_tablesProxy;
+
+        public string GetTablePath(uint tblID)
+        {
+            return GetTable(tblID , false)?.FilePath;
+        }
+
         public IEnumerable<IDBTable> CriticalTables
         {
             get
@@ -190,10 +196,13 @@ namespace DGD.Hub.DB
         {
             IDBTable tbl = AllTables.FirstOrDefault(t => t.ID == tableID);
 
+            if (!connect)
+                return tbl;
+
             Dbg.Assert(Program.Settings.ClientInfo != null);
 
             if (tbl != null)
-                if (connect && !tbl.IsConnected)
+                if (!tbl.IsConnected)
                     try
                     {
                         tbl.Connect();

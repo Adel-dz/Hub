@@ -187,6 +187,10 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RunOnce\ClearTable.cs" />
+    <Compile Include="RunOnce\ResetClientInfo.cs" />
+    <Compile Include="RunOnce\ResetUpdateInfo.cs" />
+    <Compile Include="RunOnce\RunOnceManager.cs" />
     <Compile Include="SettingsManager.cs" />
     <Compile Include="SpotView\SpotViewItem.cs" />
     <Compile Include="SpotView\SpotView.cs">
