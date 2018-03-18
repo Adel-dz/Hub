@@ -52,7 +52,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_380D2096F8237562F0B4AE3F53C2A4D7"
+        "OwnerKey" = "8:_B6BF4A155058F8F3508777B1ACDB8745"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -64,7 +64,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B6BF4A155058F8F3508777B1ACDB8745"
+        "OwnerKey" = "8:_380D2096F8237562F0B4AE3F53C2A4D7"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -169,11 +169,6 @@
             "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.7.6650.23452, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_380D2096F8237562F0B4AE3F53C2A4D7"
-                    {
-                    "Name" = "8:Hubcore.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:Hubcore.dll"
             "TargetName" = "8:"
@@ -200,11 +195,6 @@
             "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
                 "ScatterAssemblies"
                 {
-                    "_B6BF4A155058F8F3508777B1ACDB8745"
-                    {
-                    "Name" = "8:System.Net.Http.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:System.Net.Http.dll"
             "TargetName" = "8:"
@@ -231,11 +221,6 @@
             "AssemblyAsmDisplayName" = "8:ezLib, Version=0.4.6647.42870, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_D927DA59ED9749E988776CECE320C758"
-                    {
-                    "Name" = "8:ezLib.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:ezLib.dll"
             "TargetName" = "8:"
@@ -311,15 +296,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Hub de la Valeur en Douane"
-        "ProductCode" = "8:{8F815412-6534-4D26-BE6F-4904C5DB9317}"
-        "PackageCode" = "8:{BBAECC63-B44B-497F-AC2B-B21FBA5A6568}"
+        "ProductCode" = "8:{3D0E0AEC-F3A3-4BC7-B940-E882301BEB9C}"
+        "PackageCode" = "8:{4902A2F2-233A-469D-8762-C6BC1DCD6F05}"
         "UpgradeCode" = "8:{09E42667-45AD-4BDE-8CBB-57A72FB06158}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.8.6650"
+        "ProductVersion" = "8:0.9.6651"
         "Manufacturer" = "8:Douane Algérienne"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

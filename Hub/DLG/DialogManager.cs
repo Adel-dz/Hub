@@ -29,6 +29,7 @@ namespace DGD.Hub.DLG
         uint m_clientLastMsgID;
         int m_timeToLive = TTL_MAX;
         bool m_needUpload;
+        bool m_dialogRunning;
 
 
         public DialogManager()
@@ -82,6 +83,7 @@ namespace DGD.Hub.DLG
                     m_clStatus = ClientStatus_t.Enabled;
                     m_dialogTimer.Start();
                     m_updateTimer.Start(true);
+                    m_dialogRunning = true;
                 }
 
                 return;
@@ -172,16 +174,17 @@ namespace DGD.Hub.DLG
             if (IsRunning)
             {
                 m_updateTimer.Stop();
-                m_dialogTimer.Stop();
+                m_dialogTimer.Stop();                
 
                 Opts.SettingsView.ClientInfoChanged -= SettingsView_ClientInfoChaned;
 
-                if (m_clInfo != null && !ignoreCloseNotification)
+                if (m_clInfo != null && !ignoreCloseNotification && m_dialogRunning)
                 {
                     var thread = new System.Threading.Thread(PostCloseMessage);
                     thread.Start();
                 }
 
+                m_dialogRunning = false;
                 IsRunning = false;
             }
         }
@@ -259,6 +262,7 @@ namespace DGD.Hub.DLG
             {
                 m_dialogTimer.Start();
                 m_updateTimer.Start(true);
+                m_dialogRunning = true;
             }
             else
             {
@@ -287,6 +291,7 @@ namespace DGD.Hub.DLG
                 case ResumeHandler.Result_t.Ok:            
                 m_dialogTimer.Start();
                 m_updateTimer.Start(true);
+                m_dialogRunning = true;
                 break;
 
                 case ResumeHandler.Result_t.Rejected:

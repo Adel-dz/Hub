@@ -158,6 +158,8 @@ namespace DGD.Hub
             }
         }
 
+        public bool UseCountryCode { get; set; }
+
         public static Uri ServerURI => new Uri("ftp://douane.gov.dz");
         public static Uri DataUpdateDirURI => Uris.GetDataUpdateDirUri(ServerURI);
         public static Uri AppUpdateDirURI => Uris.GetAppUpdateDirUri(ServerURI);
@@ -171,6 +173,7 @@ namespace DGD.Hub
         public static int UpdateTimerInterval => 1 * 60 * 1000;
         public static int ConnectionTimerInterval => 10 * 1000;
         public static int MaxConnectAttemps => 3;
+        
 
         public static string AppDataFolder => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) , APP_BASE_FOLDER);
@@ -253,6 +256,7 @@ namespace DGD.Hub
                 writer.Write(FrameRectangle.Top);
                 writer.Write(FrameRectangle.Width);
                 writer.Write(FrameRectangle.Height);
+                writer.Write(UseCountryCode);
 
                 writer.Write(MRUSubHeadingSize);
                 writer.Write(MRUSubHeading.Count);
@@ -287,6 +291,7 @@ namespace DGD.Hub
 
                 FrameRectangle = new Rectangle(x , y , w , h);
 
+                UseCountryCode = reader.ReadBoolean();
 
                 int mruSize = reader.ReadInt();
                 int mruCount = reader.ReadInt();

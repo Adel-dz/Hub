@@ -15,20 +15,20 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_8569EBAE40114BD053EC1584598E9C94"
+        "MsmKey" = "8:_21BF9438E147D8BCE00ACA66D19B1626"
         "OwnerKey" = "8:_FB72238B1ABF4B4094406A03994E250F"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_8569EBAE40114BD053EC1584598E9C94"
-        "OwnerKey" = "8:_98744BEE9B21E4BBDCE773562CE9A7CE"
+        "MsmKey" = "8:_70B14E68879449C693B92D1B9C2FB9FF"
+        "OwnerKey" = "8:_FB72238B1ABF4B4094406A03994E250F"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_98744BEE9B21E4BBDCE773562CE9A7CE"
-        "OwnerKey" = "8:_FB72238B1ABF4B4094406A03994E250F"
+        "MsmKey" = "8:_70B14E68879449C693B92D1B9C2FB9FF"
+        "OwnerKey" = "8:_21BF9438E147D8BCE00ACA66D19B1626"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -52,13 +52,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_98744BEE9B21E4BBDCE773562CE9A7CE"
+        "OwnerKey" = "8:_21BF9438E147D8BCE00ACA66D19B1626"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_8569EBAE40114BD053EC1584598E9C94"
+        "OwnerKey" = "8:_70B14E68879449C693B92D1B9C2FB9FF"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -162,20 +162,20 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_8569EBAE40114BD053EC1584598E9C94"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_21BF9438E147D8BCE00ACA66D19B1626"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ezLib, Version=1.0.6643.16725, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.9.6651.17827, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_8569EBAE40114BD053EC1584598E9C94"
+                    "_21BF9438E147D8BCE00ACA66D19B1626"
                     {
-                    "Name" = "8:ezLib.dll"
+                    "Name" = "8:Hubcore.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:ezLib.dll"
+            "SourcePath" = "8:Hubcore.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_049468C3EAA24AEAAF84E1F06D1C8CC1"
@@ -193,20 +193,20 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_98744BEE9B21E4BBDCE773562CE9A7CE"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_70B14E68879449C693B92D1B9C2FB9FF"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Hubcore, Version=1.0.6643.16726, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.5.6651.17827, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_98744BEE9B21E4BBDCE773562CE9A7CE"
+                    "_70B14E68879449C693B92D1B9C2FB9FF"
                     {
-                    "Name" = "8:Hubcore.dll"
+                    "Name" = "8:ezLib.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:Hubcore.dll"
+            "SourcePath" = "8:ezLib.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_049468C3EAA24AEAAF84E1F06D1C8CC1"
@@ -311,15 +311,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Hub Governor"
-        "ProductCode" = "8:{214EC639-1FF2-4D89-8B00-CB2125006A2A}"
-        "PackageCode" = "8:{A25EB0B1-86F3-47FE-BADF-85890EE4AF5E}"
+        "ProductCode" = "8:{67A778F9-A9D2-421D-9364-237A72A8FCB2}"
+        "PackageCode" = "8:{3F33B272-7C4A-45FB-B148-E85445D63F1F}"
         "UpgradeCode" = "8:{E84052B2-E777-4DC6-AB95-9EB58ECE7A0C}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.1.6643"
+        "ProductVersion" = "8:0.5.6651"
         "Manufacturer" = "8:Douane Algérienne"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
