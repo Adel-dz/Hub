@@ -76,7 +76,8 @@ namespace DGD.HubGovernor.Clients
             m_msgProcessors = new Dictionary<Message_t , Func<Message , uint , Message>>
             {
                 { Message_t.Close, ProcessCloseMessage },
-                {Message_t.Null, ProcessNullMessage }
+                {Message_t.Null, ProcessNullMessage },
+                {Message_t.SetInfo, ProcessSetInfoMessage }
             };
 
             RegisterHandlers();
@@ -394,7 +395,7 @@ namespace DGD.HubGovernor.Clients
                 if (respList.Count > 0)
                 {
                     DialogEngin.AppendSrvDialog(AppPaths.GetLocalSrvDialogPath(clientID) , respList);
-                    AddDownload(Names.GetSrvDialogFile(clientID));
+                    AddUpload(Names.GetSrvDialogFile(clientID));
                 }
 
 

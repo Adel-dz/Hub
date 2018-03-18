@@ -62,7 +62,15 @@ namespace DGD.Hub
         {
             base.OnFormClosing(e);
 
-            if(Program.DialogManager.IsRunning)
+            AutoUpdater.CanDownlaodAppUpdate -= AutoUpdater_CanDownlaodAppUpdate;
+            AutoUpdater.CanRunAppUpdate -= AutoUpdater_CanRunAppUpdate;
+
+            Log.LogEngin.MessageReady -= LogEngin_MessageReady;
+            Log.LogEngin.MessageTimeout -= LogEngin_MessageTimeout;
+
+
+
+            if (Program.DialogManager.IsRunning)
                 Program.DialogManager.Stop();
 
             if (WindowState == FormWindowState.Maximized)
@@ -149,7 +157,14 @@ namespace DGD.Hub
         DummyView.DummyView InitMachineriesView() => InitDummyView(m_tsbMachinery);
         DummyView.DummyView InitQuadView() => InitDummyView(m_tsbQuad);
         DummyView.DummyView InitJetSkiesView() => InitDummyView(m_tsbJetSki);
-        DummyView.DummyView InitSettingsView() => InitDummyView(m_tsbSettings);
+
+        Opts.SettingsView InitSettingsView()
+        {
+            var view = new Opts.SettingsView();
+            m_tsbSettings.Tag = view;
+            return view;
+        }
+
         DummyView.DummyView InitHelpView() => InitDummyView(m_tsbHelp);
 
         T RunTask<T>(Func<T> func , bool useThreadPool = false)

@@ -223,6 +223,16 @@ namespace DGD.Hub.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap settings_256 {
+            get {
+                object obj = ResourceManager.GetObject("settings_256", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap spinner_32 {
             get {
                 object obj = ResourceManager.GetObject("spinner_32", resourceCulture);

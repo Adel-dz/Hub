@@ -321,6 +321,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="hub_app_ico.ico" />
+    <None Include="Resources\settings_256.png" />
     <None Include="Resources\spinner_32.gif" />
     <None Include="Resources\profile_64.png" />
     <None Include="Resources\range_val_48.png" />

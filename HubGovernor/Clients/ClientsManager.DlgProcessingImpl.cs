@@ -443,5 +443,42 @@ namespace DGD.HubGovernor.Clients
 
             return null;
         }
+
+        Message ProcessSetInfoMessage(Message msg, uint clID)
+        {
+            Dbg.Assert(msg.MessageCode == Message_t.SetInfo);
+            EventLogger.Info($"Réception d’une mise à jour des infos. Utilisateur du client {clID:X}.");
+
+            int ndx = m_ndxerClients.IndexOf(clID);
+
+            if(ndx < 0)
+            {
+                EventLogger.Warning("Client inexistant.  Requête ignorée.");
+                return null;
+            }
+
+            //maj le client
+            ClientInfo clInfo = new ClientInfo();
+            clInfo.SetBytes(msg.Data);
+
+            var client = new HubClient(clInfo.ClientID , clInfo.ProfileID)
+            {
+                ContaclEMail = clInfo.ContaclEMail ,
+                ContactName = clInfo.ContactName ,
+                ContactPhone = clInfo.ContactPhone ,
+            };
+
+
+            m_ndxerClients.Source.Replace(ndx , client);
+
+            
+            ClientData clData;
+            lock (m_runningClients)
+                m_runningClients.TryGetValue(clID , out clData);
+
+            uint msgID = clData == null ? 1 : ++clData.LastClientMessageID;
+
+            return msg.CreateResponse(msgID , Message_t.Ok);
+        }
     }
 }

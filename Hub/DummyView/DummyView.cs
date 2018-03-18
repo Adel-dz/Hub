@@ -3,7 +3,7 @@ using static System.Diagnostics.Debug;
 
 namespace DGD.Hub.DummyView
 {
-    public partial class DummyView: UserControl, IView
+    sealed partial class DummyView: UserControl, IView
     {
         public DummyView()
         {

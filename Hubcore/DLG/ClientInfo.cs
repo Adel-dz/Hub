@@ -10,7 +10,7 @@ namespace DGD.HubCore.DLG
         ClientInfo()
         { }
 
-        public ClientInfo(uint clientID , uint profileID)
+        public ClientInfo(uint clientID = 0, uint profileID = 0)
         {
             ClientID = clientID;
             ProfileID = profileID;
@@ -18,7 +18,7 @@ namespace DGD.HubCore.DLG
 
         public uint ClientID { get; private set; }
         public uint ProfileID { get; private set; }
-        public string MachineName { get; set; }
+        //public string MachineName { get; set; }
         public string ContactName { get; set; }
         public string ContaclEMail { get; set; }
         public string ContactPhone { get; set; }
@@ -31,7 +31,7 @@ namespace DGD.HubCore.DLG
             if (ClientID == 0 || ProfileID == 0)
                 throw new CorruptedStreamException();
 
-            MachineName = reader.ReadString();
+            //MachineName = reader.ReadString();
             ContactName = reader.ReadString();
             ContactPhone = reader.ReadString(); 
             ContaclEMail = reader.ReadString(); 
@@ -44,7 +44,7 @@ namespace DGD.HubCore.DLG
 
             writer.Write(ClientID);
             writer.Write(ProfileID);
-            writer.Write(MachineName);
+            //writer.Write(MachineName);
             writer.Write(ContactName);
             writer.Write(ContactPhone);
             writer.Write(ContaclEMail);

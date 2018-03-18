@@ -70,6 +70,8 @@ namespace DGD.Hub.DLG
 
             IsRunning = true;
 
+            Opts.SettingsView.ClientInfoChanged += SettingsView_ClientInfoChaned;
+
             //client enregistre?
             m_clInfo = Program.Settings.ClientInfo;
 
@@ -84,6 +86,11 @@ namespace DGD.Hub.DLG
 
                 return;
             }
+
+
+            DialogEngin.WriteHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) , 
+                m_clInfo.ClientID , Enumerable.Empty<Message>());
+            
 
             //process only status part of the g file
             string tmpFile = Path.GetTempFileName();
@@ -145,6 +152,7 @@ namespace DGD.Hub.DLG
 
             task.Start();
         }
+                
 
         public void PostMessage(Message_t msgCode , byte[] data = null , uint reqID = 0)
         {
@@ -165,6 +173,8 @@ namespace DGD.Hub.DLG
             {
                 m_updateTimer.Stop();
                 m_dialogTimer.Stop();
+
+                Opts.SettingsView.ClientInfoChanged -= SettingsView_ClientInfoChaned;
 
                 if (m_clInfo != null && !ignoreCloseNotification)
                 {
@@ -191,15 +201,62 @@ namespace DGD.Hub.DLG
             }
         }
 
+        public uint SendMessage(Message_t msgCode, byte[] data = null, uint reqID = 0)
+        {
+            Message msg;
+
+            lock(m_lock)            
+                msg = new Message(++m_clientLastMsgID , reqID , msgCode , data);
+
+            
+            try
+            {
+                Uri dest = SettingsManager.GetClientDialogURI(m_clInfo.ClientID);
+                string src = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
+
+                DialogEngin.AppendHubDialog(src , m_clInfo.ClientID , msg);
+                new NetEngin(Program.Settings).Upload(dest , src);
+
+                return msg.ID;
+            }            
+            catch(Exception ex)
+            {
+                Dbg.Log(ex.Message);                
+            }
+
+            return 0;
+        }
+
+        public Message ReceiveMessage(uint reqID)
+        {
+            string tmpFile = Path.GetTempFileName();
+            Uri src = SettingsManager.GetServerDialogURI(m_clInfo.ClientID);
+
+            try
+            {
+                new NetEngin(Program.Settings).Download(tmpFile , src);
+                ClientDialog clDlg = DialogEngin.ReadSrvDialog(tmpFile);
+
+                Message msg = clDlg.Messages.SingleOrDefault(m => m.ReqID == reqID);
+                return msg;
+            }
+            catch (Exception ex)
+            {
+                Dbg.Log(ex.Message);
+            }
+            finally
+            {
+                File.Delete(tmpFile);
+            }
+
+            return null;
+        }
 
         //private:
         void StartResp(bool ok)
         {
             if (ok)
             {
-                DialogEngin.WriteHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) , 
-                    m_clInfo.ClientID , Enumerable.Empty<Message>());
-
                 m_dialogTimer.Start();
                 m_updateTimer.Start(true);
             }
@@ -227,10 +284,7 @@ namespace DGD.Hub.DLG
                 Exit();
                 break;
 
-                case ResumeHandler.Result_t.Ok:
-                DialogEngin.WriteHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) , 
-                    m_clInfo.ClientID , Enumerable.Empty<Message>());
-
+                case ResumeHandler.Result_t.Ok:            
                 m_dialogTimer.Start();
                 m_updateTimer.Start(true);
                 break;
@@ -289,7 +343,7 @@ namespace DGD.Hub.DLG
                 clInfo.ContaclEMail = dlg.ContactEMail;
                 clInfo.ContactName = dlg.Contact;
                 clInfo.ContactPhone = dlg.ContactPhone;
-                clInfo.MachineName = Environment.MachineName;
+                //clInfo.MachineName = Environment.MachineName;
             }
 
 
@@ -498,6 +552,13 @@ namespace DGD.Hub.DLG
 
             var task = new Task(post , TaskCreationOptions.LongRunning);
             task.Start();
+        }
+
+
+        //handlers:
+        private void SettingsView_ClientInfoChaned()
+        {
+            m_clInfo = Program.Settings.ClientInfo;            
         }
     }
 }

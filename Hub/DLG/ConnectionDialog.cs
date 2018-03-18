@@ -185,7 +185,7 @@ namespace DGD.Hub.DLG
                         clInfo.ContaclEMail = m_clInfo.ContaclEMail;
                         clInfo.ContactName = m_clInfo.ContactName;
                         clInfo.ContactPhone = m_clInfo.ContactPhone;
-                        clInfo.MachineName = m_clInfo.MachineName;
+                        //clInfo.MachineName = m_clInfo.MachineName;
                         m_clInfo = clInfo;
 
                         if (++m_attemptsCount >= SettingsManager.MaxConnectAttemps)

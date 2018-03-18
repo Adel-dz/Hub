@@ -213,6 +213,7 @@ namespace DGD.HubGovernor.Clients
             AppContext.ClientsManager.ClientClosed -= ClientsManager_ClientClosed;
             AppContext.ClientsManager.ClientStarted -= ClientsManager_ClientStarted;
             m_ndxerStatus.DatumReplaced -= ClientStatus_DatumReplaced;
+            m_ndxerClients.DatumReplaced -= Clients_DatumReplaced;
         }
 
         void RegisterHandlers()
@@ -220,6 +221,7 @@ namespace DGD.HubGovernor.Clients
             AppContext.ClientsManager.ClientClosed += ClientsManager_ClientClosed;
             AppContext.ClientsManager.ClientStarted += ClientsManager_ClientStarted;
             m_ndxerStatus.DatumReplaced += ClientStatus_DatumReplaced;
+            m_ndxerClients.DatumReplaced += Clients_DatumReplaced;
         }
 
         void ProcessClientStatus(ClientStatus_t status)
@@ -496,5 +498,30 @@ namespace DGD.HubGovernor.Clients
                 }
             }
         }
+
+        private void Clients_DatumReplaced(IDataRow row)
+        {
+            if (InvokeRequired)
+                BeginInvoke(new Action<IDataRow>(Clients_DatumReplaced) , row);
+            else
+            {
+                TreeNode node = LocateClientNode(row.ID);
+
+                if(node != null)
+                {
+                    node.Tag = row;
+
+                    if(m_tvClients.SelectedNode == node)
+                    {
+                        var clStatus = m_ndxerStatus.Get(row.ID) as ClientStatus;
+
+                        SetClientInfo(row as HubClient);
+                        UpdateStatusButtons(clStatus.Status);
+                    }
+
+                }
+            }
+        }
+
     }
 }
