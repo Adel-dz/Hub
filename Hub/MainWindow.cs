@@ -56,6 +56,14 @@ namespace DGD.Hub
             }
         }
 
+        public void Restart()
+        {
+            if (InvokeRequired)
+                Invoke(new Action(Restart));
+            else
+                Application.Restart();
+        }
+
 
         //protected
         protected override void OnFormClosing(FormClosingEventArgs e)

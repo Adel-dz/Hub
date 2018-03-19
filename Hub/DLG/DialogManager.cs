@@ -281,7 +281,7 @@ namespace DGD.Hub.DLG
                 "Cliquez sur ok pour redémarrer le Hub et commencer l’enregistrement de votre application. ");
 
             Stop(true);
-            System.Windows.Forms.Application.Restart();
+            Program.Restart();
         }
 
         void StartResp(bool ok)
@@ -450,6 +450,10 @@ namespace DGD.Hub.DLG
                         System.Windows.Forms.MessageBox.Show(AppText.ERR_BANNED , AppText.APP_NAME ,
                             System.Windows.Forms.MessageBoxButtons.OK , System.Windows.Forms.MessageBoxIcon.Error);
                         Exit();
+                        return;
+
+                        case ClientStatus_t.Reseted:
+                        ResetRegistration();
                         return;
 
                         default:

@@ -198,10 +198,11 @@
             // m_lblCountryInfo
             // 
             this.m_lblCountryInfo.AutoSize = true;
-            this.m_lblCountryInfo.Location = new System.Drawing.Point(581, 109);
+            this.m_lblCountryInfo.Location = new System.Drawing.Point(505, 109);
             this.m_lblCountryInfo.Name = "m_lblCountryInfo";
-            this.m_lblCountryInfo.Size = new System.Drawing.Size(0, 13);
+            this.m_lblCountryInfo.Size = new System.Drawing.Size(10, 13);
             this.m_lblCountryInfo.TabIndex = 16;
+            this.m_lblCountryInfo.Text = "-";
             // 
             // m_cbOrigin
             // 
@@ -209,7 +210,7 @@
             this.m_cbOrigin.FormattingEnabled = true;
             this.m_cbOrigin.Location = new System.Drawing.Point(414, 104);
             this.m_cbOrigin.Name = "m_cbOrigin";
-            this.m_cbOrigin.Size = new System.Drawing.Size(161, 21);
+            this.m_cbOrigin.Size = new System.Drawing.Size(77, 21);
             this.m_cbOrigin.TabIndex = 3;
             this.m_cbOrigin.SelectedIndexChanged += new System.EventHandler(this.Origin_SelectedIndexChanged);
             // 
