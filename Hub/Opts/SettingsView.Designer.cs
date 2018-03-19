@@ -152,7 +152,6 @@
             // m_chkUseInternalCode
             // 
             this.m_chkUseInternalCode.AutoSize = true;
-            this.m_chkUseInternalCode.Enabled = false;
             this.m_chkUseInternalCode.Location = new System.Drawing.Point(16, 200);
             this.m_chkUseInternalCode.Name = "m_chkUseInternalCode";
             this.m_chkUseInternalCode.Size = new System.Drawing.Size(255, 17);

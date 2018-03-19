@@ -21,6 +21,7 @@ namespace DGD.Hub.Opts
     sealed partial class SettingsView: UserControl, IView
     {
         public static event Action ClientInfoChanged;
+        public static event Action CountryPrefernceChanged;
 
         public SettingsView()
         {
@@ -33,6 +34,9 @@ namespace DGD.Hub.Opts
         {
             Dbg.Assert(parent != null);
 
+            SettingsManager opt = Program.Settings;
+            m_chkUseInternalCode.Checked = opt.UseCountryCode;
+
             parent.Controls.Add(this);
             Dock = DockStyle.Fill;
 
@@ -42,6 +46,16 @@ namespace DGD.Hub.Opts
         public void Deactivate(Control parent)
         {
             Dbg.Assert(parent != null);
+
+            SettingsManager opt = Program.Settings;
+
+            bool useCtryCode = m_chkUseInternalCode.Checked;
+
+            if (opt.UseCountryCode != useCtryCode)
+            {
+                opt.UseCountryCode = useCtryCode;
+                CountryPrefernceChanged?.Invoke();
+            }
 
             parent.Controls.Remove(this);
             Hide();

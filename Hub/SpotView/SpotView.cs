@@ -11,11 +11,37 @@ using static System.Diagnostics.Debug;
 using easyLib.Extensions;
 using easyLib.DB;
 using DGD.Hub.WF;
+using System.Drawing;
 
 namespace DGD.Hub.SpotView
 {
     sealed partial class SpotView: UserControl, IView
     {
+        class CountryEntry
+        {
+            public CountryEntry(Country cntry)
+            {
+                Country = cntry;
+            }
+
+            public Country Country { get; }
+
+            public static bool UseCountryCode { get; set; }
+
+            public override string ToString()
+            {
+                if (Country == null)
+                    return AppText.UNSPECIFIED;
+
+                if (UseCountryCode)
+                    return Country.InternalCode.ToString("000");
+
+                return Country.Name;
+            }
+
+        }
+
+
         readonly Dictionary<ColumnDataType_t , IColumnSorter> m_colSorters = new Dictionary<ColumnDataType_t , IColumnSorter>();
         bool m_emptyMode;
 
@@ -40,6 +66,27 @@ namespace DGD.Hub.SpotView
         {
             Assert(parent != null);
 
+            bool useCountryCode = Program.Settings.UseCountryCode;
+
+            if (CountryEntry.UseCountryCode != useCountryCode)
+            {
+                CountryEntry.UseCountryCode = useCountryCode;
+
+                if (useCountryCode)
+                {
+                    m_cbOrigin.Size = new Size(77 , 21);
+                    m_lblCountryInfo.Location = new Point(505 , 109);
+                }
+                else
+                {
+                    m_cbOrigin.Size = new Size(161 , 21);
+                    m_lblCountryInfo.Location = new Point(581 , 109);
+                }
+                
+
+                LoadCountries();
+            }
+
             parent.Controls.Add(this);
             RegisterHandlers();
             Dock = DockStyle.Fill;
@@ -60,8 +107,6 @@ namespace DGD.Hub.SpotView
         protected override void OnLoad(EventArgs e)
         {
             LoadIncoterms();
-            LoadCountries();
-
             base.OnLoad(e);
         }
 
@@ -153,35 +198,34 @@ namespace DGD.Hub.SpotView
             AutoUpdater.BeginTableUpdate += BeginTableProcessing_Handler;
             AutoUpdater.EndTableUpdate += EndTableProcessing_Handler;
 
-            
+            //Opts.SettingsView.CountryPrefernceChanged += SettingsView_CountryPrefernceChanged;
         }
-        
+
         void UnregisterHandlers()
         {
             TablesManager tablesManager = Program.TablesManager;
 
             tablesManager.BeginTableProcessing -= BeginTableProcessing_Handler;
-            tablesManager.EndTableProcessing-= EndTableProcessing_Handler;
+            tablesManager.EndTableProcessing -= EndTableProcessing_Handler;
             tablesManager.GetDataProvider(TablesID.COUNTRY).SourceCleared -= Countries_SourceCleared;
             tablesManager.GetDataProvider(TablesID.INCOTERM).SourceCleared -= Incoterms_SourceCleared;
 
             AutoUpdater.BeginTableUpdate -= BeginTableProcessing_Handler;
             AutoUpdater.EndTableUpdate -= EndTableProcessing_Handler;
 
+            //Opts.SettingsView.CountryPrefernceChanged += SettingsView_CountryPrefernceChanged;
         }
 
         void LoadCountries()
         {
-            IEnumerable<Country> countries = from Country ctry in Program.TablesManager.GetDataProvider(TablesID.COUNTRY).Enumerate()
-                                             orderby ctry.Name
-                                             select ctry;
-
-            var emptyCountry = new Country(0 , AppText.UNSPECIFIED , 0 , null);
-
+            IEnumerable<CountryEntry> countries = from Country ctry in Program.TablesManager.GetDataProvider(TablesID.COUNTRY).Enumerate()
+                                                  orderby ctry.Name
+                                                  select new CountryEntry(ctry);
+            
             m_cbOrigin.Items.Clear();
-            m_cbOrigin.Items.Add(emptyCountry);
+            m_cbOrigin.Items.Add(new CountryEntry(null));
             m_cbOrigin.Items.AddRange(countries.ToArray());
-            m_cbOrigin.DisplayMember = "Name";
+
             m_cbOrigin.SelectedIndex = 0;
         }
 
@@ -249,9 +293,9 @@ namespace DGD.Hub.SpotView
 
                 if (origin.ID != 0)
                     seq = from SpotValue sv in seq
-                                  where sv.ValueContext.OriginID == origin.ID
-                                  select sv;
-                 
+                          where sv.ValueContext.OriginID == origin.ID
+                          select sv;
+
 
                 IEnumerable<SpotViewItem> items = from SpotValue sv in seq
                                                   select new SpotViewItem(sv);
@@ -270,7 +314,7 @@ namespace DGD.Hub.SpotView
 
                     if (m_lvSearchResult.View == View.Details)
                         m_lvSearchResult.AdjustColumnsSize();
-                    
+
                     m_lvSearchResult.EndUpdate();
                 }
 
@@ -291,7 +335,7 @@ namespace DGD.Hub.SpotView
             task.Start();
         }
 
-        private void SetupColumns()
+        void SetupColumns()
         {
             m_lvSearchResult.Columns.Clear();
 
@@ -395,7 +439,17 @@ namespace DGD.Hub.SpotView
         private void Origin_SelectedIndexChanged(object sender , EventArgs e)
         {
             int ndx = m_cbOrigin.SelectedIndex;
-            m_lblCountryInfo.Text = ndx == 0 ? "" : $"( Code pays: {(m_cbOrigin.SelectedItem as Country).InternalCode.ToString()} )";
+
+            string txt;
+
+            if (ndx == 0)
+                txt = "";
+            else if (CountryEntry.UseCountryCode)
+                txt = $"( {(m_cbOrigin.SelectedItem as CountryEntry).Country.Name} )";
+            else
+                txt = $"( Code pays: {(m_cbOrigin.SelectedItem as CountryEntry).Country.InternalCode.ToString()} )";
+
+            m_lblCountryInfo.Text = txt;
         }
 
         private void ToggleView_Click(object sender , EventArgs e)
@@ -462,16 +516,16 @@ namespace DGD.Hub.SpotView
 
         private void SearchResult_ColumnClick(object sender , ColumnClickEventArgs e)
         {
-            var sorter = m_lvSearchResult.ListViewItemSorter as IColumnSorter;            
+            var sorter = m_lvSearchResult.ListViewItemSorter as IColumnSorter;
             ColumnDataType_t dataType = (ColumnDataType_t)m_lvSearchResult.Columns[e.Column].Tag;
 
-            if(sorter == null)
+            if (sorter == null)
             {
                 sorter = GetColumnSorter(dataType);
                 sorter.ColumnIndex = e.Column;
                 m_lvSearchResult.ListViewItemSorter = sorter;
             }
-            else if(sorter.ColumnIndex != e.Column)
+            else if (sorter.ColumnIndex != e.Column)
             {
                 m_lvSearchResult.SetColumnHeaderSortIcon(sorter.ColumnIndex , SortOrder.None);
                 sorter = GetColumnSorter(dataType);
@@ -502,6 +556,7 @@ namespace DGD.Hub.SpotView
                 Invoke(new Action(LoadCountries));
             else
                 LoadCountries();
-        }
+        }      
+
     }
 }
