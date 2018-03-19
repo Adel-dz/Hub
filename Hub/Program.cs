@@ -16,6 +16,8 @@ namespace DGD.Hub
         static DLG.DialogManager m_dlgManager;
         static RunOnce.RunOnceManager m_runOnceManager;
         static MainWindow m_mainWindow;
+        static Mutex m_mtx;
+        static bool m_restarting;
 
         public static TablesManager TablesManager => m_tblManager;
         public static SettingsManager Settings => m_settings;
@@ -51,19 +53,34 @@ namespace DGD.Hub
             return showMsg();
         }
 
+        public static void Restart()
+        {
+            if (m_mainWindow != null)
+            {
+                m_restarting = true;
+
+                if (m_mainWindow.InvokeRequired)
+                    m_mainWindow.Invoke(new Action(m_mainWindow.Close));
+                else
+                    m_mainWindow.Close();               
+            }
+            else
+                Application.Restart();
+        }
+
         //private:
 
         //Entry:
         [STAThread]
         static void Main()
         {
-            bool created;
-            Mutex mtx = null;
+            bool created;            
 
-            mtx = new Mutex(true , @"Global\HUB_BoumekouezKhaled" , out created);
+            m_mtx = new Mutex(true , @"Global\HUB_BoumekouezKhaled" , out created);
 
-            if (!created)
+            if (!created)                
                 return;
+            
             try
             {
                 using (m_settings = new SettingsManager())
@@ -107,12 +124,15 @@ namespace DGD.Hub
             }
             finally
             {
-                if (mtx != null)
+                if (m_mtx != null)
                 {
-                    mtx.ReleaseMutex();
-                    mtx.Dispose();
+                    m_mtx.ReleaseMutex();
+                    m_mtx.Dispose();
                 }
             }
+
+            if (m_restarting)
+                Application.Restart();
         }
     }
 }

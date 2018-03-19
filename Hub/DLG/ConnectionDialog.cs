@@ -163,7 +163,16 @@ namespace DGD.Hub.DLG
             using (new AutoReleaser(() => File.Delete(tmpFile)))
             {
                 SetProgressMessage("Réception des données à partir du serveur...");
-                netEngin.Download(tmpFile , SettingsManager.ConnectionRespURI);
+
+                try
+                {
+                    netEngin.Download(tmpFile , SettingsManager.ConnectionRespURI);
+                }
+                catch(Exception ex)
+                {
+                    Dbg.Log(ex.Message);
+                    DialogEngin.WriteConnectionsResp(tmpFile , Enumerable.Empty<HubCore.DLG.Message>());
+                }
 
                 IEnumerable<HubCore.DLG.Message> messages = DialogEngin.ReadConnectionsResp(tmpFile);
                 HubCore.DLG.Message[] msgs = (from resp in messages
@@ -184,8 +193,7 @@ namespace DGD.Hub.DLG
                         ClientInfo clInfo = ClientInfo.CreateClient(m_clInfo.ProfileID);
                         clInfo.ContaclEMail = m_clInfo.ContaclEMail;
                         clInfo.ContactName = m_clInfo.ContactName;
-                        clInfo.ContactPhone = m_clInfo.ContactPhone;
-                        //clInfo.MachineName = m_clInfo.MachineName;
+                        clInfo.ContactPhone = m_clInfo.ContactPhone;                        
                         m_clInfo = clInfo;
 
                         if (++m_attemptsCount >= SettingsManager.MaxConnectAttemps)
