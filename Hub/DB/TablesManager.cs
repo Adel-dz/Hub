@@ -57,6 +57,7 @@ namespace DGD.Hub.DB
         }
 
 
+        public IEnumerable<string> TablesFilePath => AllTables.Select(tbl => tbl.FilePath);
         public ITablesCollection Tables => m_tablesProxy;
 
         public string GetTablePath(uint tblID)

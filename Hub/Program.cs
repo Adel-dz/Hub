@@ -14,11 +14,13 @@ namespace DGD.Hub
         static TablesManager m_tblManager;
         static SettingsManager m_settings;
         static DLG.DialogManager m_dlgManager;
+        static RunOnce.RunOnceManager m_runOnceManager;
         static MainWindow m_mainWindow;
 
         public static TablesManager TablesManager => m_tblManager;
         public static SettingsManager Settings => m_settings;
         public static DLG.DialogManager DialogManager => m_dlgManager;
+        public static RunOnce.RunOnceManager RunOnceManager => m_runOnceManager;
 
         public static AppArchitecture_t AppArchitecture =>
 #if WINXP
@@ -65,9 +67,11 @@ namespace DGD.Hub
             try
             {
                 using (m_settings = new SettingsManager())
-                using (m_tblManager = new TablesManager())
-                using (m_dlgManager = new DLG.DialogManager())
+                using (m_runOnceManager = new RunOnce.RunOnceManager())
                 {
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+
                     if (!Directory.Exists(SettingsManager.AppDataFolder))
                         Directory.CreateDirectory(SettingsManager.AppDataFolder);
 
@@ -81,16 +85,19 @@ namespace DGD.Hub
                         Directory.CreateDirectory(SettingsManager.DialogFolder);
 
 
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);
+                    m_runOnceManager.Run();
 
-                    m_mainWindow = new MainWindow();
-                    Application.Run(m_mainWindow);
-                    m_mainWindow = null;
+                    using (m_tblManager = new TablesManager())
+                    using (m_dlgManager = new DLG.DialogManager())
+                    {
+                        m_mainWindow = new MainWindow();
+                        Application.Run(m_mainWindow);
+                        m_mainWindow = null;
+                    }
+
+                    Log.LogEngin.Dispose();
+
                 }
-
-                Log.LogEngin.Dispose();
-
             }
             catch (Exception ex)
             {

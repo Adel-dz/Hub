@@ -1,4 +1,5 @@
 ﻿using DGD.Hub.Log;
+using DGD.Hub.RunOnce;
 using DGD.HubCore.DB;
 using DGD.HubCore.DLG;
 using DGD.HubCore.Net;
@@ -162,12 +163,7 @@ namespace DGD.Hub.DLG
             var appUpdateTask = new Task(AutoUpdater.UpdateApp , TaskCreationOptions.LongRunning);
             appUpdateTask.Start();
         }
-
-        void ResetRegistration()
-        {
-
-        }
-
+        
         public void PostMessage(Message_t msgCode , byte[] data = null , uint reqID = 0)
         {
             lock (m_lock)
@@ -267,7 +263,27 @@ namespace DGD.Hub.DLG
             return null;
         }
 
+
         //private:
+        void ResetRegistration()
+        {
+            RunOnceManager runOnceMgr = Program.RunOnceManager;
+
+            foreach (string filePath in Program.TablesManager.TablesFilePath)
+                runOnceMgr.Add(new ClearTable(filePath));
+
+            runOnceMgr.Add(new ResetClientInfo());
+            runOnceMgr.Add(new ResetUpdateInfo());
+
+            runOnceMgr.Save();
+
+            Program.ShowMessage("Un réinscription de l’utilisateur est exigée par le serveur. " +
+                "Cliquez sur ok pour redémarrer le Hub et commencer l’enregistrement de votre application. ");
+
+            Stop(true);
+            System.Windows.Forms.Application.Restart();
+        }
+
         void StartResp(bool ok)
         {
             if (ok)

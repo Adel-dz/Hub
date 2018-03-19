@@ -523,5 +523,16 @@ namespace DGD.HubGovernor.Clients
             }
         }
 
+        private void Reset_Click(object sender , EventArgs e)
+        {
+            TreeNode selNode = m_tvClients.SelectedNode;
+
+            Dbg.Assert(selNode != null && selNode.Parent != null);
+
+            var client = selNode.Tag as HubClient;
+
+            EventLogger.Info($"Envoi d'une notification de réinitialisation au client {client.ID:X}.");
+            AppContext.ClientsManager.SetClientStatus(client , ClientStatus_t.Reseted);
+        }
     }
 }

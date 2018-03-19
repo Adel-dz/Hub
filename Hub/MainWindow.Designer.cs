@@ -116,7 +116,7 @@
             this.m_tsbSettings.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.m_tsbSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.m_tsbSettings.Name = "m_tsbSettings";
-            this.m_tsbSettings.Size = new System.Drawing.Size(50, 52);
+            this.m_tsbSettings.Size = new System.Drawing.Size(52, 52);
             this.m_tsbSettings.Text = "Réglages";
             this.m_tsbSettings.Click += new System.EventHandler(this.SetView_Handler);
             // 
@@ -161,7 +161,7 @@
             this.m_tsbAbout.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.m_tsbAbout.Name = "m_tsbAbout";
             this.m_tsbAbout.Size = new System.Drawing.Size(50, 52);
-            this.m_tsbAbout.Text = "A props de cette application";
+            this.m_tsbAbout.Text = "A propos de cette application";
             this.m_tsbAbout.Click += new System.EventHandler(this.SetView_Handler);
             // 
             // m_mainToolStrip

@@ -15,8 +15,9 @@ namespace DGD.HubGovernor.ListViewSorters
 
         public int Compare(ListViewItem lvi1 , ListViewItem lvi2)
         {
-            long i1 = long.Parse(lvi1.SubItems[ColumnIndex].Text);
-            long i2 = long.Parse(lvi2.SubItems[ColumnIndex].Text);
+            long i1, i2;
+            long.TryParse(lvi1.SubItems[ColumnIndex].Text, out i1);
+            long.TryParse(lvi2.SubItems[ColumnIndex].Text, out i2);
 
             if (SortDescending)
                 return i2 < i1 ? -1 : i2 == i1 ? 0 : 1;

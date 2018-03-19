@@ -720,6 +720,7 @@
             this.m_tsbReset.Name = "m_tsbReset";
             this.m_tsbReset.Size = new System.Drawing.Size(23, 22);
             this.m_tsbReset.Text = "Réinitialisation du client";
+            this.m_tsbReset.Click += new System.EventHandler(this.Reset_Click);
             // 
             // toolStripSeparator6
             // 

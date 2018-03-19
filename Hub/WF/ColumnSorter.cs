@@ -2,9 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DGD.Hub.WF
@@ -41,8 +38,10 @@ namespace DGD.Hub.WF
 
         public int Compare(ListViewItem lvi1 , ListViewItem lvi2)
         {
-            double d1 = double.Parse(lvi1.SubItems[ColumnIndex].Text);
-            double d2 = double.Parse(lvi2.SubItems[ColumnIndex].Text);
+            double d1, d2;
+
+            double.TryParse(lvi1.SubItems[ColumnIndex].Text, out d1);
+            double.TryParse(lvi2.SubItems[ColumnIndex].Text, out d2);
 
             if (SortDescending)
                 return d2 < d1 ? -1 : d1 == d2 ? 0 : 1;
@@ -69,8 +68,10 @@ namespace DGD.Hub.WF
 
         public int Compare(ListViewItem lvi1 , ListViewItem lvi2)
         {
-            long i1 = long.Parse(lvi1.SubItems[ColumnIndex].Text);
-            long i2 = long.Parse(lvi2.SubItems[ColumnIndex].Text);
+            long i1, i2;
+
+            long.TryParse(lvi1.SubItems[ColumnIndex].Text, out i1);
+            long.TryParse(lvi2.SubItems[ColumnIndex].Text, out i2);
 
             if (SortDescending)
                 return i2 < i1 ? -1 : i2 == i1 ? 0 : 1;
@@ -135,8 +136,9 @@ namespace DGD.Hub.WF
 
         public int Compare(ListViewItem lvi1 , ListViewItem lvi2)
         {
-            DateTime dt1 = DateTime.Parse(lvi1.SubItems[ColumnIndex].Text);
-            DateTime dt2 = DateTime.Parse(lvi2.SubItems[ColumnIndex].Text);
+            DateTime dt1, dt2;
+            DateTime.TryParse(lvi1.SubItems[ColumnIndex].Text, out dt1);
+            DateTime.TryParse(lvi2.SubItems[ColumnIndex].Text, out dt2);
 
             return SortDescending ? DateTime.Compare(dt2 , dt1) : DateTime.Compare(dt1 , dt2);
         }
