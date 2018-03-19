@@ -169,7 +169,7 @@ namespace DGD.HubGovernor.Clients
         public void SetClientStatus(HubClient client , ClientStatus_t status)
         {
             //basculer le mode de gestion des profil vers manuel
-            SetProfileManagementMode(client.ProfileID , ManagementMode_t.Manual);
+            //SetProfileManagementMode(client.ProfileID , ManagementMode_t.Manual);
 
             //desactiver le client
             HubClient oldClient = GetProfileEnabledClient(client.ProfileID);

@@ -241,6 +241,7 @@ namespace DGD.HubGovernor.Clients
                     return;
             }
 
+            AppContext.ClientsManager.SetProfileManagementMode(client.ProfileID , ManagementMode_t.Manual);
             //maj le status
             AppContext.ClientsManager.SetClientStatus(client , status);
         }
@@ -525,6 +526,13 @@ namespace DGD.HubGovernor.Clients
 
         private void Reset_Click(object sender , EventArgs e)
         {
+            const string msg = "Vous êtes sur le point d’envoyer une demande de réinitialisation " +
+                "au client sélectionné, celle-ci entrainera ce dernier à s’enregistré une nouvelle " +
+                "fois sous un autre ID. Voulez-vous poursuivre ?";
+
+            if (MessageBox.Show(msg , Text , MessageBoxButtons.YesNo , MessageBoxIcon.Warning) != DialogResult.Yes)
+                return;
+
             TreeNode selNode = m_tvClients.SelectedNode;
 
             Dbg.Assert(selNode != null && selNode.Parent != null);

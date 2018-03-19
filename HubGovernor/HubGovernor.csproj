@@ -94,8 +94,8 @@
       <DependentUpon>IntegrityCheckerDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="AppContext.cs" />
-    <Compile Include="Clients\ClientsManager.DlgProcessingImpl.cs" />
     <Compile Include="Clients\ClientsManager.cs" />
+    <Compile Include="Clients\ClientsManager.DlgProcessingImpl.cs" />
     <Compile Include="Clients\ClientStatus.cs" />
     <Compile Include="Clients\ClientStatusTable.cs" />
     <Compile Include="Clients\ClientsManagmentWindow.cs">
