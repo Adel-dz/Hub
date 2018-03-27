@@ -23,7 +23,7 @@ namespace DGD.HubGovernor.Opts
             {
                 Dbg.Log(ex.Message);
 
-                EventLogger.Warning("Erreur lors du chargement des paramètrs.");
+                TextLogger.Warning("Erreur lors du chargement des paramètrs.");
             }
         }
 

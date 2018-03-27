@@ -17,6 +17,7 @@ namespace DGD.HubGovernor
         public const uint PROFILE_MGMNT_MODE = 2200;
         public const uint APP_UPDATE = 2300;
         public const uint CLIENT_ENV = 2400;
+        public const uint LOG_EVENT = 2500;
     }
 
 

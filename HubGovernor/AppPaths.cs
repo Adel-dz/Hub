@@ -15,6 +15,7 @@ namespace DGD.HubGovernor
         const string TABLES_DIR = "DB\\";
         const string CACHE_DIR = "Cache\\";
         const string DLG_DIR = "Dlg\\";
+        const string LOG_DIR = "Log\\";
 
         public static string UserDataFolder =>
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) , APP_BASE_DIR);
@@ -41,6 +42,9 @@ namespace DGD.HubGovernor
         public static Uri RemoteConnectionReqUri => Uris.GetConnectionReqUri(RemoteBaseURI);
         public static string LocalProfilesPath => Path.Combine(LocalDialogFolderPath , Names.ProfilesFile);
         public static Uri RemoteProfilesURI => Uris.GetProfilesURI(RemoteBaseURI);
+        public static string LogFolder => Path.Combine(AppDataFolder , LOG_DIR);
+        public static string GetClientLogPath(uint clID) => Path.Combine(LogFolder , clID.ToString("X"));
+        public static string SrvLogPath => Path.Combine(LogFolder , "Sys");
 
         public static string GetLocalClientDilogPath(uint idClient) => Path.Combine(LocalDialogFolderPath ,
             Names.GetClientDialogFile(idClient));

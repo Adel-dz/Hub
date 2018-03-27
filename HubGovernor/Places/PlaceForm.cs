@@ -215,7 +215,7 @@ namespace DGD.HubGovernor.Places
 
             if(m_datum != null && name == m_datum.Name && idCtry == m_datum.CountryID)
             {
-                EventLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
+                TextLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
                 Close();
 
                 return;
@@ -248,7 +248,7 @@ namespace DGD.HubGovernor.Places
                 {
                     var place = dp.Get(0) as Place;
 
-                    var logger = new EventLogger(LogSeverity.Warning);
+                    var logger = new TextLogger(LogSeverity.Warning);
                     logger.Put("Duplication de données détectée.");
                     logger.Put("Elément trouvé:\n");
                     logger.Put("ID: {0}\n" , place.ID);
@@ -280,7 +280,7 @@ namespace DGD.HubGovernor.Places
                     Close();
                 }
 
-                EventLogger.Info("Enregistrement réussi.");
+                TextLogger.Info("Enregistrement réussi.");
             }
         }
                 

@@ -115,7 +115,7 @@ namespace DGD.HubGovernor.Incoterms
 
             if(m_incoterm != null && m_incoterm.Name == ictName)
             {
-                EventLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
+                TextLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
 
                 Close();
                 return;
@@ -138,12 +138,12 @@ namespace DGD.HubGovernor.Incoterms
                 else
                     m_ndxerNames.Source.Replace(m_ndxerNames.IndexOf(m_incoterm.Name.ToUpper()).Single() , ict);
 
-                EventLogger.Info("Enregistrement réussi.");
+                TextLogger.Info("Enregistrement réussi.");
                 Close();
             }
             else
             {
-                var logger = new EventLogger(LogSeverity.Warning);
+                var logger = new TextLogger(LogSeverity.Warning);
                 logger.Put("Duplication de données détectée.");
                 logger.Put("Elément trouvé:\n");
 

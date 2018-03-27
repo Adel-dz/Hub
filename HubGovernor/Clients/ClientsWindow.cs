@@ -123,7 +123,7 @@ namespace DGD.HubGovernor.Clients
             Action<Task> onErr = t =>
             {
                 MessageBox.Show(t.Exception.InnerException.Message , Text);
-                EventLogger.Error(t.Exception.InnerException.Message);
+                TextLogger.Error(t.Exception.InnerException.Message);
                 waitClue.LeaveWaitMode();
             };
 

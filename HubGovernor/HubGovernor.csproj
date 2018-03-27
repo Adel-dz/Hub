@@ -94,6 +94,7 @@
       <DependentUpon>IntegrityCheckerDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="AppContext.cs" />
+    <Compile Include="Clients\ActiveClientsQueue.cs" />
     <Compile Include="Clients\ClientsManager.cs" />
     <Compile Include="Clients\ClientsManager.DlgProcessingImpl.cs" />
     <Compile Include="Clients\ClientStatus.cs" />
@@ -176,6 +177,13 @@
       <DependentUpon>ProcessingDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="ListViewSorters\DefaultColumnSorter.cs" />
+    <Compile Include="ListViewSorters\VersionColumnSorter.cs" />
+    <Compile Include="Log\ClientEventLogger.cs" />
+    <Compile Include="Log\EventLog.cs" />
+    <Compile Include="Log\EventLogger.cs" />
+    <Compile Include="Log\EventLogTable.cs" />
+    <Compile Include="Log\LogManager.cs" />
+    <Compile Include="Log\SysEventLogger.cs" />
     <Compile Include="NetManager.cs" />
     <Compile Include="Opts\AppSettings.cs" />
     <Compile Include="Currencies\Currency.cs" />

@@ -184,7 +184,7 @@ namespace DGD.HubGovernor
                     MessageBox.Show(ex.Message , null , MessageBoxButtons.OK , MessageBoxIcon.Error);
                 }
 
-                EventLogger.Info(string.Format("{0} élément(s) supprimé(s)." , nbDeleted));
+                TextLogger.Info(string.Format("{0} élément(s) supprimé(s)." , nbDeleted));
             }
         }
 
@@ -210,7 +210,7 @@ namespace DGD.HubGovernor
                     MessageBox.Show(ex.Message , null , MessageBoxButtons.OK , MessageBoxIcon.Error);
                 }
 
-                EventLogger.Info(string.Format("{0} élément(s) supprimé(s)." , nbDeleted));
+                TextLogger.Info(string.Format("{0} élément(s) supprimé(s)." , nbDeleted));
             }
         }
 

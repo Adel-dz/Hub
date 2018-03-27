@@ -415,7 +415,7 @@ namespace DGD.Hub.DLG
             }
             catch (Exception ex)
             {
-                EventLogger.Error(ex.Message);
+                TextLogger.Error(ex.Message);
 
                 LogEngin.PushFlash(ex.Message);
                 m_dialogTimer.Start();
@@ -501,7 +501,7 @@ namespace DGD.Hub.DLG
             }
             catch (Exception ex)
             {
-                EventLogger.Error(ex.Message);
+                TextLogger.Error(ex.Message);
                 m_dialogTimer.Start();
             }
         }
@@ -509,7 +509,7 @@ namespace DGD.Hub.DLG
         void ProcessUpdateTimer()
         {
             m_updateTimer.Stop();
-            EventLogger.Debug("Processing update timer...");
+            TextLogger.Debug("Processing update timer...");
 
             try
             {
@@ -520,7 +520,7 @@ namespace DGD.Hub.DLG
                     if (AutoUpdater.UpdateData())
                         LogEngin.PushFlash("Vos données sont à jour.");
 
-                    EventLogger.Debug("Update done!");
+                    TextLogger.Debug("Update done!");
                 }
                 catch (Exception ex)
                 {
@@ -530,7 +530,7 @@ namespace DGD.Hub.DLG
             }
             catch (Exception ex)
             {
-                EventLogger.Error(ex.Message);
+                TextLogger.Error(ex.Message);
             }
             finally
             {

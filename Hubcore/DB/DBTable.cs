@@ -172,7 +172,7 @@ namespace DGD.HubCore.DB
 
                 szDatum = Math.Max(szDatum , sizeof(long));
 
-                EventLogger.Debug($"Création de la table {Path.GetFileName(Name)}");
+                TextLogger.Debug($"Création de la table {Path.GetFileName(Name)}");
 
                 m_dataFile = new FileStream(FilePath ,
                     FileMode.CreateNew ,
@@ -522,7 +522,7 @@ namespace DGD.HubCore.DB
         {
             const int BUFFER_SIZE = 4096;
 
-            EventLogger.Debug($"Ouverture de la table {Name}.");
+            TextLogger.Debug($"Ouverture de la table {Name}.");
 
             m_dataFile = new FileStream(FilePath ,
              FileMode.Open ,

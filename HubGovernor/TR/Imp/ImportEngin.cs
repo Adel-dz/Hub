@@ -87,7 +87,7 @@ namespace DGD.HubGovernor.TR.Imp
             
             SetupSupplier();
 
-            var logger = new EventLogger(LogSeverity.Error);
+            var logger = new TextLogger(LogSeverity.Error);
 
             for(int i = 0; i < m_srcData.Length;++i)
             {

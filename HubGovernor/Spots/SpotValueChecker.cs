@@ -28,7 +28,7 @@ namespace DGD.HubGovernor.Spots
 
         public bool Check()
         {
-            var logger = new EventLogger(LogSeverity.Warning);
+            var logger = new TextLogger(LogSeverity.Warning);
             logger.PutLine("*** Control d’intégrité ***");
             logger.PutLine($"Table: {AppContext.TableManager.SpotValues.Name}");
             logger.PutLine("La contrainte d’intégrité n° 8 est violée par les éléments suivants :");            

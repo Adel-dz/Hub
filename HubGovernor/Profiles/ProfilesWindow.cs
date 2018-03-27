@@ -253,7 +253,7 @@ namespace DGD.HubGovernor.Profiles
             }
 
 
-            EventLogger.Info($"{profiles.Count()} profiles(s) supprimé(s).");
+            TextLogger.Info($"{profiles.Count()} profiles(s) supprimé(s).");
         }
 
         private void Profiles_DatumReplaced(IDataRow row)

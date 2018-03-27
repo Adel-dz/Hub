@@ -282,7 +282,7 @@ namespace DGD.HubGovernor.Updating
 
                     Action<Task> onErr = t =>
                     {
-                        EventLogger.Error(t.Exception.InnerException.Message);
+                        TextLogger.Error(t.Exception.InnerException.Message);
                         this.ShowError(t.Exception.InnerException.Message);
 
                         dp?.Dispose();
@@ -309,8 +309,7 @@ namespace DGD.HubGovernor.Updating
         {
             var filesNames = new Dictionary<AppArchitecture_t , string>
                 {
-                    { AppArchitecture_t.Win7SP1, WIN7SP1_UPDATE_FILENAME },
-                    { AppArchitecture_t.Win7SP1X64, WIN7SP1X64_UPADTE_FILENAME },
+                    { AppArchitecture_t.Win7SP1, WIN7SP1_UPDATE_FILENAME },                    
                     { AppArchitecture_t.WinXP, WINXP_UPADTE_FILENAME }
                 };
 
@@ -336,7 +335,7 @@ namespace DGD.HubGovernor.Updating
                 }
                 catch (Exception ex)
                 {
-                    EventLogger.Warning(ex.Message);
+                    TextLogger.Warning(ex.Message);
                     appManifest = new Dictionary<AppArchitecture_t , string>();
                 }
                                 
@@ -350,7 +349,7 @@ namespace DGD.HubGovernor.Updating
                 }
                 catch (Exception ex)
                 {
-                    EventLogger.Warning(ex.Message);
+                    TextLogger.Warning(ex.Message);
                     gManifest = new UpdateManifest(0 , 0);
                 }
 
@@ -394,7 +393,7 @@ namespace DGD.HubGovernor.Updating
             {
                 waitDlg.Dispose();
                 this.ShowError(t.Exception.InnerException.Message);
-                EventLogger.Error(t.Exception.InnerException.Message);
+                TextLogger.Error(t.Exception.InnerException.Message);
             };
 
 

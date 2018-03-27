@@ -139,7 +139,7 @@ namespace DGD.HubGovernor.Profiles
 
             if (seq.Count() > 0)
             {
-                var logger = new EventLogger(LogSeverity.Warning);
+                var logger = new TextLogger(LogSeverity.Warning);
                 logger.PutLine("Duplication de données détectée.");
                 logger.PutLine(seq.Single().ToString());
                 logger.Flush();
@@ -175,7 +175,7 @@ namespace DGD.HubGovernor.Profiles
         {
             if (string.Compare(name , m_datum.Name) == 0 && m_datum.Privilege == privilege)
             {
-                EventLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
+                TextLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
                 return true;
             }
 
@@ -185,7 +185,7 @@ namespace DGD.HubGovernor.Profiles
 
             if (seq.Count() > 0)
             {
-                var logger = new EventLogger(LogSeverity.Warning);
+                var logger = new TextLogger(LogSeverity.Warning);
                 logger.PutLine("Duplication de données détectée.");
                 logger.PutLine(seq.Single().ToString());
                 logger.Flush();

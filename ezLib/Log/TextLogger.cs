@@ -16,36 +16,27 @@ namespace easyLib.Log
     }
 
 
-    public sealed class EventLogger : IDisposable
+    public sealed class TextLogger : IDisposable
     {
-        const string DEFAULT_PROMPT = "> ";
         readonly static List<ILogReceiver> m_receivers = new List<ILogReceiver>();
         readonly StringBuilder m_msgBuilder;
         readonly LogSeverity m_logSeverity;
-        readonly DateTime? m_timestamp;
 
 
-        public EventLogger(LogSeverity severity = LogSeverity.Infomational, bool skipTimestamp = false)
+        public TextLogger(LogSeverity severity = LogSeverity.Infomational)
         {
             System.Diagnostics.Debug.Assert(Enum.IsDefined(typeof(LogSeverity), severity));
 
             m_msgBuilder = new StringBuilder();
             m_logSeverity = severity;
-            Prompt = DEFAULT_PROMPT;
-
-            if (!skipTimestamp)
-                m_timestamp = DateTime.Now;
         }
+                
 
-
-        public string Prompt { get; set; }
-
-
-        public EventLogger PutLine(string msg = null) => Put(msg + Environment.NewLine);
-        public EventLogger PutLine(string frmString , params object[] args) => Put(frmString + Environment.NewLine , args);
-        public EventLogger PutLine(object obj) => PutLine(obj.ToString());
+        public TextLogger PutLine(string msg = null) => Put(msg + Environment.NewLine);
+        public TextLogger PutLine(string frmString , params object[] args) => Put(frmString + Environment.NewLine , args);
+        public TextLogger PutLine(object obj) => PutLine(obj.ToString());
         
-        public EventLogger Put(string msg)
+        public TextLogger Put(string msg)
         {
             if (msg != null)
                 m_msgBuilder.Append(msg);
@@ -53,7 +44,7 @@ namespace easyLib.Log
             return this;
         }
 
-        public EventLogger Put(object obj)
+        public TextLogger Put(object obj)
         {
             if (obj != null)
                 Put(obj.ToString());
@@ -61,7 +52,7 @@ namespace easyLib.Log
             return this;
         }
 
-        public EventLogger Put(string frmString, params object[] args)
+        public TextLogger Put(string frmString, params object[] args)
         {
             string msg = args.Length > 0 ? string.Format(frmString, args) : frmString;
 
@@ -74,10 +65,7 @@ namespace easyLib.Log
             m_msgBuilder.Clear();
 
             if (!string.IsNullOrWhiteSpace(str))
-            {
-                str = (m_timestamp == null ? "" : m_timestamp.Value.ToLongTimeString()) + Prompt + str;
                 Emit(str , m_logSeverity);                
-            }
         }
 
         public void Dispose()

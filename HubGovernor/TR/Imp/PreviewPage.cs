@@ -39,6 +39,12 @@ namespace DGD.HubGovernor.TR.Imp
             }
 
 
+            public bool AutoFlush
+            {
+                get { return m_dpCountries.AutoFlush; }
+                set { m_dpCountries.AutoFlush = value; }
+            }
+
             public int Count
             {
                 get
@@ -453,7 +459,7 @@ namespace DGD.HubGovernor.TR.Imp
                 catch(Exception ex)
                 {
                     MessageBox.Show(ex.Message , null , MessageBoxButtons.OK , MessageBoxIcon.Error);
-                    easyLib.Log.EventLogger.Error(ex.Message);
+                    easyLib.Log.TextLogger.Error(ex.Message);
                 }
         }
     }

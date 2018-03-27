@@ -106,7 +106,7 @@
             this.m_tsbHelp.Name = "m_tsbHelp";
             this.m_tsbHelp.Size = new System.Drawing.Size(50, 52);
             this.m_tsbHelp.Text = "Aide";
-            this.m_tsbHelp.Click += new System.EventHandler(this.SetView_Handler);
+            this.m_tsbHelp.Click += new System.EventHandler(this.Help_Click);
             // 
             // m_tsbSettings
             // 
@@ -195,7 +195,7 @@
             this.m_tsbSpotView.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.m_tsbSpotView.Name = "m_tsbSpotView";
             this.m_tsbSpotView.Size = new System.Drawing.Size(50, 52);
-            this.m_tsbSpotView.Text = "Trouver une valeur boursière";
+            this.m_tsbSpotView.Text = "consulter les valeurs boursières";
             this.m_tsbSpotView.Click += new System.EventHandler(this.SetView_Handler);
             // 
             // m_tsbMachinery

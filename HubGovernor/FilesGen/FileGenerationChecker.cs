@@ -11,7 +11,7 @@ namespace DGD.HubGovernor.FilesGen
 
         public bool Check()
         {
-            var logger = new EventLogger(LogSeverity.Warning);
+            var logger = new TextLogger(LogSeverity.Warning);
             logger.PutLine("*** Control d’intégrité ***");
             logger.PutLine($"Table: {AppContext.TableManager.Countries.Name}");
             logger.PutLine("Les élemnets suivants ont un numerà de géneration invalide:");

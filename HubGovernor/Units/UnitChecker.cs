@@ -31,7 +31,7 @@ namespace DGD.HubGovernor.Units
         public bool Check()
         {
             //contrainte no 10 = Name et unique
-            var logger = new EventLogger(LogSeverity.Warning);
+            var logger = new TextLogger(LogSeverity.Warning);
             logger.PutLine("*** Control d’intégrité ***");
             logger.PutLine($"Table: {AppContext.TableManager.Suppiers.Name}");
             

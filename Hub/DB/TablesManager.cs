@@ -213,7 +213,7 @@ namespace DGD.Hub.DB
                     }
                     catch (FileNotFoundException)
                     {
-                        EventLogger.Warning($"Impossible d'ouvrir la table {tbl.Name}\nLancement de la procedure de création...");
+                        TextLogger.Warning($"Impossible d'ouvrir la table {tbl.Name}\nLancement de la procedure de création...");
 
                         try
                         {
@@ -221,11 +221,11 @@ namespace DGD.Hub.DB
                         }
                         catch (Exception ex)
                         {
-                            EventLogger.Error($"Erreur lors de la création du fichier!\n Exception: {ex.Message}");
+                            TextLogger.Error($"Erreur lors de la création du fichier!\n Exception: {ex.Message}");
                             throw;
                         }
 
-                        EventLogger.Info("Création ok");
+                        TextLogger.Info("Création ok");
                     }
 
             return tbl;

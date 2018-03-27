@@ -166,7 +166,7 @@ namespace DGD.HubGovernor.Countries
             if(m_datum != null && name == m_datum.Name && code == m_datum.InternalCode && 
                 isoCode == m_datum.IsoCode)
             {
-                EventLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
+                TextLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
 
                 Close();
                 return;
@@ -221,7 +221,7 @@ namespace DGD.HubGovernor.Countries
                 
                 if (duplicate)
                 {
-                    var logger = new EventLogger(LogSeverity.Warning);
+                    var logger = new TextLogger(LogSeverity.Warning);
                     logger.Put("Duplication de données détectée.");
                     logger.Put("Elément trouvé:\n");
 
@@ -245,7 +245,7 @@ namespace DGD.HubGovernor.Countries
                     MessageBoxButtons.OK ,
                     MessageBoxIcon.Warning);
             else
-                EventLogger.Info("Enregistrement réussi.");
+                TextLogger.Info("Enregistrement réussi.");
         }
         
         //handlers

@@ -5,8 +5,7 @@ namespace DGD.HubCore
 {
     public enum AppArchitecture_t : byte
     {
-        Win7SP1,
-        Win7SP1X64,
+        Win7SP1,        
         WinXP
     }
 
@@ -16,7 +15,6 @@ namespace DGD.HubCore
         static string[] m_archNames =
         {
             "Microsoft Windows 7 SP 1",
-            "Microsoft Windows 7 SP 1, 64 bits",
             "Microsoft Windows XP"
         };
 

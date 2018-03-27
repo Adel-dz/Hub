@@ -152,11 +152,11 @@ namespace easyLib.DB
                 }
                 catch (System.IO.FileNotFoundException ex)
                 {
-                    EventLogger.Warning(ex.Message);
+                    TextLogger.Warning(ex.Message);
                 }
                 catch (Exception ex)
                 {
-                    EventLogger.Error(ex.Message);
+                    TextLogger.Error(ex.Message);
                     throw;
                 }
 
@@ -169,7 +169,7 @@ namespace easyLib.DB
                     }
                     catch (Exception ex)
                     {
-                        EventLogger.Error(ex.Message);
+                        TextLogger.Error(ex.Message);
                         throw;
                     }
 
@@ -348,7 +348,7 @@ namespace easyLib.DB
         {
             const int BUFFER_SIZE = 4096;
 
-            EventLogger.Debug("Création de fichier {0}.", m_filePath);
+            TextLogger.Debug("Création de fichier {0}.", m_filePath);
 
             m_dataFile = new System.IO.FileStream(m_filePath ,
              System.IO.FileMode.CreateNew ,
@@ -370,7 +370,7 @@ namespace easyLib.DB
         {
             const int BUFFER_SIZE = 4096;
 
-            EventLogger.Debug("Ouverture du fichier {0}.", m_filePath);
+            TextLogger.Debug("Ouverture du fichier {0}.", m_filePath);
 
             m_dataFile = new System.IO.FileStream(m_filePath ,
              System.IO.FileMode.Open ,
@@ -387,7 +387,7 @@ namespace easyLib.DB
             }
             catch (Exception ex)
             {
-                EventLogger.Error(ex.Message);
+                TextLogger.Error(ex.Message);
 
                 m_dataFile.Dispose();
                 m_dataFile = null;

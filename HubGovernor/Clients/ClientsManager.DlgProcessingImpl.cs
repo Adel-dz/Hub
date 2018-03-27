@@ -18,15 +18,15 @@ namespace DGD.HubGovernor.Clients
     {
         Message ProcessCloseMessage(Message msg , uint clID)
         {
-            EventLogger.Info("Réception d'une notification de fermeture.");
+            TextLogger.Info("Réception d'une notification de fermeture.");
 
             Dbg.Assert(msg.MessageCode == Message_t.Close);
 
-            EventLogger.Info($"Réception d’une notification de fermeture de la part du client {clID:X}");
+            TextLogger.Info($"Réception d’une notification de fermeture de la part du client {clID:X}");
 
 
             DateTime dt = DateTime.Now;
-            EventLogger.Info($"client arrêté le {dt.ToShortDateString()} à {dt.ToLongTimeString()}");
+            TextLogger.Info($"client arrêté le {dt.ToShortDateString()} à {dt.ToLongTimeString()}");
 
             lock (m_runningClients)
                 m_runningClients.Remove(clID);
@@ -38,7 +38,7 @@ namespace DGD.HubGovernor.Clients
 
         Message ProcessStartMessage(Message msg)
         {
-            EventLogger.Info("Réception d'une notification de démarrage.");
+            TextLogger.Info("Réception d'une notification de démarrage.");
 
             Dbg.Assert(msg.MessageCode == Message_t.Start);
 
@@ -51,7 +51,7 @@ namespace DGD.HubGovernor.Clients
 
             if (client == null)
             {
-                EventLogger.Warning("Réception d’une notification de démarrage " +
+                TextLogger.Warning("Réception d’une notification de démarrage " +
                     $"de la part d’un client inexistant ({clID}). Bannissement du client.");
 
                 //maj du fichier gov
@@ -66,7 +66,7 @@ namespace DGD.HubGovernor.Clients
             }
 
 
-            EventLogger.Info("Réception d’une notification de démarrage " +
+            TextLogger.Info("Réception d’une notification de démarrage " +
                     $"de la part du client {client.ContactName}");
 
             //verifier le statut du client
@@ -74,7 +74,7 @@ namespace DGD.HubGovernor.Clients
 
             if (clStatus.Status != ClientStatus_t.Enabled)
             {
-                EventLogger.Info("Tentative de démarrage d’un client non autorisé. Requête rejetée.");
+                TextLogger.Info("Tentative de démarrage d’un client non autorisé. Requête rejetée.");
                 return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , msg.Data);
             }
 
@@ -91,12 +91,12 @@ namespace DGD.HubGovernor.Clients
             }
             catch (Exception ex)
             {
-                EventLogger.Error(ex.Message);
+                TextLogger.Error(ex.Message);
                 return null;    // let the cleint retry req.
             }
 
 
-            EventLogger.Info($"Client démarré le {dtStart.Date.ToShortDateString()} à {dtStart.ToLongTimeString()}");
+            TextLogger.Info($"Client démarré le {dtStart.Date.ToShortDateString()} à {dtStart.ToLongTimeString()}");
 
             //verifier si l'env du client a changé
             UpdateClientEnvironment(clID , clEnv);
@@ -119,7 +119,7 @@ namespace DGD.HubGovernor.Clients
         {
             Dbg.Assert(msg.MessageCode == Message_t.Resume);
 
-            EventLogger.Info("Réception d’une requête de reprise.");
+            TextLogger.Info("Réception d’une requête de reprise.");
 
             //verfier que le client existe
             uint clID = BitConverter.ToUInt32(msg.Data , 0);
@@ -127,18 +127,18 @@ namespace DGD.HubGovernor.Clients
 
             if (client == null)
             {
-                EventLogger.Info("Réception d’une requête de reprise émanant d’un client non enregistré. Requête rejetée.");
+                TextLogger.Info("Réception d’une requête de reprise émanant d’un client non enregistré. Requête rejetée.");
                 return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , BitConverter.GetBytes(clID));
             }
 
             var prf = m_ndxerProfiles.Get(client.ProfileID) as UserProfile;
-            EventLogger.Info($"Requête de reprise émanant de {client.ContactName} pour le profil {prf.Name}, " +
+            TextLogger.Info($"Requête de reprise émanant de {client.ContactName} pour le profil {prf.Name}, " +
                 $"inscrit le {client.CreationTime}.");
 
             //verifier que le profil est en mode auto
             if ((m_ndxerProfilesMgmnt.Get(prf.ID) as ProfileManagementMode).ManagementMode == ManagementMode_t.Manual)
             {
-                EventLogger.Info($"Le profil {prf.Name} est en gestion manuelle. Requête rejetée.");
+                TextLogger.Info($"Le profil {prf.Name} est en gestion manuelle. Requête rejetée.");
                 return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , msg.Data);
             }
 
@@ -152,16 +152,16 @@ namespace DGD.HubGovernor.Clients
 
             if (curClient != null)
             {
-                EventLogger.Info($"Le client actif {curClient.ContactName} inscrit le {curClient.CreationTime}.");
+                TextLogger.Info($"Le client actif {curClient.ContactName} inscrit le {curClient.CreationTime}.");
 
                 if (curClient.CreationTime <= client.CreationTime)
                 {
-                    EventLogger.Info("Le client actif est plus ancien. Requête rejetée.");
+                    TextLogger.Info("Le client actif est plus ancien. Requête rejetée.");
                     return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , msg.Data);
                 }
 
                 //bannissemnt du client actif
-                EventLogger.Info($"Le client demandeur est plus ancien. Bannissement du client actif ({curClient.ContactName})...");
+                TextLogger.Info($"Le client demandeur est plus ancien. Bannissement du client actif ({curClient.ContactName})...");
 
                 //maj de la table des statuts
                 var curClStatus = m_ndxerClientsStatus.Get(curClient.ID) as ClientStatus;
@@ -192,7 +192,7 @@ namespace DGD.HubGovernor.Clients
             }
             catch (Exception ex)
             {
-                EventLogger.Error(ex.Message);
+                TextLogger.Error(ex.Message);
                 return null;    // let the cleint retry req.
             }
 
@@ -212,7 +212,7 @@ namespace DGD.HubGovernor.Clients
 
             ClientStarted?.Invoke(clID);
 
-            EventLogger.Info("Requête acceptée. :-)");
+            TextLogger.Info("Requête acceptée. :-)");
             return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , msg.Data);
         }
 
@@ -220,7 +220,7 @@ namespace DGD.HubGovernor.Clients
         {
             Dbg.Assert(msg.MessageCode == Message_t.NewConnection);
 
-            EventLogger.Info("Réception d’une nouvelle requête  d’inscription.");
+            TextLogger.Info("Réception d’une nouvelle requête  d’inscription.");
 
             var ms = new MemoryStream(msg.Data);
             var reader = new RawDataReader(ms , Encoding.UTF8);
@@ -235,13 +235,13 @@ namespace DGD.HubGovernor.Clients
                 (profile == null ? "un profil inexistant." :
                             $"le profil {profile.Name}.");
 
-            EventLogger.Info(reqLog);
+            TextLogger.Info(reqLog);
 
 
             //verifier que le profil existe
             if (profile == null)
             {
-                EventLogger.Info("Lancement de la procédure d’actualisation  " +
+                TextLogger.Info("Lancement de la procédure d’actualisation  " +
                     "de la liste des profils sur le serveur");
 
                 ProcessProfilesChange();
@@ -254,7 +254,7 @@ namespace DGD.HubGovernor.Clients
 
             if (clSameID != null)
             {
-                EventLogger.Info("Collision d’identifiants: " +
+                TextLogger.Info("Collision d’identifiants: " +
                     $"un client portant le même ID est déjà enregistré ({clSameID.ContactName}). " +
                     "Demande au client de reformuler son inscription avec un nouvel ID.");
 
@@ -267,13 +267,13 @@ namespace DGD.HubGovernor.Clients
 
             if (prfMgmntMode == ManagementMode_t.Manual)
             {
-                EventLogger.Info("Profil en gestion manuelle, inscription rejetée.");
+                TextLogger.Info("Profil en gestion manuelle, inscription rejetée.");
                 return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , data);
             }
 
 
-            EventLogger.Info("Profil en gestion automatique.");
-            EventLogger.Info("Enregistrement du client...");
+            TextLogger.Info("Profil en gestion automatique.");
+            TextLogger.Info("Enregistrement du client...");
 
 
             //desactiver l'ancien client actif si il existe
@@ -284,14 +284,14 @@ namespace DGD.HubGovernor.Clients
                 if (IsClientRunning(oldClient.ID))
                 {
                     //rejeter l'inscription
-                    EventLogger.Info($"Un client pour le profil {profile.Name} est déjà en cours d’exécution. " +
+                    TextLogger.Info($"Un client pour le profil {profile.Name} est déjà en cours d’exécution. " +
                         "requête rejetée.");
 
                     return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , data);
                 }
 
 
-                EventLogger.Info($"Désactivation du client {oldClient.ContactName}...");
+                TextLogger.Info($"Désactivation du client {oldClient.ContactName}...");
 
 
                 //maj la table des status clients                
@@ -323,7 +323,7 @@ namespace DGD.HubGovernor.Clients
             }
             catch (Exception ex)
             {
-                EventLogger.Error(ex.Message);
+                TextLogger.Error(ex.Message);
                 return null;    // let the cleint retry req.
             }
 
@@ -355,7 +355,7 @@ namespace DGD.HubGovernor.Clients
 
             ClientStarted?.Invoke(clInfo.ClientID);
 
-            EventLogger.Info("Inscription réussie. :-)");
+            TextLogger.Info("Inscription réussie. :-)");
             return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , data);
         }
 
@@ -365,7 +365,7 @@ namespace DGD.HubGovernor.Clients
             Dbg.Assert(msg.MessageCode == Message_t.UnknonwnMsg);
             Dbg.Log("Processing unknown message.");
 
-            EventLogger.Warning($"Reception d'un msg inconnu en provenance du client {ClientStrID(clientID)}.");
+            TextLogger.Warning($"Reception d'un msg inconnu en provenance du client {ClientStrID(clientID)}.");
 
             return null;
         }
@@ -382,7 +382,7 @@ namespace DGD.HubGovernor.Clients
             uint srvMsgID = reader.ReadUInt();
             uint clMsgId = reader.ReadUInt();
 
-            EventLogger.Info($"Reception d'un message de synchronisation du client {clID:X}.");
+            TextLogger.Info($"Reception d'un message de synchronisation du client {clID:X}.");
 
             ClientData clData;
 
@@ -410,7 +410,7 @@ namespace DGD.HubGovernor.Clients
 
             if(client == null)
             {
-                EventLogger.Warning("Réception d’une demande de synchronisation " +
+                TextLogger.Warning("Réception d’une demande de synchronisation " +
                     $"de la part d’un client inexistant ({clID}). Bannissement du client.");
 
                 //maj du fichier gov
@@ -447,13 +447,13 @@ namespace DGD.HubGovernor.Clients
         Message ProcessSetInfoMessage(Message msg, uint clID)
         {
             Dbg.Assert(msg.MessageCode == Message_t.SetInfo);
-            EventLogger.Info($"Réception d’une mise à jour des infos. Utilisateur du client {clID:X}.");
+            TextLogger.Info($"Réception d’une mise à jour des infos. Utilisateur du client {clID:X}.");
 
             int ndx = m_ndxerClients.IndexOf(clID);
 
             if(ndx < 0)
             {
-                EventLogger.Warning("Client inexistant.  Requête ignorée.");
+                TextLogger.Warning("Client inexistant.  Requête ignorée.");
                 return null;
             }
 

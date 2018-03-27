@@ -27,8 +27,6 @@ namespace DGD.Hub
         public static AppArchitecture_t AppArchitecture =>
 #if WINXP
             AppArchitecture_t.WinXP;
-#elif WIN7SP1X64
-           AppArchitecture_t.Win7SP1X64;
 #else
             AppArchitecture_t.Win7SP1;
 #endif

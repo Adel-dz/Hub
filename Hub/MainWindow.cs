@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -269,6 +270,12 @@ namespace DGD.Hub
         private void Quit_Click(object sender , EventArgs e)
         {
             Program.DialogManager.Exit();
+        }
+
+        private void Help_Click(object sender , EventArgs e)
+        {
+            string path = Path.GetDirectoryName(Application.ExecutablePath);
+            Help.ShowHelp(this , Path.Combine(path , "HubHelp.chm"));
         }
     }
 }

@@ -34,7 +34,7 @@ namespace DGD.HubGovernor.TR
 
         public bool Check()
         {
-            var logger = new EventLogger(LogSeverity.Warning);
+            var logger = new TextLogger(LogSeverity.Warning);
             logger.PutLine("*** Control d’intégrité ***");
             logger.PutLine($"Table: {AppContext.TableManager.Incoterms.Name}");
             logger.PutLine("La contrainte d’intégrité n° 16 est violée par les éléments suivants :");

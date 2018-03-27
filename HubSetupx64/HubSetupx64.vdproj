@@ -46,25 +46,25 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_DA4662414A58411D82BA3662853B7E93"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_F0ED60E404BC424F9C287B5747689817"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_3A025D72CF677E419BAB2D7197097B8F"
+        "OwnerKey" = "8:_DA4662414A58411D82BA3662853B7E93"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_6EC1B14AE4E582168F39675E324A0E59"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_3A025D72CF677E419BAB2D7197097B8F"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -166,14 +166,9 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.9.6651.17827, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.9.6651.35340, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_3A025D72CF677E419BAB2D7197097B8F"
-                    {
-                    "Name" = "8:Hubcore.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:Hubcore.dll"
             "TargetName" = "8:"
@@ -197,14 +192,9 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.5.6651.17827, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.5.6651.17906, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_6EC1B14AE4E582168F39675E324A0E59"
-                    {
-                    "Name" = "8:ezLib.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:ezLib.dll"
             "TargetName" = "8:"
@@ -231,11 +221,6 @@
             "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
                 "ScatterAssemblies"
                 {
-                    "_DA4662414A58411D82BA3662853B7E93"
-                    {
-                    "Name" = "8:System.Net.Http.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:System.Net.Http.dll"
             "TargetName" = "8:"
@@ -311,15 +296,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Hub de la Valeur en Douane"
-        "ProductCode" = "8:{7C52C818-6A30-4083-BAF7-B1C1A3B116F2}"
-        "PackageCode" = "8:{44198024-8FAB-499A-9C01-1850C877BD3A}"
+        "ProductCode" = "8:{E588DB7C-291C-4B80-8376-CF311F8E46B0}"
+        "PackageCode" = "8:{FA5C1A94-C2D0-4845-8A70-41566AA3C179}"
         "UpgradeCode" = "8:{AB529E85-5504-489A-BF87-BFB25BE86868}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.9.6651"
+        "ProductVersion" = "8:0.11.6657"
         "Manufacturer" = "8:Douane Algérienne"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

@@ -29,7 +29,7 @@ namespace DGD.HubGovernor.Suppliers
 
         public bool Check()
         {
-            var logger = new EventLogger(LogSeverity.Warning);
+            var logger = new TextLogger(LogSeverity.Warning);
             logger.PutLine("*** Control d’intégrité ***");
             logger.PutLine($"Table: {AppContext.TableManager.Suppiers.Name}");
             logger.PutLine("La contrainte d’intégrité n° 6 est violée par les éléments suivants :");

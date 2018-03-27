@@ -141,7 +141,7 @@ namespace DGD.HubGovernor.Units
             //any modif?
             if (m_datum != null && name == m_datum.Name && descr == m_datum.Description)
             {
-                EventLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
+                TextLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
                 Close();
                 return;
             }
@@ -163,7 +163,7 @@ namespace DGD.HubGovernor.Units
                 {
                     Unit unit = seq.First();
 
-                    var logger = new EventLogger(LogSeverity.Warning);
+                    var logger = new TextLogger(LogSeverity.Warning);
                     logger.Put("Duplication de données détectée.");
                     logger.Put("Elément trouvé:\n");
                     logger.Put("ID: {0}\n" , unit.ID);
@@ -192,7 +192,7 @@ namespace DGD.HubGovernor.Units
                         ClearForm();
                     }
 
-                    EventLogger.Info("Enregistrement réussi.");
+                    TextLogger.Info("Enregistrement réussi.");
                 }
             }
         }

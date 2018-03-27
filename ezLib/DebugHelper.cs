@@ -71,7 +71,7 @@ namespace easyLib
                 int n = m_tableProviders[key].Count;
 
                 if (n != 0)
-                    EventLogger.Debug("Warn! Table: {0}, # of dps  = {1}.", key, n);
+                    TextLogger.Debug("Warn! Table: {0}, # of dps  = {1}.", key, n);
 
                 dpCount += n;
             }
@@ -172,7 +172,7 @@ namespace easyLib
                 int n = m_tableProviders[key].Count;
 
                 if (n != 0)
-                    EventLogger.Debug("Warn! Table: {0}, # of dps  = {1}." , key , n);
+                    TextLogger.Debug("Warn! Table: {0}, # of dps  = {1}." , key , n);
 
                 dpCount += n;
             }

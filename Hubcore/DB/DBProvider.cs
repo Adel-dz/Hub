@@ -64,6 +64,12 @@ namespace DGD.HubCore.DB
         public IDBSource DataSource => m_src.DataSource;
         public bool IsConnected { get; private set; }
 
+        public bool AutoFlush
+        {
+            get { return m_src.AutoFlush; }
+            set { m_src.AutoFlush = value; }
+        }
+
         public int Count
         {
             get

@@ -34,12 +34,13 @@
             System.Windows.Forms.Label m_lblPhone;
             System.Windows.Forms.Label m_lblContact;
             System.Windows.Forms.PictureBox m_pbLogo;
+            this.m_btnSave = new System.Windows.Forms.Button();
             this.m_tbEmail = new System.Windows.Forms.TextBox();
             this.m_tbPhone = new System.Windows.Forms.TextBox();
             this.m_lblProfile = new System.Windows.Forms.Label();
             this.m_tbContact = new System.Windows.Forms.TextBox();
             this.m_chkUseInternalCode = new System.Windows.Forms.CheckBox();
-            this.m_btnSave = new System.Windows.Forms.Button();
+            this.m_grpOtherOpt = new System.Windows.Forms.GroupBox();
             m_grpClientInfo = new System.Windows.Forms.GroupBox();
             m_lblProfileLabel = new System.Windows.Forms.Label();
             m_lblEmail = new System.Windows.Forms.Label();
@@ -48,10 +49,12 @@
             m_pbLogo = new System.Windows.Forms.PictureBox();
             m_grpClientInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(m_pbLogo)).BeginInit();
+            this.m_grpOtherOpt.SuspendLayout();
             this.SuspendLayout();
             // 
             // m_grpClientInfo
             // 
+            m_grpClientInfo.Controls.Add(this.m_btnSave);
             m_grpClientInfo.Controls.Add(this.m_tbEmail);
             m_grpClientInfo.Controls.Add(this.m_tbPhone);
             m_grpClientInfo.Controls.Add(this.m_lblProfile);
@@ -62,10 +65,22 @@
             m_grpClientInfo.Controls.Add(m_lblContact);
             m_grpClientInfo.Location = new System.Drawing.Point(15, 14);
             m_grpClientInfo.Name = "m_grpClientInfo";
-            m_grpClientInfo.Size = new System.Drawing.Size(368, 164);
+            m_grpClientInfo.Size = new System.Drawing.Size(368, 206);
             m_grpClientInfo.TabIndex = 0;
             m_grpClientInfo.TabStop = false;
-            m_grpClientInfo.Text = " Infos Utilsateur ";
+            m_grpClientInfo.Text = " Infos Utilisateur ";
+            // 
+            // m_btnSave
+            // 
+            this.m_btnSave.Enabled = false;
+            this.m_btnSave.ForeColor = System.Drawing.Color.SteelBlue;
+            this.m_btnSave.Location = new System.Drawing.Point(194, 168);
+            this.m_btnSave.Name = "m_btnSave";
+            this.m_btnSave.Size = new System.Drawing.Size(140, 23);
+            this.m_btnSave.TabIndex = 3;
+            this.m_btnSave.Text = "Transmettre au serveur...";
+            this.m_btnSave.UseVisualStyleBackColor = true;
+            this.m_btnSave.Click += new System.EventHandler(this.Save_Click);
             // 
             // m_tbEmail
             // 
@@ -152,24 +167,22 @@
             // m_chkUseInternalCode
             // 
             this.m_chkUseInternalCode.AutoSize = true;
-            this.m_chkUseInternalCode.Location = new System.Drawing.Point(16, 200);
+            this.m_chkUseInternalCode.Location = new System.Drawing.Point(9, 29);
             this.m_chkUseInternalCode.Name = "m_chkUseInternalCode";
             this.m_chkUseInternalCode.Size = new System.Drawing.Size(255, 17);
             this.m_chkUseInternalCode.TabIndex = 1;
             this.m_chkUseInternalCode.Text = "Utiliser les codes pays au lieu des noms de pays.";
             this.m_chkUseInternalCode.UseVisualStyleBackColor = true;
             // 
-            // m_btnSave
+            // m_grpOtherOpt
             // 
-            this.m_btnSave.Enabled = false;
-            this.m_btnSave.ForeColor = System.Drawing.Color.SteelBlue;
-            this.m_btnSave.Location = new System.Drawing.Point(307, 226);
-            this.m_btnSave.Name = "m_btnSave";
-            this.m_btnSave.Size = new System.Drawing.Size(75, 23);
-            this.m_btnSave.TabIndex = 3;
-            this.m_btnSave.Text = "Enregistrer";
-            this.m_btnSave.UseVisualStyleBackColor = true;
-            this.m_btnSave.Click += new System.EventHandler(this.Save_Click);
+            this.m_grpOtherOpt.Controls.Add(this.m_chkUseInternalCode);
+            this.m_grpOtherOpt.Location = new System.Drawing.Point(15, 240);
+            this.m_grpOtherOpt.Name = "m_grpOtherOpt";
+            this.m_grpOtherOpt.Size = new System.Drawing.Size(368, 63);
+            this.m_grpOtherOpt.TabIndex = 3;
+            this.m_grpOtherOpt.TabStop = false;
+            this.m_grpOtherOpt.Text = " Autres paramètres ";
             // 
             // SettingsView
             // 
@@ -177,9 +190,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.Controls.Add(this.m_btnSave);
+            this.Controls.Add(this.m_grpOtherOpt);
             this.Controls.Add(m_pbLogo);
-            this.Controls.Add(this.m_chkUseInternalCode);
             this.Controls.Add(m_grpClientInfo);
             this.ForeColor = System.Drawing.SystemColors.WindowText;
             this.Name = "SettingsView";
@@ -187,8 +199,9 @@
             m_grpClientInfo.ResumeLayout(false);
             m_grpClientInfo.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(m_pbLogo)).EndInit();
+            this.m_grpOtherOpt.ResumeLayout(false);
+            this.m_grpOtherOpt.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -200,5 +213,6 @@
         private System.Windows.Forms.TextBox m_tbContact;
         private System.Windows.Forms.CheckBox m_chkUseInternalCode;
         private System.Windows.Forms.Button m_btnSave;
+        private System.Windows.Forms.GroupBox m_grpOtherOpt;
     }
 }

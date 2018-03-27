@@ -14,6 +14,7 @@ namespace DGD.Hub
 {
     static class AutoUpdater
     {
+        public static event Action DataUpdated;
         public static event Action<uint> BeginTableUpdate;
         public static event Action<uint> EndTableUpdate;
         public static event Func<bool> CanDownlaodAppUpdate;
@@ -81,6 +82,8 @@ namespace DGD.Hub
                             }
                         }
                     }
+
+                    DataUpdated?.Invoke();
                 }
 
                 Assert(Program.Settings.DataGeneration == updateManifest.DataGeneration);

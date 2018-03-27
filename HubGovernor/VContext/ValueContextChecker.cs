@@ -28,7 +28,7 @@ namespace DGD.HubGovernor.VContext
         {
             //contrainte 14
 
-            var logger = new EventLogger(LogSeverity.Warning);
+            var logger = new TextLogger(LogSeverity.Warning);
             logger.PutLine("*** Control d’intégrité ***");
             logger.PutLine($"Table: {AppContext.TableManager.ValuesContext.Name}");
             

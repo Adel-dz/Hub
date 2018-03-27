@@ -127,7 +127,7 @@ namespace DGD.HubGovernor.Suppliers
             //any modifs?
             if(m_datum.Name == name)
             {
-                EventLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
+                TextLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
                 Close();
                 return;
             }
@@ -143,7 +143,7 @@ namespace DGD.HubGovernor.Suppliers
             {
                 DataSupplier supplier = rows.First();
 
-                var logger = new EventLogger(LogSeverity.Warning);
+                var logger = new TextLogger(LogSeverity.Warning);
                 logger.Put("Duplication de données détectée.");
                 logger.Put("Elément trouvé:\n");
                 logger.Put("ID: {0}\n" , supplier.ID);
@@ -161,7 +161,7 @@ namespace DGD.HubGovernor.Suppliers
                 m_ndxerSuppliers.Source.Replace(ndx , supplier);
                 Close();
 
-                EventLogger.Info("Enregistrement réussi.");
+                TextLogger.Info("Enregistrement réussi.");
             }
         }
         

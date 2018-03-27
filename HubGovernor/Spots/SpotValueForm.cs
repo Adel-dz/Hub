@@ -126,7 +126,7 @@ namespace DGD.HubGovernor.Spots
 
             if(m_spotValue.Price == price && m_spotValue.SpotTime == dtSpot)
             {
-                EventLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
+                TextLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
                 Close();
 
                 return;
@@ -146,7 +146,7 @@ namespace DGD.HubGovernor.Spots
 
                 if(values.Count() > 1 || (values.Count() == 1 && values.Single().ID != m_spotValue.ID) )
                 {
-                    var logger = new EventLogger(LogSeverity.Warning);
+                    var logger = new TextLogger(LogSeverity.Warning);
                     logger.Put("Duplication de données détectée.");
                     logger.Put("Elément trouvé:\n");
 
@@ -169,7 +169,7 @@ namespace DGD.HubGovernor.Spots
                     m_spotValue.ValueContextID , m_spotValue.SupplierID, 0);
                 m_ndxerValues.Source.Replace(m_ndxerValues.IndexOf(m_spotValue.ID) , newValue);
 
-                EventLogger.Info("Enregistrement réussi.");
+                TextLogger.Info("Enregistrement réussi.");
                 Close();
             }
         }

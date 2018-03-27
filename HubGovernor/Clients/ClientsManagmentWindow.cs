@@ -112,7 +112,7 @@ namespace DGD.HubGovernor.Clients
             Action<Task> onErr = t =>
             {
                 MessageBox.Show(t.Exception.InnerException.Message , Text);
-                EventLogger.Error(t.Exception.InnerException.Message);
+                TextLogger.Error(t.Exception.InnerException.Message);
                 waitClue.LeaveWaitMode();
             };
 
@@ -184,7 +184,7 @@ namespace DGD.HubGovernor.Clients
             Action<Task> onErr = t =>
             {
                 MessageBox.Show(t.Exception.InnerException.Message , Text);
-                EventLogger.Error(t.Exception.InnerException.Message);
+                TextLogger.Error(t.Exception.InnerException.Message);
                 waitClue.LeaveWaitMode();
             };
 
@@ -539,7 +539,7 @@ namespace DGD.HubGovernor.Clients
 
             var client = selNode.Tag as HubClient;
 
-            EventLogger.Info($"Envoi d'une notification de réinitialisation au client {client.ID:X}.");
+            TextLogger.Info($"Envoi d'une notification de réinitialisation au client {client.ID:X}.");
             AppContext.ClientsManager.SetClientStatus(client , ClientStatus_t.Reseted);
         }
     }

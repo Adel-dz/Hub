@@ -15,7 +15,7 @@ namespace DGD.HubGovernor
         {
             InitializeComponent();
 
-            EventLogger.RegisterReceiver(this);
+            TextLogger.RegisterReceiver(this);
         }
 
         public void Write(string message , LogSeverity severity)

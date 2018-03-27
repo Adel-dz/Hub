@@ -27,7 +27,7 @@ namespace DGD.HubGovernor
             m_logWindow = new LogWindow();
 
 
-            EventLogger.Info($"Hub Governor version: {Assembly.GetExecutingAssembly().GetName().Version}");
+            TextLogger.Info($"Hub Governor version: {Assembly.GetExecutingAssembly().GetName().Version}");
         }
 
 
@@ -51,7 +51,7 @@ namespace DGD.HubGovernor
             if (!AppContext.Settings.UserSettings.LogWindowHidden)
                 m_logWindow.Show(this);
 
-            EventLogger.Info($"Version des données: {AppContext.Settings.AppSettings.DataGeneration}.");            
+            TextLogger.Info($"Version des données: {AppContext.Settings.AppSettings.DataGeneration}.");            
 
             base.OnLoad(e);
         }

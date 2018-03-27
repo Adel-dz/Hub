@@ -57,7 +57,7 @@ namespace DGD.HubGovernor.TR
         {
             //∀ p1, P2 ∈ TRProductMapping, p1.ProductNumber = p2.ProductNumber <=> p1 = p2;
 
-            var logger = new EventLogger(LogSeverity.Warning);
+            var logger = new TextLogger(LogSeverity.Warning);
             logger.PutLine("*** Control d’intégrité ***");
             logger.PutLine($"Table: {AppContext.TableManager.TRProductsMapping.Name}");
 
@@ -87,7 +87,7 @@ namespace DGD.HubGovernor.TR
         {
             //∀ p1, p2 ∈ TRProductMapping (p1.ProductID, p1.ContextID) = (p2.ProductID, p2.ContextID) <=> p1 = p2
 
-            var logger = new EventLogger(LogSeverity.Warning);
+            var logger = new TextLogger(LogSeverity.Warning);
             logger.PutLine("*** Control d’intégrité ***");
             logger.PutLine($"Table: {AppContext.TableManager.TRProductsMapping.Name}");
 
@@ -130,7 +130,7 @@ namespace DGD.HubGovernor.TR
         {
             //∀m ∈ ProductMapping  ∃p ∈ Product : p.ID = m.ProducID
 
-            var logger = new EventLogger(LogSeverity.Warning);
+            var logger = new TextLogger(LogSeverity.Warning);
             logger.PutLine("*** Control d’intégrité ***");
             logger.PutLine($"Table: {AppContext.TableManager.TRProductsMapping.Name}");
 
@@ -156,7 +156,7 @@ namespace DGD.HubGovernor.TR
         {
             //∀m ∈ ProductMapping  ∃c ∈ ValueContext : c.ID = m.ContextID
 
-            var logger = new EventLogger(LogSeverity.Warning);
+            var logger = new TextLogger(LogSeverity.Warning);
             logger.PutLine("*** Control d’intégrité ***");
             logger.PutLine($"Table: {AppContext.TableManager.TRProductsMapping.Name}");
 

@@ -35,7 +35,7 @@ namespace DGD.HubCore.DB
             if(id == 0)
             {
                 var ex = new CorruptedStreamException();
-                EventLogger.Error(ex.Message);
+                TextLogger.Error(ex.Message);
 
                 throw ex;
             }

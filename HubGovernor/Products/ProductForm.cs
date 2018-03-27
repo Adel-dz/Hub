@@ -134,7 +134,7 @@ namespace DGD.HubGovernor.Products
             //any modif.?
             if(m_datum != null && name == m_datum.Name && subHeading.Value == m_datum.SubHeading.Value)
             {
-                EventLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
+                TextLogger.Info("Aucune modification détectée, enregistrement non-nécessaire.");
                 Close();
                 return;
             }
@@ -163,7 +163,7 @@ namespace DGD.HubGovernor.Products
                 {
                     Product prod = dp.Get(0) as Product;
 
-                    var logger = new EventLogger(LogSeverity.Warning);
+                    var logger = new TextLogger(LogSeverity.Warning);
                     logger.Put("Duplication de données détectée.");
                     logger.Put("Elément trouvé:\n");
                     logger.Put("ID: {0}\n" , prod.ID);
@@ -194,7 +194,7 @@ namespace DGD.HubGovernor.Products
                     Close();
                 }
 
-                EventLogger.Info("Enregistrement réussi.");
+                TextLogger.Info("Enregistrement réussi.");
             }
         }
 

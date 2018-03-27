@@ -60,7 +60,7 @@ namespace DGD.HubGovernor.TR
         {
             //∀v ∈ SpotValueTable  ∃l ∈ TRLabelTable : v.LabelID = l.ID
 
-            var logger = new EventLogger(LogSeverity.Warning);
+            var logger = new TextLogger(LogSeverity.Warning);
             logger.PutLine("*** Control d’intégrité ***");
             logger.PutLine($"Table: {AppContext.TableManager.TRSpotValues.Name}");
 
@@ -93,7 +93,7 @@ namespace DGD.HubGovernor.TR
         {
             // ∀v ∈ TRSpotValueTable ∃m ∈ TRProductMappingTable: v.ProductMappingID = m.ID;
 
-            var logger = new EventLogger(LogSeverity.Warning);
+            var logger = new TextLogger(LogSeverity.Warning);
             logger.PutLine("*** Control d’intégrité ***");
             logger.PutLine($"Table: {AppContext.TableManager.TRSpotValues.Name}");
 
@@ -126,7 +126,7 @@ namespace DGD.HubGovernor.TR
         {
             //∀v1, v2 ∈ TRSpotValueTable (v1.ProductMappingId, v1.Time) = (v2.ProductMappingId, v2.Time) <=> v1=v2
 
-            var logger = new EventLogger(LogSeverity.Warning);
+            var logger = new TextLogger(LogSeverity.Warning);
             logger.PutLine("*** Control d’intégrité ***");
             logger.PutLine($"Table: {AppContext.TableManager.TRSpotValues.Name}");
 

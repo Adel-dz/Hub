@@ -68,7 +68,7 @@ namespace DGD.Hub.SpotView
 
             bool useCountryCode = Program.Settings.UseCountryCode;
 
-            if (CountryEntry.UseCountryCode != useCountryCode)
+            if (m_cbOrigin.Items.Count == 0 || CountryEntry.UseCountryCode != useCountryCode)
             {
                 CountryEntry.UseCountryCode = useCountryCode;
 
@@ -291,7 +291,7 @@ namespace DGD.Hub.SpotView
                           select sv;
 
 
-                if (origin.ID != 0)
+                if (origin != null)
                     seq = from SpotValue sv in seq
                           where sv.ValueContext.OriginID == origin.ID
                           select sv;
@@ -381,7 +381,7 @@ namespace DGD.Hub.SpotView
 
             DateTime date = m_dtpSpotDate.Value;
             var ict = m_cbIncoterm.SelectedItem as Incoterm;
-            var ctry = m_cbOrigin.SelectedItem as Country;
+            var ctry = (m_cbOrigin.SelectedItem as CountryEntry).Country;
 
             try
             {

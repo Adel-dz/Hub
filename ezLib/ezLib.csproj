@@ -108,7 +108,7 @@
     <Compile Include="Jobs\ForegroundJob.cs" />
     <Compile Include="Jobs\Job.cs" />
     <Compile Include="Jobs\Processing.cs" />
-    <Compile Include="Log\EventLogger.cs" />
+    <Compile Include="Log\TextLogger.cs" />
     <Compile Include="Log\LogReceiver.cs" />
     <Compile Include="MRUList.cs" />
     <Compile Include="Pair.cs" />

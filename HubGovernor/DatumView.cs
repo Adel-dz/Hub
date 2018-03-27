@@ -151,7 +151,7 @@ namespace DGD.HubGovernor
 
             m_lvData.Items.AddRange(items);
 
-            EventLogger.Info("\nNbre d'enregistrements {0}." , m_dataProvider.Count);
+            TextLogger.Info("\nNbre d'enregistrements {0}." , m_dataProvider.Count);
         }
 
         void LoadDataAsync()
@@ -168,7 +168,7 @@ namespace DGD.HubGovernor
             Action<Task<ListViewEntry[]>> onError = t =>
             {
                 Exception ex = t.Exception.InnerException;
-                EventLogger.Error(ex.Message);
+                TextLogger.Error(ex.Message);
 
                 waitClue.LeaveWaitMode();
 

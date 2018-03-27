@@ -176,7 +176,7 @@ namespace DGD.HubGovernor.Clients
 
             if (status == ClientStatus_t.Enabled && oldClient != null && oldClient.ID != client.ID)
             {
-                EventLogger.Info($"Désactivation du client {oldClient.ContactName}...");
+                TextLogger.Info($"Désactivation du client {oldClient.ContactName}...");
 
                 //maj la table des status clients
                 var oldClStatus = m_ndxerClientsStatus.Get(oldClient.ID) as ClientStatus;
@@ -195,7 +195,7 @@ namespace DGD.HubGovernor.Clients
                 }
                 catch (Exception ex)
                 {
-                    EventLogger.Warning(ex.Message);
+                    TextLogger.Warning(ex.Message);
                     DialogEngin.WriteSrvDialog(oldClFilePath ,
                         new ClientDialog(oldClient.ID , ClientStatus_t.Disabled , Enumerable.Empty<Message>()));
                 }
@@ -221,7 +221,7 @@ namespace DGD.HubGovernor.Clients
             }
             catch (Exception ex)
             {
-                EventLogger.Warning(ex.Message);
+                TextLogger.Warning(ex.Message);
                 DialogEngin.WriteSrvDialog(filePath ,
                     new ClientDialog(client.ID , status , Enumerable.Empty<Message>()));
             }
@@ -285,7 +285,7 @@ namespace DGD.HubGovernor.Clients
         //private:                        
         void Initialize()
         {
-            EventLogger.Info("Réinitialisation des fichiers sur le serveur...");
+            TextLogger.Info("Réinitialisation des fichiers sur le serveur...");
 
             string reqFilePath = AppPaths.LocalConnectionReqPath;
             DialogEngin.WriteConnectionsReq(reqFilePath , Enumerable.Empty<Message>());
@@ -301,11 +301,11 @@ namespace DGD.HubGovernor.Clients
                 netEngin.Upload(AppPaths.RemoteConnectionRespUri , respFilePath);
                 m_initializationDone = true;
 
-                EventLogger.Info("Réinitialisation réussie.");
+                TextLogger.Info("Réinitialisation réussie.");
             }
             catch (Exception ex)
             {
-                EventLogger.Error("Une erreur est survenue lors de l’initialisation du serveur: " +
+                TextLogger.Error("Une erreur est survenue lors de l’initialisation du serveur: " +
                     ex.Message);
             }
         }
@@ -345,7 +345,7 @@ namespace DGD.HubGovernor.Clients
 
         void ProcessProfilesChange()
         {
-            EventLogger.Info("Mise à jour des profils au niveau du serveur.");
+            TextLogger.Info("Mise à jour des profils au niveau du serveur.");
 
             string filePath = AppPaths.LocalProfilesPath;
 
@@ -487,7 +487,7 @@ namespace DGD.HubGovernor.Clients
                     }
                     catch (Exception ex)
                     {
-                        EventLogger.Error(ex.Message);
+                        TextLogger.Error(ex.Message);
                         continue;
                     }
                 }
@@ -528,7 +528,7 @@ namespace DGD.HubGovernor.Clients
                     }
                     catch (Exception ex)
                     {
-                        EventLogger.Error(ex.Message);
+                        TextLogger.Error(ex.Message);
                         continue;
                     }
 
@@ -540,7 +540,7 @@ namespace DGD.HubGovernor.Clients
                         }
                         catch (Exception ex)
                         {
-                            EventLogger.Warning(ex.Message);
+                            TextLogger.Warning(ex.Message);
                         }
                     else
                     {
@@ -553,7 +553,7 @@ namespace DGD.HubGovernor.Clients
                         }
                         catch (Exception ex)
                         {
-                            EventLogger.Warning(ex.Message);
+                            TextLogger.Warning(ex.Message);
                             continue;
                         }
                     }
@@ -603,7 +603,7 @@ namespace DGD.HubGovernor.Clients
                         deadClients.Add(clID);
                     else if (clData.LiveTimeout <= TTL_REFRESH)
                     {
-                        EventLogger.Info($"Envoi d'un message de synchronisation au client {clID:X}.");
+                        TextLogger.Info($"Envoi d'un message de synchronisation au client {clID:X}.");
                         var msg = new Message(++clData.LastSrvMessageID , 0 , Message_t.Sync); //delegate status update to processdialog method
                         DialogEngin.AppendSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) , msg);
                         AddUpload(Names.GetSrvDialogFile(clID));
@@ -612,7 +612,7 @@ namespace DGD.HubGovernor.Clients
 
             foreach (uint id in deadClients)
             {
-                EventLogger.Info($"Client {id:X} présumé déconnecté.");
+                TextLogger.Info($"Client {id:X} présumé déconnecté.");
 
                 lock (m_runningClients)
                     m_runningClients.Remove(id);

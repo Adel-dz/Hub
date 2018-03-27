@@ -58,6 +58,12 @@ namespace easyLib.DB
         public bool IsDisposed { get; private set; }
         public bool IsConnected { get; private set; }
 
+        public bool AutoFlush
+        {
+            get { return m_source.AutoFlush; }
+            set { m_source.AutoFlush = value; }
+        }
+
         public int Count
         {
             get

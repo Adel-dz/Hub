@@ -30,7 +30,7 @@ namespace DGD.HubGovernor.Products
         {
             //contrainte 1
 
-            var logger = new EventLogger(LogSeverity.Warning);
+            var logger = new TextLogger(LogSeverity.Warning);
             logger.PutLine("*** Control d’intégrité ***");
             logger.PutLine($"Table: {AppContext.TableManager.Products.Name}");
             logger.PutLine("La contrainte d’intégrité n° 1 est violée par les éléments suivants :");

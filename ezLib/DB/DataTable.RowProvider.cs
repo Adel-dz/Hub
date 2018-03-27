@@ -14,7 +14,7 @@ namespace easyLib.DB
             readonly DataTable<T> m_table;
             readonly object m_lock = new object();
             int m_refCount;
-            
+           
 
             public event Action<int , IDatum> DatumInserted;
             public event Action<int> DatumDeleted;
@@ -35,6 +35,7 @@ namespace easyLib.DB
             public IDataSource DataSource => m_table;
             public bool IsConnected { get; private set; }
             public bool IsDisposed { get; private set; }
+            public bool AutoFlush { get; set; }
 
             public int Count
             {
@@ -85,6 +86,9 @@ namespace easyLib.DB
                 Assert(item is T);
 
                 m_table.InsertRow((T)item);
+
+                if (AutoFlush)
+                    m_table.Flush();
             }
 
             public void Delete(int ndxItem)
@@ -93,6 +97,9 @@ namespace easyLib.DB
                 Assert(ndxItem < Count);               
 
                 m_table.DeleteRow(ndxItem);
+
+                if (AutoFlush)
+                    m_table.Flush();
             }
 
             public IEnumerable<IDatum> Enumerate() => Count == 0 ? Enumerable.Empty<IDatum>() : Enumerate(0);
@@ -117,10 +124,12 @@ namespace easyLib.DB
             {
                 Assert(IsConnected);
                 Assert(ndxItem < Count);
-                Assert(item is T);
-                
+                Assert(item is T);                
 
                 m_table.ReplaceRow(ndxItem , (T)item);
+
+                if (AutoFlush)
+                    m_table.Flush();
             }
 
             public void Dispose()

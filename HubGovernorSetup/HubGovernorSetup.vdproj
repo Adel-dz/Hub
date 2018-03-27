@@ -15,31 +15,37 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_22514C3B7650F0EBD28BBC1C28A9929F"
-        "OwnerKey" = "8:_2979D7CE1C1B413681AB81E2663025B8"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_22514C3B7650F0EBD28BBC1C28A9929F"
-        "OwnerKey" = "8:_A140D755D8DABFCE489B7E4B5B2AF408"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_2979D7CE1C1B413681AB81E2663025B8"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_A140D755D8DABFCE489B7E4B5B2AF408"
+        "MsmKey" = "8:_40A2533A6C68DB30390737891D89A033"
         "OwnerKey" = "8:_2979D7CE1C1B413681AB81E2663025B8"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
+        "MsmKey" = "8:_51F519CBB07003C2B2B40E08283AC107"
+        "OwnerKey" = "8:_2979D7CE1C1B413681AB81E2663025B8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_51F519CBB07003C2B2B40E08283AC107"
+        "OwnerKey" = "8:_40A2533A6C68DB30390737891D89A033"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D409488E817E2396DF5E170874562006"
+        "OwnerKey" = "8:_2979D7CE1C1B413681AB81E2663025B8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_2979D7CE1C1B413681AB81E2663025B8"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -52,19 +58,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_22514C3B7650F0EBD28BBC1C28A9929F"
+        "OwnerKey" = "8:_51F519CBB07003C2B2B40E08283AC107"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_A140D755D8DABFCE489B7E4B5B2AF408"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2979D7CE1C1B413681AB81E2663025B8"
+        "OwnerKey" = "8:_40A2533A6C68DB30390737891D89A033"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -162,15 +162,15 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_22514C3B7650F0EBD28BBC1C28A9929F"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_40A2533A6C68DB30390737891D89A033"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.2.6645.22643, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.9.6651.35340, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                 }
-            "SourcePath" = "8:ezLib.dll"
+            "SourcePath" = "8:Hubcore.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_90D8C4AB67474AA582301E1EF39AACED"
@@ -188,15 +188,15 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A140D755D8DABFCE489B7E4B5B2AF408"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_51F519CBB07003C2B2B40E08283AC107"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.2.6645.22644, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.5.6651.17906, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                 }
-            "SourcePath" = "8:Hubcore.dll"
+            "SourcePath" = "8:ezLib.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_90D8C4AB67474AA582301E1EF39AACED"
@@ -296,15 +296,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:HubGovernorSetup"
-        "ProductCode" = "8:{92BE8AB7-F7CB-472D-AB3F-3CA9219BFE5B}"
-        "PackageCode" = "8:{4CACDCAE-CEC2-4D09-AFA3-ADA97CDC4617}"
+        "ProductCode" = "8:{0277540D-426C-484F-A2C5-C1728474ADCD}"
+        "PackageCode" = "8:{1653BCCB-0C2E-49DD-96E5-33170E0FD765}"
         "UpgradeCode" = "8:{B1E6447C-4F8E-4AAF-A884-19AEEF31D5BB}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.5.6651"
+        "ProductVersion" = "8:0.7.6657"
         "Manufacturer" = "8:Douane Algérienne"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

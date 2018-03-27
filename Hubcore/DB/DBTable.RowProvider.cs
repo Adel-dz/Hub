@@ -46,6 +46,9 @@ namespace DGD.HubCore.DB
                 }
             }
 
+            public bool AutoFlush { get; set; }
+
+
             public void Connect()
             {
                 Assert(!IsConnected);
@@ -87,6 +90,9 @@ namespace DGD.HubCore.DB
                 {
                     DataDeleting?.Invoke(indices);
                     m_table.Delete(indices);
+
+                    if (AutoFlush)
+                        m_table.Flush();
                 }
             }
 
@@ -100,6 +106,9 @@ namespace DGD.HubCore.DB
                 {
                     DatumDeleting?.Invoke(ndx);
                     m_table.Delete(ndx);
+
+                    if (AutoFlush)
+                        m_table.Flush();
                 }
             }
 
@@ -138,7 +147,13 @@ namespace DGD.HubCore.DB
                 Assert(data.OfType<T>().Count() == data.Count());
 
                 lock (m_lock)
+                {
                     m_table.Insert(data.Cast<T>().ToArray());
+
+                    if (AutoFlush)
+                        m_table.Flush();
+                }
+
             }
 
             public void Insert(IDataRow datum)
@@ -148,7 +163,12 @@ namespace DGD.HubCore.DB
                 Assert(datum is T);
 
                 lock (m_lock)
+                {
                     m_table.Insert((T)datum);
+
+                    if (AutoFlush)
+                        m_table.Flush();
+                }
             }
 
             public void Replace(int ndx , IDataRow datum)
@@ -163,6 +183,9 @@ namespace DGD.HubCore.DB
                 {
                     DatumReplacing?.Invoke(ndx , datum);
                     m_table.Replace(ndx , (T)datum);
+
+                    if (AutoFlush)
+                        m_table.Flush();
                 }
             }
 

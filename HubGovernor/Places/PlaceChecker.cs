@@ -30,7 +30,7 @@ namespace DGD.HubGovernor.Places
         {
             //contrainte 4
 
-            var logger = new EventLogger(LogSeverity.Warning);
+            var logger = new TextLogger(LogSeverity.Warning);
             logger.PutLine("*** Control d’intégrité ***");
             logger.PutLine($"Table: {AppContext.TableManager.Places.Name}");
             logger.PutLine("La contrainte d’intégrité n° 4 est violée par les éléments suivants :");
