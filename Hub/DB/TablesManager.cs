@@ -5,7 +5,6 @@ using System.Linq;
 using System.IO;
 using DGD.HubCore;
 using static System.Diagnostics.Debug;
-using easyLib.Log;
 using easyLib;
 using System.Text;
 
@@ -213,7 +212,7 @@ namespace DGD.Hub.DB
                     }
                     catch (FileNotFoundException)
                     {
-                        TextLogger.Warning($"Impossible d'ouvrir la table {tbl.Name}\nLancement de la procedure de création...");
+                        System.Diagnostics.Debug.WriteLine($"Impossible d'ouvrir la table {tbl.Name}\nLancement de la procedure de création...");
 
                         try
                         {
@@ -221,11 +220,11 @@ namespace DGD.Hub.DB
                         }
                         catch (Exception ex)
                         {
-                            TextLogger.Error($"Erreur lors de la création du fichier!\n Exception: {ex.Message}");
+                            System.Diagnostics.Debug.WriteLine($"Erreur lors de la création du fichier!\n Exception: {ex.Message}");
                             throw;
                         }
 
-                        TextLogger.Info("Création ok");
+                        System.Diagnostics.Debug.WriteLine("Création ok");
                     }
 
             return tbl;

@@ -13,16 +13,18 @@ namespace DGD.HubGovernor.Clients
             uint LastClientMessageID { get; set; }
             uint LastSrvMessageID { get; set; }
             IEnumerable<IEventLog> ClientLogs { get; }
+
+            void AddLog(IEventLog log);
         }
 
 
         class ClientData: IClientData
         {          
-            public ClientData(DateTime cxnTime, int TTL = 20)
+            public ClientData(DateTime cxnTime)
             {
                 LogList = new List<IEventLog>();
                 ConnectionTime = cxnTime;
-                TimeToLive = TTL;
+                TimeToLive = InitTimeToLive;
             }
 
 
@@ -32,6 +34,11 @@ namespace DGD.HubGovernor.Clients
             public uint LastClientMessageID { get; set; }
             public uint LastSrvMessageID { get; set; }
             public IEnumerable<IEventLog> ClientLogs => LogList;
+
+            public void AddLog(IEventLog log)
+            {
+                LogList.Add(log);
+            }
         }
 
 
@@ -39,7 +46,9 @@ namespace DGD.HubGovernor.Clients
         readonly Dictionary<uint , ClientData> m_clients = new Dictionary<uint, ClientData>(); //the lock
 
 
-        public IClientData[] Clients
+        public static int InitTimeToLive { get; set; } = 10;
+
+        public IClientData[] ClientsData
         {
             get
             {
@@ -53,10 +62,23 @@ namespace DGD.HubGovernor.Clients
             }
         }
 
-
-        public IClientData AddClient(uint clID, DateTime cxnTime)
+        public uint[] ClientsID
         {
-            Dbg.Assert(ContainsClient(clID) == false);
+            get
+            {
+                lock(m_clients)
+                {
+                    var ids = new uint[m_clients.Count];
+                    m_clients.Keys.CopyTo(ids , 0);
+
+                    return ids;
+                }
+            }
+        }
+
+        public IClientData Add(uint clID, DateTime cxnTime)
+        {
+            Dbg.Assert(Contains(clID) == false);
 
             ClientData clData = null;
 
@@ -70,18 +92,30 @@ namespace DGD.HubGovernor.Clients
             return clData;
         }
 
-        public IClientData AddClient(uint clID) => AddClient(clID , DateTime.Now);
+        public IClientData Add(uint clID) => Add(clID , DateTime.Now);
 
-        public void RemoveClient(uint clID)
+        public void Remove(uint clID)
         {
             lock (m_clients)
                 m_clients.Remove(clID);
         }
 
-        public bool ContainsClient(uint clID)
+        public bool Contains(uint clID)
         {
             lock (m_clients)
                 return m_clients.ContainsKey(clID);
+        }
+
+        public IClientData Get(uint clID)
+        {
+            Dbg.Assert(Contains(clID));
+
+            ClientData clData;
+
+            lock (m_clients)
+                m_clients.TryGetValue(clID , out clData);
+
+            return clData;
         }
     }
 }

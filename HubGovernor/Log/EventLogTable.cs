@@ -4,8 +4,8 @@ namespace DGD.HubGovernor.Log
 {
     sealed class EventLogTable: FuzzyTable<EventLog>
     {
-        public EventLogTable(string name , string filePath) :
-            base(InternalTablesID.LOG_EVENT , name , filePath)
+        public EventLogTable(string filePath) :
+            base(InternalTablesID.LOG_EVENT , "log" , filePath)
         { }
 
 

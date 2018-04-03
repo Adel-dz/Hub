@@ -12,6 +12,7 @@ namespace DGD.HubGovernor
     {
         const string APP_BASE_DIR = "DGD.Governor";
 
+        static readonly Log.LogManager m_logManager;
         static readonly TableManager m_tableManager;
         static readonly ClientsManager m_clientsManager;
         static readonly DataAccessPath m_accessPath;
@@ -22,6 +23,7 @@ namespace DGD.HubGovernor
 
         static AppContext()
         {
+            m_logManager = new Log.LogManager();
             m_tableManager = new TableManager();
             m_settings = new Settings();
             m_accessPath = new DataAccessPath();
@@ -37,6 +39,7 @@ namespace DGD.HubGovernor
         public static IDatumFactory DatumFactory => m_datumFactory;
         public static ClientsManager ClientsManager => m_clientsManager;
         public static TransactionListener TransactionListener => m_ioListener;
+        public static Log.LogManager LogManager => m_logManager;
 
 
         public static void Init()
@@ -62,8 +65,8 @@ namespace DGD.HubGovernor
                 m_clientsManager.Dispose();
                 m_ioListener.Dispose();
                 m_accessPath.Dispose();
+                m_logManager.Dispose();
                 m_tableManager.Dispose();
-
                 m_settings.Save();
 
                 IsDisposed = true;

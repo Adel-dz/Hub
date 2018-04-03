@@ -5,74 +5,50 @@ using System.Linq;
 
 namespace DGD.HubGovernor.Log
 {
-    class ClientEventLogger: IEventLogger
+    interface IClientEventLogger: IEventLogger
     {
-        DataTable<EventLog> m_logTable;
+        uint ClientID { get; }
+        IEnumerable<IEventLog> Logs { get; }
+    }
+
+
+
+    sealed class ClientEventLogger: IClientEventLogger
+    {
+        readonly EventLogTable m_tbl;
         IDatumProvider m_logProvider;
-        readonly object m_lock = new object();
-        readonly uint m_clID;
 
         public ClientEventLogger(uint clID)
         {
             Dbg.Assert(clID != 0);
-            m_clID = clID;
+            ClientID = clID;
+
+            m_tbl = new EventLogTable(AppPaths.GetClientLogPath(clID));
+            m_logProvider = m_tbl.DataProvider;
+            m_logProvider.Connect();
         }
 
-        protected ClientEventLogger()
-        { }
-
-
         public bool IsDisposed { get; private set; }
+        public IEnumerable<IEventLog> Logs => m_logProvider.Enumerate().Cast<IEventLog>();
+        public uint ClientID { get; }
+
 
         public void Dispose()
         {
             if (!IsDisposed)
-                lock (m_lock)
-                    if (!IsDisposed)
-                    {
-                        m_logProvider?.Close();
-                        IsDisposed = true;
-                    }
-        }
-
-        public IEnumerable<IEventLog> EnumerateLog(uint clID = 0)
-        {
-            lock (m_lock)
-                return DataProvider.Enumerate().Cast<IEventLog>();            
-        }
-
-        public void LogEvent(string txt , DateTime tm , EventType_t evType , EventSource_t src , uint clientID = 0)
-        {
-            if(clientID == m_clID)
             {
-                Dbg.Assert(src == EventSource_t.Client);
-
-                lock(m_lock)
-                {
-                    IDatumProvider dp = DataProvider;
-                    var log = new EventLog(m_logTable.CreateUniqID() , txt , evType , tm);
-                    dp.Insert(log);
-                }
+                m_logProvider.Dispose();
+                m_tbl.Dispose();
+                IsDisposed = true;
             }
         }
 
-
-        //private:
-        IDatumProvider DataProvider
+        public IEventLog LogEvent(string txt , DateTime tm , EventType_t evType)
         {
-            get
-            {
-                if (m_logProvider == null)
-                {
-                    string tblPath = m_clID == 0? AppPaths.SrvLogPath : AppPaths.GetClientLogPath(m_clID);
-                    m_logTable = new EventLogTable("Log" , tblPath);
-                    m_logProvider = m_logTable.DataProvider;
+            var log = new EventLog(m_tbl.CreateUniqID() , txt , evType , tm);
+            m_logProvider.Insert(log);
 
-                    m_logProvider.Connect();
-                }
-
-                return m_logProvider;
-            }
+            return log;
         }
     }
 }

@@ -3,9 +3,9 @@ using DGD.HubCore.DLG;
 using DGD.HubGovernor.Clients;
 using DGD.HubGovernor.Extensions;
 using DGD.HubGovernor.ListViewSorters;
+using DGD.HubGovernor.Log;
 using easyLib.DB;
 using easyLib.Extensions;
-using easyLib.Log;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -184,15 +184,12 @@ namespace DGD.HubGovernor.Profiles
             m_tsbDeleteProfile.Enabled = m_lvData.SelectedItems.Count > 0;
 
             if (m_lvData.SelectedItems.Count == 1)
-            {
-                m_tsbClients.Enabled = m_tsbAutoManagement.Enabled = true;
+            {                
                 UserProfile prf = m_lvData.SelectedItems[0].Tag as UserProfile;
 
                 m_tsbAutoManagement.Checked =
                     AppContext.ClientsManager.GetProfileManagementMode(prf.ID) == ManagementMode_t.Auto;
             }
-            else
-                m_tsbClients.Enabled = m_tsbAutoManagement.Enabled = false;
         }
 
         private void DeleteProfile_Click(object sender , EventArgs e)
@@ -368,14 +365,6 @@ namespace DGD.HubGovernor.Profiles
             m_tsbAutoManagement.Checked = !m_tsbAutoManagement.Checked;
             prfMgmntMode.ManagementMode = mode;
             m_ndxerMgmntMode.Source.Replace(m_ndxerMgmntMode.IndexOf(prf.ID) , prfMgmntMode);
-        }
-
-        private void Clients_Click(object sender , EventArgs e)
-        {
-            var prf = m_lvData.SelectedItems[0].Tag as UserProfile;
-
-            var clWind = new Clients.ClientsWindow(ndxerProfiles: m_ndxerProfiles , idProfile: prf.ID);
-            clWind.Show(Owner);
         }
 
         private void Data_ColumnClick(object sender , ColumnClickEventArgs e)

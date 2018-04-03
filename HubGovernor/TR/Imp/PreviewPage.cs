@@ -13,6 +13,7 @@ using DGD.HubGovernor.Extensions;
 using DGD.HubCore.DB;
 using DGD.HubCore;
 using easyLib;
+using DGD.HubGovernor.Log;
 
 namespace DGD.HubGovernor.TR.Imp
 {
@@ -459,7 +460,7 @@ namespace DGD.HubGovernor.TR.Imp
                 catch(Exception ex)
                 {
                     MessageBox.Show(ex.Message , null , MessageBoxButtons.OK , MessageBoxIcon.Error);
-                    easyLib.Log.TextLogger.Error(ex.Message);
+                    TextLogger.Error(ex.Message);
                 }
         }
     }

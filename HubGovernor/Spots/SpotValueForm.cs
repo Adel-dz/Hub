@@ -1,8 +1,8 @@
 ﻿using DGD.HubCore.DB;
 using DGD.HubGovernor.Extensions;
+using DGD.HubGovernor.Log;
 using easyLib.DB;
 using easyLib.Extensions;
-using easyLib.Log;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

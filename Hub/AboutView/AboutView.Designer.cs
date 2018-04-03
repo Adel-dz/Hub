@@ -31,11 +31,13 @@
             System.Windows.Forms.PictureBox m_pbLogo;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutView));
             System.Windows.Forms.PictureBox m_pbTitle;
+            System.Windows.Forms.Label m_lblNB;
             this.m_lblVersion = new System.Windows.Forms.Label();
             this.m_lblDataGeneration = new System.Windows.Forms.Label();
             this.m_lblUpdateKey = new System.Windows.Forms.Label();
             m_pbLogo = new System.Windows.Forms.PictureBox();
             m_pbTitle = new System.Windows.Forms.PictureBox();
+            m_lblNB = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(m_pbLogo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(m_pbTitle)).BeginInit();
             this.SuspendLayout();
@@ -98,16 +100,29 @@
             this.m_lblUpdateKey.Text = "Clé de mise à jours:";
             this.m_lblUpdateKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
+            // m_lblNB
+            // 
+            m_lblNB.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            m_lblNB.AutoSize = true;
+            m_lblNB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            m_lblNB.Location = new System.Drawing.Point(56, 504);
+            m_lblNB.Name = "m_lblNB";
+            m_lblNB.Size = new System.Drawing.Size(737, 13);
+            m_lblNB.TabIndex = 6;
+            m_lblNB.Text = "Les valeurs reprises dans ce logiciel sont à prendre à titre indicatif et sont à " +
+    "usage interne et exclusif aux services des douanes.";
+            // 
             // AboutView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
+            this.Controls.Add(m_lblNB);
             this.Controls.Add(this.m_lblUpdateKey);
-            this.Controls.Add(m_pbLogo);
             this.Controls.Add(this.m_lblDataGeneration);
             this.Controls.Add(this.m_lblVersion);
             this.Controls.Add(m_pbTitle);
+            this.Controls.Add(m_pbLogo);
             this.ForeColor = System.Drawing.SystemColors.WindowText;
             this.Name = "AboutView";
             this.Size = new System.Drawing.Size(848, 531);

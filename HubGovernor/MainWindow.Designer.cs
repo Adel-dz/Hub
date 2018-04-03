@@ -29,14 +29,17 @@
         private void InitializeComponent()
         {
             System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+            System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+            System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
             System.Windows.Forms.ToolStripMenuItem m_miCheckIntegrity;
             System.Windows.Forms.ToolStripButton m_tsbTR;
             System.Windows.Forms.ToolStripButton m_tsbUpdate;
             System.Windows.Forms.ToolStripButton m_tsbRepository;
-            System.Windows.Forms.ToolStripButton m_tsbSettings;
             System.Windows.Forms.ToolStripButton m_tsbClientWindow;
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+            System.Windows.Forms.ToolStripButton m_tsbSysLog;
+            System.Windows.Forms.ToolStripButton m_tsbSettings;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
+            this.m_tsbLogView = new System.Windows.Forms.ToolStripButton();
             this.m_toolStrip = new System.Windows.Forms.ToolStrip();
             this.m_tsbMainMenu = new System.Windows.Forms.ToolStripDropDownButton();
             this.afficherLeJournalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,13 +48,15 @@
             this.quitterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             m_miCheckIntegrity = new System.Windows.Forms.ToolStripMenuItem();
             m_tsbTR = new System.Windows.Forms.ToolStripButton();
             m_tsbUpdate = new System.Windows.Forms.ToolStripButton();
             m_tsbRepository = new System.Windows.Forms.ToolStripButton();
-            m_tsbSettings = new System.Windows.Forms.ToolStripButton();
             m_tsbClientWindow = new System.Windows.Forms.ToolStripButton();
-            toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            m_tsbSysLog = new System.Windows.Forms.ToolStripButton();
+            m_tsbSettings = new System.Windows.Forms.ToolStripButton();
             this.m_toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -59,6 +64,16 @@
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
             toolStripSeparator3.Size = new System.Drawing.Size(6, 39);
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new System.Drawing.Size(6, 39);
+            // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new System.Drawing.Size(6, 39);
             // 
             // m_miCheckIntegrity
             // 
@@ -98,16 +113,6 @@
             m_tsbRepository.Text = "Tables";
             m_tsbRepository.Click += new System.EventHandler(this.Repository_Click);
             // 
-            // m_tsbSettings
-            // 
-            m_tsbSettings.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            m_tsbSettings.Image = global::DGD.HubGovernor.Properties.Resources.settings_mixer_32;
-            m_tsbSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
-            m_tsbSettings.Name = "m_tsbSettings";
-            m_tsbSettings.Size = new System.Drawing.Size(36, 36);
-            m_tsbSettings.Text = "Paramètres";
-            m_tsbSettings.Click += new System.EventHandler(this.Settings_Click);
-            // 
             // m_tsbClientWindow
             // 
             m_tsbClientWindow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -118,10 +123,37 @@
             m_tsbClientWindow.Text = "Gestionnaire des clients";
             m_tsbClientWindow.Click += new System.EventHandler(this.ClientWindow_Click);
             // 
-            // toolStripSeparator2
+            // m_tsbSysLog
             // 
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new System.Drawing.Size(6, 39);
+            m_tsbSysLog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbSysLog.Image = global::DGD.HubGovernor.Properties.Resources.syslog_32;
+            m_tsbSysLog.ImageTransparentColor = System.Drawing.Color.Magenta;
+            m_tsbSysLog.Name = "m_tsbSysLog";
+            m_tsbSysLog.Size = new System.Drawing.Size(36, 36);
+            m_tsbSysLog.Text = "Journal des événements système";
+            m_tsbSysLog.Click += new System.EventHandler(this.SysLog_Click);
+            // 
+            // m_tsbSettings
+            // 
+            m_tsbSettings.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbSettings.Image = global::DGD.HubGovernor.Properties.Resources.settings_mixer_32;
+            m_tsbSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
+            m_tsbSettings.Name = "m_tsbSettings";
+            m_tsbSettings.Size = new System.Drawing.Size(36, 36);
+            m_tsbSettings.Text = "Paramètres";
+            m_tsbSettings.Click += new System.EventHandler(this.Settings_Click);
+            // 
+            // m_tsbLogView
+            // 
+            this.m_tsbLogView.Checked = true;
+            this.m_tsbLogView.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.m_tsbLogView.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.m_tsbLogView.Image = global::DGD.HubGovernor.Properties.Resources.logviewer_32;
+            this.m_tsbLogView.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.m_tsbLogView.Name = "m_tsbLogView";
+            this.m_tsbLogView.Size = new System.Drawing.Size(36, 36);
+            this.m_tsbLogView.Text = "Afficher / Masquer la fenêtre du journal partial";
+            this.m_tsbLogView.Click += new System.EventHandler(this.LogView_Click);
             // 
             // m_toolStrip
             // 
@@ -135,6 +167,9 @@
             toolStripSeparator3,
             m_tsbClientWindow,
             toolStripSeparator2,
+            m_tsbSysLog,
+            this.m_tsbLogView,
+            toolStripSeparator4,
             m_tsbSettings});
             this.m_toolStrip.Location = new System.Drawing.Point(0, 0);
             this.m_toolStrip.Name = "m_toolStrip";
@@ -216,6 +251,7 @@
         private System.Windows.Forms.ToolStripMenuItem quitterToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem m_mpAdministration;
+        private System.Windows.Forms.ToolStripButton m_tsbLogView;
     }
 }
 

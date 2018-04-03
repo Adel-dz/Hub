@@ -1,5 +1,4 @@
 ﻿using easyLib.DB;
-using easyLib.Log;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -172,7 +171,7 @@ namespace DGD.HubCore.DB
 
                 szDatum = Math.Max(szDatum , sizeof(long));
 
-                TextLogger.Debug($"Création de la table {Path.GetFileName(Name)}");
+                System.Diagnostics.Debug.WriteLine($"Création de la table {Path.GetFileName(Name)}");
 
                 m_dataFile = new FileStream(FilePath ,
                     FileMode.CreateNew ,
@@ -522,7 +521,7 @@ namespace DGD.HubCore.DB
         {
             const int BUFFER_SIZE = 4096;
 
-            TextLogger.Debug($"Ouverture de la table {Name}.");
+            System.Diagnostics.Debug.WriteLine($"Ouverture de la table {Name}.");
 
             m_dataFile = new FileStream(FilePath ,
              FileMode.Open ,

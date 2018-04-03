@@ -1,17 +1,17 @@
-﻿using easyLib.Log;
+﻿using DGD.HubGovernor.Log;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 using static System.Diagnostics.Debug;
 
-namespace DGD.HubGovernor
+namespace DGD.HubGovernor.Log
 {
-    sealed partial class LogWindow: Form, ILogReceiver
+    sealed partial class TextLogWindow: Form, ITextLogReceiver
     {
         const string OPT_KEY = "LOG";
 
 
-        public LogWindow()
+        public TextLogWindow()
         {
             InitializeComponent();
 

@@ -1,16 +1,14 @@
 ﻿using DGD.HubCore;
 using DGD.HubCore.DB;
 using DGD.HubCore.DLG;
+using DGD.HubGovernor.Log;
 using DGD.HubGovernor.Profiles;
 using easyLib.Extensions;
-using easyLib.Log;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -25,6 +23,7 @@ namespace DGD.HubGovernor.Clients
         readonly KeyIndexer m_ndxerStatus;
         readonly KeyIndexer m_ndxerClients;
         readonly KeyIndexer m_ndxerClientEnv;
+        readonly Font m_tmFont;
 
 
         public ClientsManagmentWindow()
@@ -35,6 +34,8 @@ namespace DGD.HubGovernor.Clients
             m_ndxerStatus = AppContext.AccessPath.GetKeyIndexer(InternalTablesID.CLIENT_STATUS);
             m_ndxerClientEnv = AppContext.AccessPath.GetKeyIndexer(InternalTablesID.CLIENT_ENV);
             m_ndxerClients = AppContext.AccessPath.GetKeyIndexer(InternalTablesID.HUB_CLIENT);
+
+            m_tmFont = new Font(Font , FontStyle.Bold | FontStyle.Italic);
         }
 
 
@@ -51,6 +52,7 @@ namespace DGD.HubGovernor.Clients
         {
             base.OnFormClosing(e);
             UnregisterHandlers();
+            m_tmFont.Dispose();
         }
 
         //private:
@@ -112,7 +114,8 @@ namespace DGD.HubGovernor.Clients
             Action<Task> onErr = t =>
             {
                 MessageBox.Show(t.Exception.InnerException.Message , Text);
-                TextLogger.Error(t.Exception.InnerException.Message);
+                AppContext.LogManager.LogSysError("Chargement de la liste des clients actifs: " + t.Exception.InnerException.Message , true);
+
                 waitClue.LeaveWaitMode();
             };
 
@@ -184,7 +187,7 @@ namespace DGD.HubGovernor.Clients
             Action<Task> onErr = t =>
             {
                 MessageBox.Show(t.Exception.InnerException.Message , Text);
-                TextLogger.Error(t.Exception.InnerException.Message);
+                AppContext.LogManager.LogSysError("Chargement de la liste de tous les clients: " + t.Exception.InnerException.Message , true);
                 waitClue.LeaveWaitMode();
             };
 
@@ -214,6 +217,7 @@ namespace DGD.HubGovernor.Clients
             AppContext.ClientsManager.ClientStarted -= ClientsManager_ClientStarted;
             m_ndxerStatus.DatumReplaced -= ClientStatus_DatumReplaced;
             m_ndxerClients.DatumReplaced -= Clients_DatumReplaced;
+            AppContext.LogManager.ClientLogAdded -= LogManager_ClientLogAdded;
         }
 
         void RegisterHandlers()
@@ -222,6 +226,7 @@ namespace DGD.HubGovernor.Clients
             AppContext.ClientsManager.ClientStarted += ClientsManager_ClientStarted;
             m_ndxerStatus.DatumReplaced += ClientStatus_DatumReplaced;
             m_ndxerClients.DatumReplaced += Clients_DatumReplaced;
+            AppContext.LogManager.ClientLogAdded += LogManager_ClientLogAdded;
         }
 
         void ProcessClientStatus(ClientStatus_t status)
@@ -241,7 +246,10 @@ namespace DGD.HubGovernor.Clients
                     return;
             }
 
+            AppContext.LogManager.LogUserActivity($"Action utilisateur:  Changement du statut du client {ClientsManager.ClientStrID(client.ID)} en {ClientStatuses.GetStatusName(status)}");
+
             AppContext.ClientsManager.SetProfileManagementMode(client.ProfileID , ManagementMode_t.Manual);
+
             //maj le status
             AppContext.ClientsManager.SetClientStatus(client , status);
         }
@@ -334,13 +342,71 @@ namespace DGD.HubGovernor.Clients
                 }
         }
 
-
-        ////handlers
-        private void Profiles_Click(object sender , EventArgs e)
+        void AddLog(IEventLog evLog , bool ensureVisible = false)
         {
-            var wind = new Profiles.ProfilesWindow();
-            wind.Show(Owner);
+            m_rtbClientLog.SelectionBullet = true;
+
+            m_rtbClientLog.SelectionIndent = 10;
+            m_rtbClientLog.SelectionFont = m_tmFont;
+            m_rtbClientLog.SelectedText = evLog.Time.ToString() + ": ";
+            m_rtbClientLog.SelectionFont = m_rtbClientLog.Font;
+
+            if (evLog.EventType == EventType_t.Error)
+                m_rtbClientLog.SelectionColor = Color.Red;
+
+            m_rtbClientLog.SelectedText = evLog.Text + Environment.NewLine;
+
+            m_rtbClientLog.SelectionBullet = false;
+            m_rtbClientLog.AppendText(Environment.NewLine);
+
+            if (ensureVisible)
+                m_rtbClientLog.ScrollToCaret();
         }
+
+        void LoadClientLog(uint clID)
+        {
+            Dbg.Assert(!InvokeRequired);
+
+            ClearLog();
+
+            AppContext.LogManager.ClientLogAdded -= LogManager_ClientLogAdded;
+
+            if (m_tsbShowActivityHistory.Checked)
+            {
+                bool loggerStarted = AppContext.LogManager.IsLoggerStarted(clID);
+
+                if (!loggerStarted)
+                    AppContext.LogManager.StartLogger(clID);
+
+                IEnumerable<IEventLog> logs = AppContext.LogManager.EnumerateClientLog(clID);
+
+                foreach (IEventLog log in logs)
+                    AddLog(log);
+
+                if (!loggerStarted)
+                    AppContext.LogManager.CloseLogger(clID);
+
+            }
+            else if (AppContext.ClientsManager.IsClientRunning(clID))
+            {
+                IEnumerable<IEventLog> logs = AppContext.ClientsManager.GetClientLog(clID);
+
+                if (logs != null)
+                    foreach (IEventLog log in logs)
+                        AddLog(log);                
+            }
+
+            AppContext.LogManager.ClientLogAdded += LogManager_ClientLogAdded;
+        }
+
+        void ClearLog()
+        {
+            m_rtbClientLog.Clear();
+            m_rtbClientLog.SelectionBullet = false;
+        }
+
+        //handlers
+        private void Profiles_Click(object sender , EventArgs e) => new ProfilesWindow().Show(Owner);
 
         private void Clients_AfterSelect(object sender , TreeViewEventArgs e)
         {
@@ -348,7 +414,6 @@ namespace DGD.HubGovernor.Clients
             {
                 ClearClientInfo();
                 UpdateStatusButtons(ClientStatus_t.Unknown);
-
             }
             else
             {
@@ -358,9 +423,8 @@ namespace DGD.HubGovernor.Clients
                 var clStatus = m_ndxerStatus.Get(client.ID) as ClientStatus;
 
                 UpdateStatusButtons(clStatus.Status);
+                LoadClientLog(client.ID);
             }
-
-
         }
 
         private void RunningClientsOnly_Click(object sender , EventArgs e)
@@ -373,6 +437,7 @@ namespace DGD.HubGovernor.Clients
                 LoadRunningClientsAsync();
 
             m_tvClients.SelectedNode = null;
+            ClearLog();
             ClearClientInfo();
             UpdateStatusButtons(ClientStatus_t.Unknown);
 
@@ -403,8 +468,7 @@ namespace DGD.HubGovernor.Clients
             if (InvokeRequired)
                 Invoke(new Action<uint>(ClientsManager_ClientStarted) , clID);
             else
-            {
-                TreeNode selNode = m_tvClients.SelectedNode;
+            {                
                 TreeNode clNode = LocateClientNode(clID);
 
                 if (clNode != null)
@@ -440,10 +504,22 @@ namespace DGD.HubGovernor.Clients
 
 
                         root.Nodes.Add(CreateClientNode(client));
-                        root.Expand();
+                        root.Expand();                
+                    }
 
-                        if (selNode != null)
-                            m_tvClients.SelectedNode = selNode;
+                    TreeNode selNode = m_tvClients.SelectedNode;
+
+                    if (selNode != null && selNode.Parent != null)
+                    {
+                        var hc = selNode.Tag as HubClient;
+
+                        if(hc.ID == clID)
+                        {                            
+                            UpdateStatusButtons(ClientStatus_t.Enabled);
+                            LoadClientLog(client.ID);
+                            SetClientInfo(hc);
+
+                        }
                     }
                 }
             }
@@ -539,8 +615,45 @@ namespace DGD.HubGovernor.Clients
 
             var client = selNode.Tag as HubClient;
 
-            TextLogger.Info($"Envoi d'une notification de réinitialisation au client {client.ID:X}.");
+            AppContext.LogManager.LogUserActivity($"Action utilisateur :  Réinitialisation du client {ClientsManager.ClientStrID(client.ID)}");
+
+
+            AppContext.LogManager.LogSysActivity("Envoi d'une notification de réinitialisation au client " +
+                $"{ClientsManager.ClientStrID(client.ID)}" , true);
+
             AppContext.ClientsManager.SetClientStatus(client , ClientStatus_t.Reseted);
+        }
+
+        private void LogManager_ClientLogAdded(uint clID , IEventLog log)
+        {
+            if (InvokeRequired)
+                BeginInvoke(new Action<uint , IEventLog>(LogManager_ClientLogAdded) , clID , log);
+            else
+            {
+                TreeNode selNode = m_tvClients.SelectedNode;
+
+                if (selNode == null || selNode.Parent == null)
+                    return;
+
+                if ((selNode.Tag as HubClient).ID != clID)
+                    return;
+
+                AddLog(log , true);
+            }
+        }
+
+        private void ShowActivityHistory_Click(object sender , EventArgs e)
+        {
+            bool showHistory = !m_tsbShowActivityHistory.Checked;
+            m_tsbShowActivityHistory.Checked = showHistory;
+
+            TreeNode selNode = m_tvClients.SelectedNode;
+
+            if (selNode == null || selNode.Parent == null)
+                return;
+
+            LoadClientLog((selNode.Tag as HubClient).ID);
+
         }
     }
 }

@@ -25,7 +25,7 @@ namespace easyLib
         }
 
 
-        public bool IsDiposed { get; private set; }
+        public bool IsDisposed { get; private set; }
         public bool IsRunning { get; private set; }
 
         public int Interval
@@ -42,50 +42,50 @@ namespace easyLib
 
         public void Start(bool startNow = false)
         {
-            Assert(!IsDiposed);
+            Assert(!IsDisposed);
             Assert(!IsRunning);
 
             lock (m_timer)
-                IsRunning = m_timer.Change(startNow ? 0 : m_interval , m_interval);
+                if (!IsDisposed)
+                    IsRunning = m_timer.Change(startNow ? 0 : m_interval , m_interval);
         }
 
         public void Stop()
         {
-            Assert(!IsDiposed);
+            Assert(!IsDisposed);
 
             lock (m_timer)
-                if (IsRunning)
+                if (!IsDisposed && IsRunning)
                     IsRunning = !m_timer.Change(System.Threading.Timeout.Infinite , System.Threading.Timeout.Infinite);
         }
 
         public void Restart(bool startNow = false)
         {
-            Assert(!IsDiposed);
+            Assert(!IsDisposed);
 
             lock (m_timer)
-            {
-                if(IsRunning)
-                    m_timer.Change(System.Threading.Timeout.Infinite , System.Threading.Timeout.Infinite);
+                if (!IsDisposed)
+                {
+                    if (IsRunning)
+                        m_timer.Change(System.Threading.Timeout.Infinite , System.Threading.Timeout.Infinite);
 
-                IsRunning = m_timer.Change(startNow ? 0 : m_interval , m_interval);
-            }
+                    IsRunning = m_timer.Change(startNow ? 0 : m_interval , m_interval);
+                }
         }
 
         public void Dispose()
         {
-            if (!IsDiposed)
+            if (!IsDisposed)
                 lock (m_timer)
-                {
-                    if (!IsDiposed)
+                    if (!IsDisposed)
                     {
-                        TimeElapsed = null;                        
+                        TimeElapsed = null;
                         IsRunning = false;
-                        m_timer.Change(System.Threading.Timeout.Infinite , System.Threading.Timeout.Infinite);                        
+                        m_timer.Change(System.Threading.Timeout.Infinite , System.Threading.Timeout.Infinite);
                         m_timer.Dispose();
-                        IsDiposed = true;
+                        IsDisposed = true;
 
                     }
-                }
         }
 
 

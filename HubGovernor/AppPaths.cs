@@ -44,7 +44,7 @@ namespace DGD.HubGovernor
         public static Uri RemoteProfilesURI => Uris.GetProfilesURI(RemoteBaseURI);
         public static string LogFolder => Path.Combine(AppDataFolder , LOG_DIR);
         public static string GetClientLogPath(uint clID) => Path.Combine(LogFolder , clID.ToString("X"));
-        public static string SrvLogPath => Path.Combine(LogFolder , "Sys");
+        public static string SysLogPath => Path.Combine(LogFolder , "Sys");
 
         public static string GetLocalClientDilogPath(uint idClient) => Path.Combine(LocalDialogFolderPath ,
             Names.GetClientDialogFile(idClient));
@@ -65,6 +65,10 @@ namespace DGD.HubGovernor
 
             if (!Directory.Exists(AppDataFolder))
                 Directory.CreateDirectory(AppDataFolder);
+
+            if (!Directory.Exists(LogFolder))
+                Directory.CreateDirectory(LogFolder);
+
 
             if (!Directory.Exists(TablesFolder))
                 Directory.CreateDirectory(TablesFolder);

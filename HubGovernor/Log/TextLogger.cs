@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 
 
-namespace easyLib.Log
+namespace DGD.HubGovernor.Log
 {
-    public enum LogSeverity
+    enum LogSeverity
     {
         Infomational,
         Cautionary,
@@ -16,9 +16,9 @@ namespace easyLib.Log
     }
 
 
-    public sealed class TextLogger : IDisposable
+    sealed class TextLogger : IDisposable
     {
-        readonly static List<ILogReceiver> m_receivers = new List<ILogReceiver>();
+        readonly static List<ITextLogReceiver> m_receivers = new List<ITextLogReceiver>();
         readonly StringBuilder m_msgBuilder;
         readonly LogSeverity m_logSeverity;
 
@@ -73,7 +73,7 @@ namespace easyLib.Log
             Flush();
         }
 
-        public static void RegisterReceiver(ILogReceiver receiver)
+        public static void RegisterReceiver(ITextLogReceiver receiver)
         {
             System.Diagnostics.Debug.Assert(receiver != null);
             System.Diagnostics.Debug.Assert(!IsReceiverRegistered(receiver));
@@ -83,7 +83,7 @@ namespace easyLib.Log
             System.Diagnostics.Debug.Assert(IsReceiverRegistered(receiver));
         }
 
-        public static void UnregisterReceiver(ILogReceiver receiver)
+        public static void UnregisterReceiver(ITextLogReceiver receiver)
         {
             System.Diagnostics.Debug.Assert(IsReceiverRegistered(receiver));
 
@@ -92,7 +92,7 @@ namespace easyLib.Log
             System.Diagnostics.Debug.Assert(!IsReceiverRegistered(receiver));
         }
 
-        public static bool IsReceiverRegistered(ILogReceiver receiver)
+        public static bool IsReceiverRegistered(ITextLogReceiver receiver)
         {
             return receiver != null && m_receivers.Contains(receiver);
         }

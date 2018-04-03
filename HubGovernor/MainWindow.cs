@@ -1,7 +1,7 @@
 ﻿using DGD.HubGovernor.Admin;
+using DGD.HubGovernor.Log;
 using DGD.HubGovernor.TR;
 using DGD.HubGovernor.Updating;
-using easyLib.Log;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,18 +18,16 @@ namespace DGD.HubGovernor
     sealed partial class MainWindow: Form
     {
         const string OPT_KEY = "MAIN";
-        readonly LogWindow m_logWindow;
+        readonly TextLogWindow m_logWindow;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            m_logWindow = new LogWindow();
+            m_logWindow = new TextLogWindow();
 
-
-            TextLogger.Info($"Hub Governor version: {Assembly.GetExecutingAssembly().GetName().Version}");
+            m_logWindow.VisibleChanged += logWindow_VisibleChanged;
         }
-
 
 
         //protected:
@@ -50,8 +48,7 @@ namespace DGD.HubGovernor
 
             if (!AppContext.Settings.UserSettings.LogWindowHidden)
                 m_logWindow.Show(this);
-
-            TextLogger.Info($"Version des données: {AppContext.Settings.AppSettings.DataGeneration}.");            
+                                   
 
             base.OnLoad(e);
         }
@@ -107,5 +104,19 @@ namespace DGD.HubGovernor
             var wind = new Clients.ClientsManagmentWindow();
             wind.Show(this);
         }
+
+        private void SysLog_Click(object sender , EventArgs e) => new SysLogWindow().Show(this);
+
+        private void LogView_Click(object sender , EventArgs e)
+        {
+            m_logWindow.Visible = !m_tsbLogView.Checked;
+        }
+
+        private void logWindow_VisibleChanged(object sender , EventArgs e)
+        {
+            m_tsbLogView.Checked = m_logWindow.Visible;            
+        }
+
+
     }
 }

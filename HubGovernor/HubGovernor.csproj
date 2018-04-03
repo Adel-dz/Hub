@@ -105,12 +105,6 @@
     <Compile Include="Clients\ClientsManagmentWindow.Designer.cs">
       <DependentUpon>ClientsManagmentWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Clients\ClientsWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Clients\ClientsWindow.Designer.cs">
-      <DependentUpon>ClientsWindow.cs</DependentUpon>
-    </Compile>
     <Compile Include="Clients\HubClient.cs" />
     <Compile Include="Clients\HubClientEnvironment.cs" />
     <Compile Include="Clients\HubClientEnvTable.cs" />
@@ -183,7 +177,15 @@
     <Compile Include="Log\EventLogger.cs" />
     <Compile Include="Log\EventLogTable.cs" />
     <Compile Include="Log\LogManager.cs" />
+    <Compile Include="Log\SysLogWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Log\SysLogWindow.Designer.cs">
+      <DependentUpon>SysLogWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Log\TextLogReceiver.cs" />
     <Compile Include="Log\SysEventLogger.cs" />
+    <Compile Include="Log\TextLogger.cs" />
     <Compile Include="NetManager.cs" />
     <Compile Include="Opts\AppSettings.cs" />
     <Compile Include="Currencies\Currency.cs" />
@@ -204,11 +206,11 @@
     <Compile Include="ListViewSorters\IntegerColumnSorter.cs" />
     <Compile Include="ListViewSorters\TextColumnSorter.cs" />
     <Compile Include="ListViewSorters\TimeColumnSorter.cs" />
-    <Compile Include="LogWindow.cs">
+    <Compile Include="Log\TextLogWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LogWindow.Designer.cs">
-      <DependentUpon>LogWindow.cs</DependentUpon>
+    <Compile Include="Log\TextLogWindow.Designer.cs">
+      <DependentUpon>TextLogWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
@@ -425,9 +427,6 @@
     <EmbeddedResource Include="Clients\ClientsManagmentWindow.resx">
       <DependentUpon>ClientsManagmentWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Clients\ClientsWindow.resx">
-      <DependentUpon>ClientsWindow.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Countries\ChooseCountryDialog.resx">
       <DependentUpon>ChooseCountryDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -452,8 +451,11 @@
     <EmbeddedResource Include="Jobs\ProcessingDialog.resx">
       <DependentUpon>ProcessingDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LogWindow.resx">
-      <DependentUpon>LogWindow.cs</DependentUpon>
+    <EmbeddedResource Include="Log\SysLogWindow.resx">
+      <DependentUpon>SysLogWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Log\TextLogWindow.resx">
+      <DependentUpon>TextLogWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
@@ -676,6 +678,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Governor_app_ico.ico" />
+    <None Include="Resources\SortDescending_16.png" />
+    <None Include="Resources\SortAscending_16.png" />
+    <None Include="Resources\filter_16.png" />
+    <None Include="Resources\logview_32.png" />
+    <None Include="Resources\syslog_32.png" />
+    <None Include="Resources\clientlog_32.png" />
     <None Include="Resources\reset_16.png" />
     <None Include="Resources\Extract_16.png" />
     <None Include="Resources\chat_16.png" />

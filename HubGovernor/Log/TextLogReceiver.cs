@@ -1,6 +1,6 @@
-﻿namespace easyLib.Log
+﻿namespace DGD.HubGovernor.Log
 {
-    public interface ILogReceiver
+    interface ITextLogReceiver
     {
         void Write(string message, LogSeverity severity);
     }

@@ -1,6 +1,6 @@
-﻿namespace DGD.HubGovernor
+﻿namespace DGD.HubGovernor.Log
 {
-    partial class LogWindow
+    partial class TextLogWindow
     {
         /// <summary>
         /// Required designer variable.

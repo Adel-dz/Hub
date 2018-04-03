@@ -1,7 +1,6 @@
 ﻿using DGD.HubCore.DB;
 using DGD.HubGovernor.DB;
 using easyLib.DB;
-using easyLib.Log;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +9,7 @@ using System.Windows.Forms;
 using static System.Diagnostics.Debug;
 using easyLib.Extensions;
 using DGD.HubGovernor.Extensions;
+using DGD.HubGovernor.Log;
 
 namespace DGD.HubGovernor
 {

@@ -8,8 +8,8 @@ using System.Windows.Forms;
 using static System.Diagnostics.Debug;
 using easyLib.Extensions;
 using DGD.HubGovernor.Extensions;
-using easyLib.Log;
 using easyLib;
+using DGD.HubGovernor.Log;
 
 namespace DGD.HubGovernor.Places
 {

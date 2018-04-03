@@ -145,6 +145,8 @@ namespace easyLib.DB
                         DatumDeleting = DatumDeleted = null;
 
                         DebugHelper.UnregisterProvider(this);
+
+                        IsDisposed = true;
                     }
 
                 }

@@ -153,6 +153,16 @@ namespace DGD.HubGovernor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap clientlog_32 {
+            get {
+                object obj = ResourceManager.GetObject("clientlog_32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap country_64 {
             get {
                 object obj = ResourceManager.GetObject("country_64", resourceCulture);
@@ -243,6 +253,16 @@ namespace DGD.HubGovernor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap filter_16 {
+            get {
+                object obj = ResourceManager.GetObject("filter_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap folder_Open_16 {
             get {
                 object obj = ResourceManager.GetObject("folder_Open_16", resourceCulture);
@@ -326,6 +346,16 @@ namespace DGD.HubGovernor.Properties {
         internal static System.Drawing.Bitmap integrity_checker {
             get {
                 object obj = ResourceManager.GetObject("integrity_checker", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap logviewer_32 {
+            get {
+                object obj = ResourceManager.GetObject("logviewer_32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -503,6 +533,26 @@ namespace DGD.HubGovernor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap SortAscending_16 {
+            get {
+                object obj = ResourceManager.GetObject("SortAscending_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap SortDescending_16 {
+            get {
+                object obj = ResourceManager.GetObject("SortDescending_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap spot_value_64 {
             get {
                 object obj = ResourceManager.GetObject("spot_value_64", resourceCulture);
@@ -516,6 +566,16 @@ namespace DGD.HubGovernor.Properties {
         internal static System.Drawing.Bitmap supplier_64_70 {
             get {
                 object obj = ResourceManager.GetObject("supplier_64_70", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap syslog_32 {
+            get {
+                object obj = ResourceManager.GetObject("syslog_32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

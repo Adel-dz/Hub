@@ -1,5 +1,5 @@
-﻿using easyLib;
-using easyLib.Log;
+﻿using DGD.HubGovernor.Log;
+using easyLib;
 using System;
 using System.IO;
 using System.IO.Compression;

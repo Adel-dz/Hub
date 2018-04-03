@@ -1,12 +1,10 @@
 ﻿using DGD.HubCore;
 using DGD.HubCore.DLG;
 using DGD.HubCore.Net;
+using DGD.HubGovernor.Log;
 using DGD.HubGovernor.Profiles;
 using easyLib;
-using easyLib.DB;
-using easyLib.Log;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,20 +15,17 @@ namespace DGD.HubGovernor.Clients
     partial class ClientsManager
     {
         Message ProcessCloseMessage(Message msg , uint clID)
-        {
-            TextLogger.Info("Réception d'une notification de fermeture.");
-
+        {            
             Dbg.Assert(msg.MessageCode == Message_t.Close);
 
-            TextLogger.Info($"Réception d’une notification de fermeture de la part du client {clID:X}");
-
+            AppContext.LogManager.LogSysActivity($"Réception d'une notification de déconnexion {ClientStrID(clID)}", true);
 
             DateTime dt = DateTime.Now;
-            TextLogger.Info($"client arrêté le {dt.ToShortDateString()} à {dt.ToLongTimeString()}");
+            AppContext.LogManager.LogSysActivity($"client {ClientStrID(clID)} arrêté le {dt.ToShortDateString()} à {dt.ToLongTimeString()}", true);
 
-            lock (m_runningClients)
-                m_runningClients.Remove(clID);
-
+            AppContext.LogManager.LogClientActivity(clID , "Déconnexion");
+            m_onlineClients.Remove(clID);            
+            AppContext.LogManager.CloseLogger(clID);
             ClientClosed?.Invoke(clID);
 
             return null;
@@ -38,8 +33,6 @@ namespace DGD.HubGovernor.Clients
 
         Message ProcessStartMessage(Message msg)
         {
-            TextLogger.Info("Réception d'une notification de démarrage.");
-
             Dbg.Assert(msg.MessageCode == Message_t.Start);
 
             var reader = new RawDataReader(new MemoryStream(msg.Data) , Encoding.UTF8);
@@ -51,8 +44,8 @@ namespace DGD.HubGovernor.Clients
 
             if (client == null)
             {
-                TextLogger.Warning("Réception d’une notification de démarrage " +
-                    $"de la part d’un client inexistant ({clID}). Bannissement du client.");
+                AppContext.LogManager.LogSysActivity("Réception d’une notification de démarrage " +
+                  $"de la part d’un client inexistant ({ClientStrID(clID)}). Bannissement du client", true);
 
                 //maj du fichier gov
                 string srvDlgFile = AppPaths.GetLocalSrvDialogPath(clID);
@@ -66,15 +59,15 @@ namespace DGD.HubGovernor.Clients
             }
 
 
-            TextLogger.Info("Réception d’une notification de démarrage " +
-                    $"de la part du client {client.ContactName}");
+            AppContext.LogManager.LogSysActivity("Réception d’une notification de démarrage " +
+                    $"de la part du client {ClientStrID(clID)}", true);
 
             //verifier le statut du client
             var clStatus = m_ndxerClientsStatus.Get(clID) as ClientStatus;
 
             if (clStatus.Status != ClientStatus_t.Enabled)
             {
-                TextLogger.Info("Tentative de démarrage d’un client non autorisé. Requête rejetée.");
+                AppContext.LogManager.LogSysActivity($"Démmarage du Client { ClientStrID(clID)} non autorisé. Requête rejetée", true);
                 return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , msg.Data);
             }
 
@@ -91,21 +84,23 @@ namespace DGD.HubGovernor.Clients
             }
             catch (Exception ex)
             {
-                TextLogger.Error(ex.Message);
+                AppContext.LogManager.LogSysError($"Traitement de la requête de démarrage du client {ClientStrID(clID)}: " +
+                    $"{ ex.Message}. demande ignorée, laisser le client reformuler la requête.", true);
+
                 return null;    // let the cleint retry req.
             }
 
 
-            TextLogger.Info($"Client démarré le {dtStart.Date.ToShortDateString()} à {dtStart.ToLongTimeString()}");
+            AppContext.LogManager.LogSysActivity($"Client {ClientStrID(clID)} démarré le { dtStart.Date.ToShortDateString()} " +
+                $"à { dtStart.ToLongTimeString()}", true);
 
             //verifier si l'env du client a changé
             UpdateClientEnvironment(clID , clEnv);
 
             //ajouter client dans running liste
-            var clData = new ClientData(dtStart);
-
-            lock (m_runningClients)
-                m_runningClients[clID] = clData;
+            m_onlineClients.Add(clID , dtStart);
+            AppContext.LogManager.StartLogger(clID);
+            AppContext.LogManager.LogClientActivity(clID , "Démarrage");
 
             //maj du last seen
             clStatus.LastSeen = dtStart;
@@ -119,7 +114,6 @@ namespace DGD.HubGovernor.Clients
         {
             Dbg.Assert(msg.MessageCode == Message_t.Resume);
 
-            TextLogger.Info("Réception d’une requête de reprise.");
 
             //verfier que le client existe
             uint clID = BitConverter.ToUInt32(msg.Data , 0);
@@ -127,18 +121,20 @@ namespace DGD.HubGovernor.Clients
 
             if (client == null)
             {
-                TextLogger.Info("Réception d’une requête de reprise émanant d’un client non enregistré. Requête rejetée.");
+                AppContext.LogManager.LogSysActivity("Réception d’une requête de reprise émanant d’un client non enregistré. Requête rejetée.", true);
                 return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , BitConverter.GetBytes(clID));
             }
 
             var prf = m_ndxerProfiles.Get(client.ProfileID) as UserProfile;
-            TextLogger.Info($"Requête de reprise émanant de {client.ContactName} pour le profil {prf.Name}, " +
-                $"inscrit le {client.CreationTime}.");
+
+            AppContext.LogManager.LogSysActivity($"Requête de reprise émanant de {ClientStrID(clID)} pour le profil " +
+                $"{prf.Name}, inscrit le {client.CreationTime}", true);
+
 
             //verifier que le profil est en mode auto
             if ((m_ndxerProfilesMgmnt.Get(prf.ID) as ProfileManagementMode).ManagementMode == ManagementMode_t.Manual)
             {
-                TextLogger.Info($"Le profil {prf.Name} est en gestion manuelle. Requête rejetée.");
+                AppContext.LogManager.LogSysActivity($"Le profil {prf.Name} est en gestion manuelle. Requête de reprise rejetée", true);
                 return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , msg.Data);
             }
 
@@ -152,16 +148,17 @@ namespace DGD.HubGovernor.Clients
 
             if (curClient != null)
             {
-                TextLogger.Info($"Le client actif {curClient.ContactName} inscrit le {curClient.CreationTime}.");
-
                 if (curClient.CreationTime <= client.CreationTime)
                 {
-                    TextLogger.Info("Le client actif est plus ancien. Requête rejetée.");
+                    AppContext.LogManager.LogSysActivity($"Le client actif {ClientStrID(curClient.ID)} inscrit le " +
+                        $"{curClient.CreationTime}. Le client actif est plus ancien. Requête de reprise rejetée", true);
+
                     return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , msg.Data);
                 }
 
                 //bannissemnt du client actif
-                TextLogger.Info($"Le client demandeur est plus ancien. Bannissement du client actif ({curClient.ContactName})...");
+                AppContext.LogManager.LogSysActivity($"Le client actif {ClientStrID(curClient.ID)} inscrit le " +
+                        $"{curClient.CreationTime}. Le client demandeur de reprise est plus ancien. Bannissement du client actif", true);
 
                 //maj de la table des statuts
                 var curClStatus = m_ndxerClientsStatus.Get(curClient.ID) as ClientStatus;
@@ -192,7 +189,9 @@ namespace DGD.HubGovernor.Clients
             }
             catch (Exception ex)
             {
-                TextLogger.Error(ex.Message);
+                AppContext.LogManager.LogSysError($"Traitement de la requête de reprise du client {ClientStrID(clID)}: " +
+                        $"{ ex.Message}. demande ignorée, laisser le client reformuler la requête", true);
+
                 return null;    // let the cleint retry req.
             }
 
@@ -205,14 +204,12 @@ namespace DGD.HubGovernor.Clients
             m_ndxerClientsStatus.Source.Replace(ndxClient , clStatus);
 
             //maj du dic des clients actifs
-            var clData = new ClientData(DateTime.Now);
-
-            lock (m_runningClients)
-                m_runningClients[clID] = clData;
-
+            m_onlineClients.Add(clID);
+            AppContext.LogManager.StartLogger(clID);
+            AppContext.LogManager.LogClientActivity(clID , "Reprise.");
             ClientStarted?.Invoke(clID);
 
-            TextLogger.Info("Requête acceptée. :-)");
+            AppContext.LogManager.LogSysActivity($"Demande de reprise du client {ClientStrID(clID)} acceptée", true);
             return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , msg.Data);
         }
 
@@ -220,7 +217,7 @@ namespace DGD.HubGovernor.Clients
         {
             Dbg.Assert(msg.MessageCode == Message_t.NewConnection);
 
-            TextLogger.Info("Réception d’une nouvelle requête  d’inscription.");
+            //TextLogger.Info("Réception d’une nouvelle requête  d’inscription.");
 
             var ms = new MemoryStream(msg.Data);
             var reader = new RawDataReader(ms , Encoding.UTF8);
@@ -230,19 +227,19 @@ namespace DGD.HubGovernor.Clients
             byte[] data = BitConverter.GetBytes(clInfo.ClientID);
             var profile = m_ndxerProfiles.Get(clInfo.ProfileID) as UserProfile;
 
-            string reqLog = $"Demande d’inscription émanant  de {clInfo.ContactName}" +
+            string reqLog = $"Réception d'une demande d’inscription émanant  de {clInfo.ContactName}" +
                 $"(ID = {ClientStrID(clInfo.ClientID)}) pour " +
                 (profile == null ? "un profil inexistant." :
                             $"le profil {profile.Name}.");
 
-            TextLogger.Info(reqLog);
+            AppContext.LogManager.LogSysActivity(reqLog, true);
 
 
             //verifier que le profil existe
             if (profile == null)
             {
-                TextLogger.Info("Lancement de la procédure d’actualisation  " +
-                    "de la liste des profils sur le serveur");
+                AppContext.LogManager.LogSysActivity("Lancement de la procédure d’actualisation  " +
+                    "de la liste des profils sur le serveur", true);
 
                 ProcessProfilesChange();
                 return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.InvalidProfile , data);
@@ -254,10 +251,9 @@ namespace DGD.HubGovernor.Clients
 
             if (clSameID != null)
             {
-                TextLogger.Info("Collision d’identifiants: " +
+                AppContext.LogManager.LogSysActivity("Collision d’identifiants: " +
                     $"un client portant le même ID est déjà enregistré ({clSameID.ContactName}). " +
-                    "Demande au client de reformuler son inscription avec un nouvel ID.");
-
+                    "Exiger au client de reformuler son inscription avec un nouvel ID", true);
                 return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.InvalidID , data);
             }
 
@@ -267,7 +263,7 @@ namespace DGD.HubGovernor.Clients
 
             if (prfMgmntMode == ManagementMode_t.Manual)
             {
-                TextLogger.Info("Profil en gestion manuelle, inscription rejetée.");
+                AppContext.LogManager.LogSysActivity("Profil en gestion manuelle, inscription rejetée.", true);
                 return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , data);
             }
 
@@ -284,14 +280,15 @@ namespace DGD.HubGovernor.Clients
                 if (IsClientRunning(oldClient.ID))
                 {
                     //rejeter l'inscription
-                    TextLogger.Info($"Un client pour le profil {profile.Name} est déjà en cours d’exécution. " +
-                        "requête rejetée.");
+            
+                    AppContext.LogManager.LogSysActivity($"Un client pour le profil {profile.Name} est déjà en cours d’exécution. " +
+                        "Inscription rejetée", true);
 
                     return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , data);
                 }
 
 
-                TextLogger.Info($"Désactivation du client {oldClient.ContactName}...");
+                AppContext.LogManager.LogSysActivity($"Désactivation du client {ClientStrID(oldClient.ID)}", true);
 
 
                 //maj la table des status clients                
@@ -323,7 +320,9 @@ namespace DGD.HubGovernor.Clients
             }
             catch (Exception ex)
             {
-                TextLogger.Error(ex.Message);
+                AppContext.LogManager.LogSysError($"Traitement de la requête d'inscription du client {ClientStrID(clInfo.ClientID)}: " +
+                    $"{ ex.Message}. demande ignorée, laisser le client reformuler la requête", true);
+                                
                 return null;    // let the cleint retry req.
             }
 
@@ -348,13 +347,13 @@ namespace DGD.HubGovernor.Clients
 
 
             //maj du dict des clients actifs
-            var clData = new ClientData(DateTime.Now);
-
-            lock (m_runningClients)
-                m_runningClients[clInfo.ClientID] = clData;
-
+            m_onlineClients.Add(clInfo.ClientID);
+            AppContext.LogManager.StartLogger(clInfo.ClientID);
+            AppContext.LogManager.LogClientActivity(clInfo.ClientID , "Inscription");
             ClientStarted?.Invoke(clInfo.ClientID);
 
+            
+            AppContext.LogManager.LogSysActivity($"Inscription du client {clInfo.ClientID} terminée", true);
             TextLogger.Info("Inscription réussie. :-)");
             return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Ok , data);
         }
@@ -365,7 +364,7 @@ namespace DGD.HubGovernor.Clients
             Dbg.Assert(msg.MessageCode == Message_t.UnknonwnMsg);
             Dbg.Log("Processing unknown message.");
 
-            TextLogger.Warning($"Reception d'un msg inconnu en provenance du client {ClientStrID(clientID)}.");
+            AppContext.LogManager.LogSysActivity($"Reception d'un message inconnu en provenance du client {ClientStrID(clientID)}. Message ignoré.", true);
 
             return null;
         }
@@ -382,16 +381,13 @@ namespace DGD.HubGovernor.Clients
             uint srvMsgID = reader.ReadUInt();
             uint clMsgId = reader.ReadUInt();
 
-            TextLogger.Info($"Reception d'un message de synchronisation du client {clID:X}.");
+            AppContext.LogManager.LogSysActivity($"Reception d'un message de synchronisation du client {ClientStrID(clID)}", true);
 
-            ClientData clData;
-
-            lock (m_runningClients)
-                m_runningClients.TryGetValue(clID , out clData);
+            ActiveClientsQueue.IClientData clData = m_onlineClients.Get(clID);
 
             if(clData != null)
             {
-                clData.LiveTimeout = MAX_TTL;
+                clData.TimeToLive = ActiveClientsQueue.InitTimeToLive;
                 var resp = new Message(++clData.LastSrvMessageID , 0 , Message_t.Null);
 
                 DialogEngin.AppendSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) , resp);
@@ -410,8 +406,8 @@ namespace DGD.HubGovernor.Clients
 
             if(client == null)
             {
-                TextLogger.Warning("Réception d’une demande de synchronisation " +
-                    $"de la part d’un client inexistant ({clID}). Bannissement du client.");
+                AppContext.LogManager.LogSysActivity("Réception d’une demande de synchronisation " +
+                        $"de la part d’un client inexistant ({ClientStrID(clID)}). Bannissement du client", true);
 
                 //maj du fichier gov
                 string srvDlgFile = AppPaths.GetLocalSrvDialogPath(clID);
@@ -433,12 +429,11 @@ namespace DGD.HubGovernor.Clients
 
             if(status.Status == ClientStatus_t.Enabled)
             {
-                clData = new ClientData(DateTime.Now);
-                clData.LastClientMessageID = clMsgId;
-                clData.LastSrvMessageID = srvMsgID;
+                ActiveClientsQueue.IClientData clientData = m_onlineClients.Add(clID);                
+                clientData.LastClientMessageID = clMsgId;
+                clientData.LastSrvMessageID = srvMsgID;
 
-                lock (m_runningClients)
-                    m_runningClients[clID] = clData;
+                AppContext.LogManager.StartLogger(clID);
             }
 
             return null;
@@ -447,13 +442,14 @@ namespace DGD.HubGovernor.Clients
         Message ProcessSetInfoMessage(Message msg, uint clID)
         {
             Dbg.Assert(msg.MessageCode == Message_t.SetInfo);
-            TextLogger.Info($"Réception d’une mise à jour des infos. Utilisateur du client {clID:X}.");
+
+            AppContext.LogManager.LogSysActivity($"Réception d’une mise à jour des informations Utilisateur du client {ClientStrID(clID)}", true);
 
             int ndx = m_ndxerClients.IndexOf(clID);
 
             if(ndx < 0)
             {
-                TextLogger.Warning("Client inexistant.  Requête ignorée.");
+                AppContext.LogManager.LogSysActivity("Mise à jour des information utilisateur d'un client inexistant.  Requête ignorée.", true);
                 return null;
             }
 
@@ -471,14 +467,36 @@ namespace DGD.HubGovernor.Clients
 
             m_ndxerClients.Source.Replace(ndx , client);
 
-            
-            ClientData clData;
-            lock (m_runningClients)
-                m_runningClients.TryGetValue(clID , out clData);
 
+            ActiveClientsQueue.IClientData clData = m_onlineClients.Get(clID);
             uint msgID = clData == null ? 1 : ++clData.LastClientMessageID;
 
             return msg.CreateResponse(msgID , Message_t.Ok);
+        }
+
+        Message ProcessLogMessage(Message msg , uint clID)
+        {
+            Dbg.Assert(msg.MessageCode == Message_t.Log);
+
+            var ms = new MemoryStream(msg.Data);
+            var reader = new RawDataReader(ms , Encoding.UTF8);
+
+            DateTime tm = reader.ReadTime();
+            bool isErr = reader.ReadBoolean();
+            string txt = reader.ReadString();
+
+            if (isErr)
+            {
+                AppContext.LogManager.LogSysActivity($"Réception log d'erreur du client {ClientStrID(clID)}");
+                AppContext.LogManager.LogClientError(clID , txt , tm);
+            }
+            else
+            {
+                AppContext.LogManager.LogSysActivity($"Réception d'un log d'activité du client {ClientStrID(clID)}");
+                AppContext.LogManager.LogClientActivity(clID , txt , tm);
+            }
+
+            return null;
         }
     }
 }

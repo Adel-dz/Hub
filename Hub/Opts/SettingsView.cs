@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DGD.HubCore.DLG;
-using easyLib.DB;
 using System.IO;
 using easyLib;
 using DGD.HubCore.Net;
@@ -26,7 +20,6 @@ namespace DGD.Hub.Opts
         public SettingsView()
         {
             InitializeComponent();
-
         }
 
 
@@ -55,6 +48,9 @@ namespace DGD.Hub.Opts
             {
                 opt.UseCountryCode = useCtryCode;
                 CountryPrefernceChanged?.Invoke();
+
+                string txt = $"Paramètres:  l’utilisateur préfère utiliser {(useCtryCode ? "les codes pays" : "le nom des pays")}";
+                Program.DialogManager.PostLog(txt , false);
             }
 
             parent.Controls.Remove(this);
@@ -195,7 +191,11 @@ namespace DGD.Hub.Opts
                 dlg.Dispose();
 
                 if (t.Exception != null)
+                {
                     Dbg.Log(t.Exception.InnerException.Message);
+                    Program.DialogManager.PostLog("Changement des informations utilisateur. Erreur lors de l'envoi: " + 
+                        t.Exception.InnerException.Message , true);
+                }
 
                 MessageBox.Show("Impossible de se connecter au serveur distant. Veuillez réessayer ultérieurement." ,
                     null ,

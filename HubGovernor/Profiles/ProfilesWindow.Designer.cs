@@ -32,7 +32,6 @@
             System.Windows.Forms.ToolStripButton m_tsbNewProfile;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
             System.Windows.Forms.ToolStripButton m_tsbAdjustColumns;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
             System.Windows.Forms.ToolStripButton m_tsbHelp;
@@ -43,14 +42,12 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProfilesWindow));
             this.m_tsbDeleteProfile = new System.Windows.Forms.ToolStripButton();
             this.m_tsbAutoManagement = new System.Windows.Forms.ToolStripButton();
-            this.m_tsbClients = new System.Windows.Forms.ToolStripButton();
             this.m_colMgmntMode = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.m_lvData = new System.Windows.Forms.ListView();
             m_toolStrip = new System.Windows.Forms.ToolStrip();
             m_tsbNewProfile = new System.Windows.Forms.ToolStripButton();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             m_tsbAdjustColumns = new System.Windows.Forms.ToolStripButton();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             m_tsbHelp = new System.Windows.Forms.ToolStripButton();
@@ -69,8 +66,6 @@
             toolStripSeparator3,
             this.m_tsbAutoManagement,
             toolStripSeparator1,
-            this.m_tsbClients,
-            toolStripSeparator4,
             m_tsbAdjustColumns,
             toolStripSeparator2,
             m_tsbHelp});
@@ -122,22 +117,6 @@
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
-            // m_tsbClients
-            // 
-            this.m_tsbClients.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.m_tsbClients.Enabled = false;
-            this.m_tsbClients.Image = global::DGD.HubGovernor.Properties.Resources.profile_clients_16;
-            this.m_tsbClients.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.m_tsbClients.Name = "m_tsbClients";
-            this.m_tsbClients.Size = new System.Drawing.Size(23, 22);
-            this.m_tsbClients.Text = "Liste des clients";
-            this.m_tsbClients.Click += new System.EventHandler(this.Clients_Click);
-            // 
-            // toolStripSeparator4
-            // 
-            toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
             // 
             // m_tsbAdjustColumns
             // 
@@ -239,6 +218,5 @@
         private System.Windows.Forms.ListView m_lvData;
         private System.Windows.Forms.ToolStripButton m_tsbAutoManagement;
         private System.Windows.Forms.ColumnHeader m_colMgmntMode;
-        private System.Windows.Forms.ToolStripButton m_tsbClients;
     }
 }

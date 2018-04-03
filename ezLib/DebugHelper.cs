@@ -1,5 +1,4 @@
-﻿using easyLib.Log;
-using easyLib.DB;
+﻿using easyLib.DB;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -71,7 +70,7 @@ namespace easyLib
                 int n = m_tableProviders[key].Count;
 
                 if (n != 0)
-                    TextLogger.Debug("Warn! Table: {0}, # of dps  = {1}.", key, n);
+                    System.Diagnostics.Debug.WriteLine("Warn! Table: {0}, # of dps  = {1}.", key, n);
 
                 dpCount += n;
             }
@@ -109,9 +108,6 @@ namespace easyLib
         }
 
     }
-
-
-
 
 
     public static class ProvidersTracker
@@ -172,7 +168,7 @@ namespace easyLib
                 int n = m_tableProviders[key].Count;
 
                 if (n != 0)
-                    TextLogger.Debug("Warn! Table: {0}, # of dps  = {1}." , key , n);
+                    System.Diagnostics.Debug.WriteLine("Warn! Table: {0}, # of dps  = {1}." , key , n);
 
                 dpCount += n;
             }

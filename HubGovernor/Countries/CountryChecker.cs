@@ -1,7 +1,7 @@
 ﻿using DGD.HubCore;
 using DGD.HubGovernor.DB;
+using DGD.HubGovernor.Log;
 using easyLib.DB;
-using easyLib.Log;
 using System.Collections.Generic;
 using System.Linq;
 using static System.Diagnostics.Debug;

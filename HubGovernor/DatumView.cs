@@ -1,8 +1,8 @@
 ﻿using DGD.HubGovernor.Extensions;
 using DGD.HubGovernor.ListViewSorters;
+using DGD.HubGovernor.Log;
 using easyLib;
 using easyLib.DB;
-using easyLib.Log;
 using System;
 using System.Drawing;
 using System.Threading;

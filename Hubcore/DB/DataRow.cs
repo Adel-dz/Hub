@@ -1,6 +1,5 @@
 ﻿using easyLib;
 using easyLib.DB;
-using easyLib.Log;
 using static System.Diagnostics.Debug;
 
 
@@ -35,7 +34,7 @@ namespace DGD.HubCore.DB
             if(id == 0)
             {
                 var ex = new CorruptedStreamException();
-                TextLogger.Error(ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.Message);
 
                 throw ex;
             }

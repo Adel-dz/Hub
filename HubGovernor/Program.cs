@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -27,6 +28,11 @@ namespace DGD.HubGovernor
 
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
+
+                AppContext.LogManager.LogSysActivity("Démarrage du HUB Governor");
+                AppContext.LogManager.LogSysActivity($"Version des données: {AppContext.Settings.AppSettings.DataGeneration}");
+                AppContext.LogManager.LogSysActivity($"Hub Governor version: {Assembly.GetExecutingAssembly().GetName().Version}");
+
                 Application.Run(new MainWindow());
 
             }

@@ -21,6 +21,7 @@ namespace DGD.HubCore.DB
     }
 
 
+
     public sealed class DBKeyIndexer: IDBKeyIndexer
     {
         readonly object m_lock = new object();
@@ -59,17 +60,19 @@ namespace DGD.HubCore.DB
 
         public void Connect()
         {
+            Assert(!IsConnected);
+
             lock (m_lock)
-            {
+                if (!IsConnected)
+                {
+                    RegisterHandlers();
+                    LoadData();
 
-                RegisterHandlers();
-                LoadData();
+                    m_tblManager.BeginTableProcessing += TableManager_BeginTableProcessing;
+                    m_tblManager.EndTableProcessing += TableManager_EndTableProcessing;
 
-                m_tblManager.BeginTableProcessing += TableManager_BeginTableProcessing;
-                m_tblManager.EndTableProcessing += TableManager_EndTableProcessing;
-
-                IsConnected = true;
-            }
+                    IsConnected = true;
+                }
         }
 
         public void Disconnect()
@@ -144,7 +147,7 @@ namespace DGD.HubCore.DB
             dp.DataDeleting += DataProvider_DataDeleting;
             dp.DataInserted += DataProvider_DataInserted;
             dp.SourceCleared += DataProvider_SourceCleared;
-        } 
+        }
 
         void UnregisterHandlers()
         {

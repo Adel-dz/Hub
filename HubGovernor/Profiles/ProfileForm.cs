@@ -5,8 +5,8 @@ using System;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using easyLib.Log;
 using DGD.HubCore.DLG;
+using DGD.HubGovernor.Log;
 
 namespace DGD.HubGovernor.Profiles
 {

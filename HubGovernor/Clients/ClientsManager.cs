@@ -2,9 +2,8 @@
 using DGD.HubCore.DB;
 using DGD.HubCore.DLG;
 using DGD.HubCore.Net;
+using DGD.HubGovernor.Log;
 using DGD.HubGovernor.Profiles;
-using easyLib.DB;
-using easyLib.Log;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,24 +15,9 @@ namespace DGD.HubGovernor.Clients
 {
     sealed partial class ClientsManager: IDisposable
     {
-        const int MAX_TTL = 10;    //TODO: as opt
+        const int TTL_DIE = -6;
 
-
-        class ClientData
-        {
-            public ClientData(DateTime cxnTime)
-            {
-                ConnectionTime = cxnTime;
-                LiveTimeout = MAX_TTL;
-            }
-
-            public DateTime ConnectionTime { get; set; }
-            public int LiveTimeout { get; set; }
-            public uint LastClientMessageID { get; set; }
-            public uint LastSrvMessageID { get; set; }
-        }
-
-        readonly Dictionary<uint , ClientData> m_runningClients;
+        readonly ActiveClientsQueue m_onlineClients;
         readonly Timer m_netTimer;
         readonly KeyIndexer m_ndxerProfiles;
         readonly KeyIndexer m_ndxerClients;
@@ -52,6 +36,7 @@ namespace DGD.HubGovernor.Clients
         public event Action<uint> ClientClosed;
 
 
+
         public ClientsManager()
         {
             m_netTimer = new Timer(obj => ProcessTimer() , null , Timeout.Infinite , Timeout.Infinite);
@@ -63,7 +48,7 @@ namespace DGD.HubGovernor.Clients
             m_ndxerClientsEnv = AppContext.AccessPath.GetKeyIndexer(InternalTablesID.CLIENT_ENV);
 
 
-            m_runningClients = new Dictionary<uint , ClientData>();
+            m_onlineClients = new ActiveClientsQueue();
 
             m_cxnReqProcessors = new Dictionary<Message_t , Func<Message , Message>>
             {
@@ -77,7 +62,8 @@ namespace DGD.HubGovernor.Clients
             {
                 { Message_t.Close, ProcessCloseMessage },
                 {Message_t.Null, ProcessNullMessage },
-                {Message_t.SetInfo, ProcessSetInfoMessage }
+                {Message_t.SetInfo, ProcessSetInfoMessage },
+                { Message_t.Log, ProcessLogMessage }
             };
 
             RegisterHandlers();
@@ -104,9 +90,9 @@ namespace DGD.HubGovernor.Clients
         {
             get
             {
-                lock (m_runningClients)
+                lock (m_onlineClients)
                 {
-                    var clients = from clID in m_runningClients.Keys
+                    var clients = from clID in m_onlineClients.ClientsID
                                   select m_ndxerClients.Get(clID) as HubClient;
 
                     return clients.ToArray();
@@ -152,11 +138,7 @@ namespace DGD.HubGovernor.Clients
             }
         }
 
-        public bool IsClientRunning(uint clID)
-        {
-            lock (m_runningClients)
-                return m_runningClients.Keys.Contains(clID);
-        }
+        public bool IsClientRunning(uint clID) => m_onlineClients.Contains(clID);
 
         public ClientStatus_t GetClientStatus(uint idClient)
         {
@@ -176,7 +158,7 @@ namespace DGD.HubGovernor.Clients
 
             if (status == ClientStatus_t.Enabled && oldClient != null && oldClient.ID != client.ID)
             {
-                TextLogger.Info($"Désactivation du client {oldClient.ContactName}...");
+                AppContext.LogManager.LogSysActivity($"Désactivation du client {ClientStrID(oldClient.ID)}" , true);
 
                 //maj la table des status clients
                 var oldClStatus = m_ndxerClientsStatus.Get(oldClient.ID) as ClientStatus;
@@ -195,7 +177,9 @@ namespace DGD.HubGovernor.Clients
                 }
                 catch (Exception ex)
                 {
-                    TextLogger.Warning(ex.Message);
+                    AppContext.LogManager.LogSysError($"Lecture du fichier dialogue du client {ClientStrID(oldClient.ID)}" +
+                        ex.Message);
+
                     DialogEngin.WriteSrvDialog(oldClFilePath ,
                         new ClientDialog(oldClient.ID , ClientStatus_t.Disabled , Enumerable.Empty<Message>()));
                 }
@@ -221,7 +205,9 @@ namespace DGD.HubGovernor.Clients
             }
             catch (Exception ex)
             {
-                TextLogger.Warning(ex.Message);
+                AppContext.LogManager.LogSysError($"Lecture du fichier dialogue du client {ClientStrID(client.ID)}" +
+                        ex.Message);
+
                 DialogEngin.WriteSrvDialog(filePath ,
                     new ClientDialog(client.ID , status , Enumerable.Empty<Message>()));
             }
@@ -263,10 +249,25 @@ namespace DGD.HubGovernor.Clients
 
             if (mgmntMode.ManagementMode != mode)
             {
+                AppContext.LogManager.LogSysActivity($"Mode de gestion du profil {idProfile} changé vers " +
+                    $"{ProfileManagementMode.GetManagementModeName(mode)}" , true);
+
                 mgmntMode.ManagementMode = mode;
                 int ndx = m_ndxerProfilesMgmnt.IndexOf(idProfile);
                 m_ndxerProfilesMgmnt.Source.Replace(ndx , mgmntMode);
             }
+        }
+
+        public IEnumerable<IEventLog> GetClientLog(uint clID)
+        {
+            Dbg.Assert(IsClientRunning(clID) == true);
+
+            ActiveClientsQueue.IClientData clData = m_onlineClients.Get(clID);
+
+            if (clData != null)
+                return clData.ClientLogs.ToArray();
+
+            return Enumerable.Empty<IEventLog>();
         }
 
         public void Dispose()
@@ -285,7 +286,7 @@ namespace DGD.HubGovernor.Clients
         //private:                        
         void Initialize()
         {
-            TextLogger.Info("Réinitialisation des fichiers sur le serveur...");
+            AppContext.LogManager.LogSysActivity("Démarrage de la réinitialisation des fichiers sur le serveur" , true);
 
             string reqFilePath = AppPaths.LocalConnectionReqPath;
             DialogEngin.WriteConnectionsReq(reqFilePath , Enumerable.Empty<Message>());
@@ -300,16 +301,15 @@ namespace DGD.HubGovernor.Clients
                 netEngin.Upload(AppPaths.RemoteConnectionReqUri , reqFilePath);
                 netEngin.Upload(AppPaths.RemoteConnectionRespUri , respFilePath);
                 m_initializationDone = true;
-
-                TextLogger.Info("Réinitialisation réussie.");
+                AppContext.LogManager.LogSysActivity("Réinitialisation des fichiers sur le serveur terminée" , true);
             }
             catch (Exception ex)
             {
-                TextLogger.Error("Une erreur est survenue lors de l’initialisation du serveur: " +
-                    ex.Message);
-            }
+                AppContext.LogManager.LogSysError("Une erreur est survenue lors de l’initialisation du serveur: " +
+                    ex.Message , true);
+            }            
         }
-
+        
         void StartTimer()
         {
             if (!IsDisposed)
@@ -345,7 +345,7 @@ namespace DGD.HubGovernor.Clients
 
         void ProcessProfilesChange()
         {
-            TextLogger.Info("Mise à jour des profils au niveau du serveur.");
+            AppContext.LogManager.LogSysActivity("Lancement de la mise à jour des profils sur serveur" , true);
 
             string filePath = AppPaths.LocalProfilesPath;
 
@@ -359,37 +359,40 @@ namespace DGD.HubGovernor.Clients
 
         void ProcessDialog(uint clientID , IEnumerable<Message> msgs)
         {
-            ClientData clData;
+            ActiveClientsQueue.IClientData clData = m_onlineClients.Get(clientID);
 
-            lock (m_runningClients)
-                if (!m_runningClients.TryGetValue(clientID , out clData))
-                    return;
+            if (clData == null)
+                return;
 
-            uint id = clData.LastClientMessageID;
+
+            uint lastClMsgID = clData.LastClientMessageID;
 
             var seq = from msg in msgs
-                      where msg.ID > id
+                      where msg.ID > lastClMsgID
                       select msg;
 
 
             if (seq.Any())
             {
                 uint lastSrvMsgID = clData.LastSrvMessageID;
-                uint lastClMsgID = clData.LastClientMessageID;
                 var respList = new List<Message>(seq.Count());
 
                 var clStatus = m_ndxerClientsStatus.Get(clientID) as ClientStatus;
                 clStatus.LastSeen = DateTime.Now;
-                clData.LiveTimeout = MAX_TTL;
+                clData.TimeToLive = ActiveClientsQueue.InitTimeToLive;
                 clData.LastClientMessageID = seq.Max(m => m.ID);
 
                 foreach (Message msg in seq)
                 {
                     Dbg.Log($"Processing dialog msg {msg.ID}: {msg.MessageCode}...");
-                    Message resp = m_msgProcessors[msg.MessageCode](msg , clientID);
 
-                    if (resp != null)
-                        respList.Add(resp);
+                    if (m_msgProcessors.ContainsKey(msg.MessageCode))
+                    {
+                        Message resp = m_msgProcessors[msg.MessageCode](msg , clientID);
+
+                        if (resp != null)
+                            respList.Add(resp);
+                    }
                 }
 
 
@@ -444,6 +447,7 @@ namespace DGD.HubGovernor.Clients
             m_ndxerProfiles.DatumInserted += Profiles_DatumInserted;
             m_ndxerProfiles.DatumReplaced += Profiles_DatumReplaced;
             m_ndxerProfiles.DatumDeleted += Profiles_DatumDeleted;
+            AppContext.LogManager.ClientLogAdded += LogManager_ClientLogAdded;
         }
 
         void UnregisterHandlers()
@@ -453,6 +457,7 @@ namespace DGD.HubGovernor.Clients
             m_ndxerProfiles.DatumInserted -= Profiles_DatumInserted;
             m_ndxerProfiles.DatumReplaced -= Profiles_DatumReplaced;
             m_ndxerProfiles.DatumDeleted -= Profiles_DatumDeleted;
+            AppContext.LogManager.ClientLogAdded -= LogManager_ClientLogAdded;
         }
 
         void ProcessUploads()
@@ -487,7 +492,7 @@ namespace DGD.HubGovernor.Clients
                     }
                     catch (Exception ex)
                     {
-                        TextLogger.Error(ex.Message);
+                        AppContext.LogManager.LogSysError("Traitement des transferts vers le serveur: " + ex.Message , true);
                         continue;
                     }
                 }
@@ -528,7 +533,8 @@ namespace DGD.HubGovernor.Clients
                     }
                     catch (Exception ex)
                     {
-                        TextLogger.Error(ex.Message);
+                        AppContext.LogManager.LogSysError("Traitement des transferts à partir du serveur: " +
+                            ex.Message , true);
                         continue;
                     }
 
@@ -553,7 +559,8 @@ namespace DGD.HubGovernor.Clients
                         }
                         catch (Exception ex)
                         {
-                            TextLogger.Warning(ex.Message);
+                            AppContext.LogManager.LogSysError("Traitement des transferts à partir du serveur: " +
+                                ex.Message , true);
                             continue;
                         }
                     }
@@ -588,41 +595,39 @@ namespace DGD.HubGovernor.Clients
 
         void ProcessRunningClients()
         {
-            const int TTL_REFRESH = 0;
-            const int TTL_DIE = -3;
-
             var deadClients = new List<uint>();
 
 
-            lock (m_runningClients) //normalemnt non necessaire
-                foreach (uint clID in m_runningClients.Keys)
-                {
-                    ClientData clData = m_runningClients[clID];
+            foreach (uint clID in m_onlineClients.ClientsID)
+            {
+                ActiveClientsQueue.IClientData clData = m_onlineClients.Get(clID);
 
-                    if (--clData.LiveTimeout <= TTL_DIE)
-                        deadClients.Add(clID);
-                    else if (clData.LiveTimeout <= TTL_REFRESH)
-                    {
-                        TextLogger.Info($"Envoi d'un message de synchronisation au client {clID:X}.");
-                        var msg = new Message(++clData.LastSrvMessageID , 0 , Message_t.Sync); //delegate status update to processdialog method
-                        DialogEngin.AppendSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) , msg);
-                        AddUpload(Names.GetSrvDialogFile(clID));
-                    }
+                if (clData == null)
+                    continue;
+
+                if (--clData.TimeToLive <= TTL_DIE)
+                    deadClients.Add(clID);
+                else if (clData.TimeToLive <= 0)
+                {
+                    AppContext.LogManager.LogSysActivity($"Envoi d'un message de synchronisation au client {ClientStrID(clID)}" , true);
+                    var msg = new Message(++clData.LastSrvMessageID , 0 , Message_t.Sync); //delegate status update to processdialog method
+                    DialogEngin.AppendSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) , msg);
+                    AddUpload(Names.GetSrvDialogFile(clID));
                 }
+            }
 
             foreach (uint id in deadClients)
             {
-                TextLogger.Info($"Client {id:X} présumé déconnecté.");
+                AppContext.LogManager.LogSysActivity($"Client {ClientStrID(id)} présumé déconnecté" , true);
 
-                lock (m_runningClients)
-                    m_runningClients.Remove(id);
-
+                m_onlineClients.Remove(id);
+                AppContext.LogManager.CloseLogger(id);
                 ClientClosed?.Invoke(id);
             }
 
-            lock (m_runningClients)
-                foreach (uint clID in m_runningClients.Keys)
-                    AddDownload(Names.GetClientDialogFile(clID));
+
+            foreach (uint clID in m_onlineClients.ClientsID)
+                AddDownload(Names.GetClientDialogFile(clID));
         }
 
         void UpdateClientEnvironment(uint clID , ClientEnvironment clEnv)
@@ -659,12 +664,23 @@ namespace DGD.HubGovernor.Clients
             newHubEnv.OSVersion = clEnv.OSVersion;
             newHubEnv.UserName = clEnv.UserName;
 
+            AppContext.LogManager.LogSysActivity("Mise à jour de l'environnement du client " +
+                $"{ClientStrID(clID)}, valeur = {newHubEnv}");
+
             m_ndxerClientsEnv.Source.Insert(newHubEnv);
         }
-        
+
         //handelrs:        
         private void Profiles_DatumDeleted(IDataRow row) => ProcessProfilesChange();
         private void Profiles_DatumReplaced(IDataRow row) => ProcessProfilesChange();
         private void Profiles_DatumInserted(IDataRow row) => ProcessProfilesChange();
+
+        private void LogManager_ClientLogAdded(uint clID , IEventLog log)
+        {
+            ActiveClientsQueue.IClientData clData = m_onlineClients.Get(clID);
+
+            if (clData != null)
+                clData.AddLog(log);
+        }
     }
 }

@@ -9,9 +9,9 @@ using System.Windows.Forms;
 using static System.Diagnostics.Debug;
 using easyLib.Extensions;
 using DGD.HubGovernor.Extensions;
-using easyLib.Log;
 using easyLib;
 using System.Collections.Generic;
+using DGD.HubGovernor.Log;
 
 namespace DGD.HubGovernor.Currencies
 {
@@ -92,7 +92,7 @@ namespace DGD.HubGovernor.Currencies
         {
             base.OnFormClosed(e);
 
-            m_ndxerCountries.Dispose();
+            m_ndxerCountries.Close();
             m_ndxerCurrencies.Dispose();
         }
 
@@ -149,6 +149,8 @@ namespace DGD.HubGovernor.Currencies
             Action<Task> onErr = t =>
             {
                 string msg = t.Exception.InnerException.Message;
+                AppContext.LogManager.LogSysError($"Lecture de la table des monnaies: {msg}");
+                
                 UseWaitCursor = false;
                 MessageBox.Show(msg , null , MessageBoxButtons.OK , MessageBoxIcon.Error);
             };
@@ -162,8 +164,7 @@ namespace DGD.HubGovernor.Currencies
                 {
                     IEnumerable<CountryListEntry> countries = from Country ctry in m_ndxerCountries.Source.Enumerate()
                                                               select new CountryListEntry(ctry);
-                    //Array.Sort(countries , (a0 , a1) => string.Compare(a0.ToString() , a1.ToString()));
-
+        
                     m_cbCountries.Items.AddRange(countries.ToArray());
 
                     Assert(m_cbCountries.Items[0].ToString() == "");
@@ -284,11 +285,15 @@ namespace DGD.HubGovernor.Currencies
 
                 if (m_datum == null)
                 {
+                    AppContext.LogManager.LogUserActivity($"Action utilsateur: Ajout d'une monnaie: {cncy}");
                     m_ndxerCurrencies.Source.Insert(cncy);
                     ClearForm();
                 }
                 else
                 {
+                    AppContext.LogManager.LogUserActivity("Action utilsateur: Remplacement d'une monnaie: " +
+                        $"ancienne valeur: {m_datum}, nouvelle valeur: {cncy}");
+
                     int ndx = m_ndxerCurrencies.IndexOf(m_datum.ID);
                     m_ndxerCurrencies.Source.Replace(ndx , cncy);
 

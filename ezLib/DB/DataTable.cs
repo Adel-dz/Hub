@@ -1,5 +1,4 @@
 ﻿using easyLib.Extensions;
-using easyLib.Log;
 using System;
 using System.Threading;
 using System.Diagnostics;
@@ -13,7 +12,7 @@ namespace easyLib.DB
         DateTime LastAccessTime { get; }
         DateTime CreationTime { get; }
         DateTime LastWriteTime { get; }
-        uint Version { get; }        
+        uint Version { get; }
         bool IsDisposed { get; }
 
         void Connect();
@@ -152,27 +151,12 @@ namespace easyLib.DB
                 }
                 catch (System.IO.FileNotFoundException ex)
                 {
-                    TextLogger.Warning(ex.Message);
-                }
-                catch (Exception ex)
-                {
-                    TextLogger.Error(ex.Message);
-                    throw;
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
                 }
 
 
                 if (!IsConnected)
-                    try
-                    {
-                        Create();
-
-                    }
-                    catch (Exception ex)
-                    {
-                        TextLogger.Error(ex.Message);
-                        throw;
-                    }
-
+                    Create();
 
                 Init();
             }
@@ -269,9 +253,9 @@ namespace easyLib.DB
                     }
 
                 m_dataFile.Flush();
-            }        
-    
-        }        
+            }
+
+        }
 
         public void Dispose()
         {
@@ -296,11 +280,11 @@ namespace easyLib.DB
         }
 
         public override string ToString() => Name;
-        
-        
-        
+
+
+
         //protected:
-        
+
         protected abstract TableHeader Header { get; }
         protected abstract int GetDataCount();
         protected abstract void Init();
@@ -309,7 +293,7 @@ namespace easyLib.DB
         protected abstract void DoDelete(int ndxItem);
         protected abstract int DoReplace(int ndxItem , T item);
         protected abstract void DoDispose();
-        protected abstract IDataColumn[] GetColumns();        
+        protected abstract IDataColumn[] GetColumns();
 
         protected ITableReader Reader
         {
@@ -332,23 +316,23 @@ namespace easyLib.DB
         {
             Debug.Assert(IsConnected);
 
-            lock(m_rwLock)
+            lock (m_rwLock)
             {
                 Header.Reset();
                 m_dataFile.SetLength(0);
                 Header.Store(m_writer);
 
                 TableResetted?.Invoke();
-            }            
+            }
         }
-        
+
 
         //private:
         void Create()
         {
             const int BUFFER_SIZE = 4096;
 
-            TextLogger.Debug("Création de fichier {0}.", m_filePath);
+            System.Diagnostics.Debug.WriteLine("Création de fichier {0}." , m_filePath);
 
             m_dataFile = new System.IO.FileStream(m_filePath ,
              System.IO.FileMode.CreateNew ,
@@ -370,7 +354,7 @@ namespace easyLib.DB
         {
             const int BUFFER_SIZE = 4096;
 
-            TextLogger.Debug("Ouverture du fichier {0}.", m_filePath);
+            System.Diagnostics.Debug.WriteLine("Ouverture du fichier {0}." , m_filePath);
 
             m_dataFile = new System.IO.FileStream(m_filePath ,
              System.IO.FileMode.Open ,
@@ -387,7 +371,7 @@ namespace easyLib.DB
             }
             catch (Exception ex)
             {
-                TextLogger.Error(ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.Message);
 
                 m_dataFile.Dispose();
                 m_dataFile = null;

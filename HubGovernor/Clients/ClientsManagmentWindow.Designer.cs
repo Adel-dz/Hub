@@ -75,7 +75,7 @@
             this.m_lblStatus = new System.Windows.Forms.Label();
             this.m_lblLastActivity = new System.Windows.Forms.Label();
             this.m_lblCreationTime = new System.Windows.Forms.Label();
-            this.m_tbActivity = new System.Windows.Forms.TextBox();
+            this.m_rtbClientLog = new System.Windows.Forms.RichTextBox();
             this.m_tsbRunningClientsOnly = new System.Windows.Forms.ToolStripButton();
             this.m_tsbEnableClient = new System.Windows.Forms.ToolStripButton();
             this.m_tsbDisableClient = new System.Windows.Forms.ToolStripButton();
@@ -192,9 +192,9 @@
             // 
             // m_detailSplitter.Panel2
             // 
-            m_detailSplitter.Panel2.Controls.Add(this.m_tbActivity);
+            m_detailSplitter.Panel2.Controls.Add(this.m_rtbClientLog);
             m_detailSplitter.Size = new System.Drawing.Size(700, 381);
-            m_detailSplitter.SplitterDistance = 239;
+            m_detailSplitter.SplitterDistance = 220;
             m_detailSplitter.TabIndex = 0;
             // 
             // m_grpEnvironment
@@ -606,16 +606,18 @@
             this.m_lblCreationTime.Text = "-";
             this.m_lblCreationTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // m_tbActivity
+            // m_rtbClientLog
             // 
-            this.m_tbActivity.BackColor = System.Drawing.SystemColors.Window;
-            this.m_tbActivity.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.m_tbActivity.Location = new System.Drawing.Point(0, 0);
-            this.m_tbActivity.Multiline = true;
-            this.m_tbActivity.Name = "m_tbActivity";
-            this.m_tbActivity.ReadOnly = true;
-            this.m_tbActivity.Size = new System.Drawing.Size(700, 138);
-            this.m_tbActivity.TabIndex = 0;
+            this.m_rtbClientLog.BackColor = System.Drawing.SystemColors.Window;
+            this.m_rtbClientLog.BulletIndent = 4;
+            this.m_rtbClientLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.m_rtbClientLog.Location = new System.Drawing.Point(0, 0);
+            this.m_rtbClientLog.Name = "m_rtbClientLog";
+            this.m_rtbClientLog.ReadOnly = true;
+            this.m_rtbClientLog.ShortcutsEnabled = false;
+            this.m_rtbClientLog.Size = new System.Drawing.Size(700, 157);
+            this.m_rtbClientLog.TabIndex = 0;
+            this.m_rtbClientLog.Text = "";
             // 
             // m_toolstrip
             // 
@@ -730,12 +732,12 @@
             // m_tsbShowActivityHistory
             // 
             this.m_tsbShowActivityHistory.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.m_tsbShowActivityHistory.Enabled = false;
             this.m_tsbShowActivityHistory.Image = global::DGD.HubGovernor.Properties.Resources.history_16;
             this.m_tsbShowActivityHistory.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.m_tsbShowActivityHistory.Name = "m_tsbShowActivityHistory";
             this.m_tsbShowActivityHistory.Size = new System.Drawing.Size(23, 22);
             this.m_tsbShowActivityHistory.Text = "Afficher l’historique des activités";
+            this.m_tsbShowActivityHistory.Click += new System.EventHandler(this.ShowActivityHistory_Click);
             // 
             // toolStripSeparator4
             // 
@@ -817,7 +819,6 @@
             m_mainSplitter.ResumeLayout(false);
             m_detailSplitter.Panel1.ResumeLayout(false);
             m_detailSplitter.Panel2.ResumeLayout(false);
-            m_detailSplitter.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(m_detailSplitter)).EndInit();
             m_detailSplitter.ResumeLayout(false);
             m_grpEnvironment.ResumeLayout(false);
@@ -849,7 +850,6 @@
         private System.Windows.Forms.ToolStripButton m_tsbChat;
         private System.Windows.Forms.ToolStripStatusLabel m_sslClientsCount;
         private System.Windows.Forms.ToolStripStatusLabel m_sslRunningClientsCount;
-        private System.Windows.Forms.TextBox m_tbActivity;
         private System.Windows.Forms.Label m_lblStatus;
         private System.Windows.Forms.Label m_lblLastActivity;
         private System.Windows.Forms.Label m_lblCreationTime;
@@ -865,5 +865,6 @@
         private System.Windows.Forms.Label m_lblHubArchitecture;
         private System.Windows.Forms.Label m_lblHubVersion;
         private System.Windows.Forms.ToolStripButton m_tsbReset;
+        private System.Windows.Forms.RichTextBox m_rtbClientLog;
     }
 }

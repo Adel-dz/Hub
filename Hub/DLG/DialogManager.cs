@@ -5,7 +5,6 @@ using DGD.HubCore.DLG;
 using DGD.HubCore.Net;
 using easyLib;
 using easyLib.Extensions;
-using easyLib.Log;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -94,9 +93,9 @@ namespace DGD.Hub.DLG
             }
 
 
-            DialogEngin.WriteHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) , 
+            DialogEngin.WriteHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) ,
                 m_clInfo.ClientID , Enumerable.Empty<Message>());
-            
+
 
             //process only status part of the g file
             string tmpFile = Path.GetTempFileName();
@@ -163,26 +162,13 @@ namespace DGD.Hub.DLG
             var appUpdateTask = new Task(AutoUpdater.UpdateApp , TaskCreationOptions.LongRunning);
             appUpdateTask.Start();
         }
-        
-        public void PostMessage(Message_t msgCode , byte[] data = null , uint reqID = 0)
-        {
-            lock (m_lock)
-            {
-                Message msg = new Message(++m_clientLastMsgID , reqID , msgCode , data);
-
-                DialogEngin.AppendHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) ,
-                    m_clInfo.ClientID , msg);
-
-                m_needUpload = true;
-            }
-        }
 
         public void Stop(bool ignoreCloseNotification = false)
         {
             if (IsRunning)
             {
                 m_updateTimer.Stop();
-                m_dialogTimer.Stop();                
+                m_dialogTimer.Stop();
 
                 Opts.SettingsView.ClientInfoChanged -= SettingsView_ClientInfoChaned;
 
@@ -212,14 +198,27 @@ namespace DGD.Hub.DLG
             }
         }
 
-        public uint SendMessage(Message_t msgCode, byte[] data = null, uint reqID = 0)
+        public void PostMessage(Message_t msgCode , byte[] data = null , uint reqID = 0)
+        {
+            lock (m_lock)
+            {
+                Message msg = new Message(++m_clientLastMsgID , reqID , msgCode , data);
+
+                DialogEngin.AppendHubDialog(SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID) ,
+                    m_clInfo.ClientID , msg);
+
+                m_needUpload = true;
+            }
+        }
+
+        public uint SendMessage(Message_t msgCode , byte[] data = null , uint reqID = 0)
         {
             Message msg;
 
-            lock(m_lock)            
+            lock (m_lock)
                 msg = new Message(++m_clientLastMsgID , reqID , msgCode , data);
 
-            
+
             try
             {
                 Uri dest = SettingsManager.GetClientDialogURI(m_clInfo.ClientID);
@@ -229,10 +228,10 @@ namespace DGD.Hub.DLG
                 new NetEngin(Program.Settings).Upload(dest , src);
 
                 return msg.ID;
-            }            
-            catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                Dbg.Log(ex.Message);                
+                Dbg.Log(ex.Message);
             }
 
             return 0;
@@ -261,6 +260,20 @@ namespace DGD.Hub.DLG
             }
 
             return null;
+        }
+
+        public void PostLog(string txt , bool isError)
+        {
+            var ms = new MemoryStream();
+            var writer = new RawDataWriter(ms , Encoding.UTF8);
+
+            writer.Write(DateTime.Now);
+            writer.Write(isError);
+            writer.Write(txt);
+
+            byte[] msgData = ms.ToArray();
+
+            PostMessage(Message_t.Log , msgData);
         }
 
 
@@ -316,7 +329,7 @@ namespace DGD.Hub.DLG
                 Exit();
                 break;
 
-                case ResumeHandler.Result_t.Ok:            
+                case ResumeHandler.Result_t.Ok:
                 m_dialogTimer.Start();
                 m_updateTimer.Start(true);
                 m_dialogRunning = true;
@@ -415,7 +428,7 @@ namespace DGD.Hub.DLG
             }
             catch (Exception ex)
             {
-                TextLogger.Error(ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.Message);
 
                 LogEngin.PushFlash(ex.Message);
                 m_dialogTimer.Start();
@@ -484,14 +497,15 @@ namespace DGD.Hub.DLG
                         if (m_msgHandlersTable.TryGetValue(msg.MessageCode , out msgHandler))
                             msgHandler.Invoke(msg);
 
-                    if (m_needUpload)
-                    {
-                        string clFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
-                        new NetEngin(Program.Settings).Upload(SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , clFilePath , true);
-                        m_needUpload = false;
-                    }
 
                     m_timeToLive = TTL_MAX;
+                }
+
+                if (m_needUpload)
+                {
+                    string clFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
+                    new NetEngin(Program.Settings).Upload(SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , clFilePath , true);
+                    m_needUpload = false;
                 }
 
                 if (--m_timeToLive <= 0)
@@ -501,7 +515,7 @@ namespace DGD.Hub.DLG
             }
             catch (Exception ex)
             {
-                TextLogger.Error(ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.Message);
                 m_dialogTimer.Start();
             }
         }
@@ -509,7 +523,7 @@ namespace DGD.Hub.DLG
         void ProcessUpdateTimer()
         {
             m_updateTimer.Stop();
-            TextLogger.Debug("Processing update timer...");
+            System.Diagnostics.Debug.WriteLine("Processing update timer...");
 
             try
             {
@@ -520,7 +534,7 @@ namespace DGD.Hub.DLG
                     if (AutoUpdater.UpdateData())
                         LogEngin.PushFlash("Vos données sont à jour.");
 
-                    TextLogger.Debug("Update done!");
+                    System.Diagnostics.Debug.WriteLine("Update done!");
                 }
                 catch (Exception ex)
                 {
@@ -530,7 +544,7 @@ namespace DGD.Hub.DLG
             }
             catch (Exception ex)
             {
-                TextLogger.Error(ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
             finally
             {
@@ -595,7 +609,7 @@ namespace DGD.Hub.DLG
         //handlers:
         private void SettingsView_ClientInfoChaned()
         {
-            m_clInfo = Program.Settings.ClientInfo;            
+            m_clInfo = Program.Settings.ClientInfo;
         }
     }
 }

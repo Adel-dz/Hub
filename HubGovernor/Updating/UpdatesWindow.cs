@@ -12,8 +12,8 @@ using DGD.HubCore.Net;
 using easyLib.DB;
 using DGD.HubCore.Updating;
 using System.IO;
-using easyLib.Log;
 using DGD.HubCore;
+using DGD.HubGovernor.Log;
 
 namespace DGD.HubGovernor.Updating
 {

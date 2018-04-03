@@ -1,6 +1,6 @@
 ﻿using DGD.HubGovernor.DB;
+using DGD.HubGovernor.Log;
 using easyLib.DB;
-using easyLib.Log;
 
 namespace DGD.HubGovernor.FilesGen
 {

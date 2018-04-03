@@ -82,7 +82,7 @@ namespace DGD.Hub.SpotView
                     m_cbOrigin.Size = new Size(161 , 21);
                     m_lblCountryInfo.Location = new Point(581 , 109);
                 }
-                
+
 
                 LoadCountries();
             }
@@ -197,8 +197,6 @@ namespace DGD.Hub.SpotView
 
             AutoUpdater.BeginTableUpdate += BeginTableProcessing_Handler;
             AutoUpdater.EndTableUpdate += EndTableProcessing_Handler;
-
-            //Opts.SettingsView.CountryPrefernceChanged += SettingsView_CountryPrefernceChanged;
         }
 
         void UnregisterHandlers()
@@ -212,8 +210,6 @@ namespace DGD.Hub.SpotView
 
             AutoUpdater.BeginTableUpdate -= BeginTableProcessing_Handler;
             AutoUpdater.EndTableUpdate -= EndTableProcessing_Handler;
-
-            //Opts.SettingsView.CountryPrefernceChanged += SettingsView_CountryPrefernceChanged;
         }
 
         void LoadCountries()
@@ -221,7 +217,7 @@ namespace DGD.Hub.SpotView
             IEnumerable<CountryEntry> countries = from Country ctry in Program.TablesManager.GetDataProvider(TablesID.COUNTRY).Enumerate()
                                                   orderby ctry.Name
                                                   select new CountryEntry(ctry);
-            
+
             m_cbOrigin.Items.Clear();
             m_cbOrigin.Items.Add(new CountryEntry(null));
             m_cbOrigin.Items.AddRange(countries.ToArray());
@@ -318,6 +314,15 @@ namespace DGD.Hub.SpotView
                     m_lvSearchResult.EndUpdate();
                 }
 
+
+
+                string txtLog = $"Module valeurs boursières: recherche de la SPT {subHeading}, date: {date.ToShortDateString()}, " +
+                    $"incoterm: {(ict.ID == 0 ? AppText.UNSPECIFIED : ict.Name)}, origine: {(origin == null ? AppText.UNSPECIFIED : origin.Name)}, " +
+                    $"Nbre d'enregistrements trouvés: {t.Result.Length}";
+
+                Program.DialogManager.PostLog(txtLog , false);
+
+
                 m_tsbSearch.Enabled = true;
                 releaser.Dispose();
                 Log.LogEngin.PushFlash($"{t.Result.Length} élément(s) trouvé(s).");
@@ -327,6 +332,9 @@ namespace DGD.Hub.SpotView
             {
                 m_tsbSearch.Enabled = true;
                 Log.LogEngin.PushFlash(t.Exception.InnerException.Message);
+
+                string errLog = "Module valeurs boursiére: Erreur lors de la recherche, " + t.Exception.InnerException.Message;
+                Program.DialogManager.PostLog(errLog , true);
             };
 
             var task = new Task<SpotViewItem[]>(search , TaskCreationOptions.LongRunning);
@@ -383,14 +391,7 @@ namespace DGD.Hub.SpotView
             var ict = m_cbIncoterm.SelectedItem as Incoterm;
             var ctry = (m_cbOrigin.SelectedItem as CountryEntry).Country;
 
-            try
-            {
-                SearchAsyncSubHeading(subHeading , date , ict , ctry);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(Parent , ex.Message , null , MessageBoxButtons.OK , MessageBoxIcon.Error);
-            }
+            SearchAsyncSubHeading(subHeading , date , ict , ctry);
         }
 
         private void EndTableProcessing_Handler(uint tableID)
@@ -414,6 +415,9 @@ namespace DGD.Hub.SpotView
                 }
                 catch (Exception ex)
                 {
+                    Program.DialogManager.PostLog($"Erreur fin de traitement de la table {tableID}: " +
+                        ex.Message, true);
+
                     MessageBox.Show(this , ex.Message , null , MessageBoxButtons.OK , MessageBoxIcon.Error);
                 }
 
@@ -556,7 +560,7 @@ namespace DGD.Hub.SpotView
                 Invoke(new Action(LoadCountries));
             else
                 LoadCountries();
-        }      
+        }
 
     }
 }

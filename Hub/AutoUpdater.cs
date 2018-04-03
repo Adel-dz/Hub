@@ -42,8 +42,15 @@ namespace DGD.Hub
                 netEngin.Download(manifest , SettingsManager.ManifestURI);
                 IUpdateManifest updateManifest = UpdateEngin.ReadUpdateManifest(manifest);
 
+                string log = "Recherche de mise à jour des données. Version actulle des données: " + 
+                    $"{Program.Settings.DataGeneration}. ";
+
+
                 if (updateManifest.DataGeneration == Program.Settings.DataGeneration)
+                {
+                    Program.DialogManager.PostLog(log + " Les données sont à jour", false);
                     return true;
+                }
 
                 if (Program.Settings.UpdateKey != updateManifest.UpdateKey)
                 {
@@ -53,6 +60,8 @@ namespace DGD.Hub
                     {
                         Log.LogEngin.PushFlash(AppText.ERR_UPDATEKEY);
                         Dbg.Log("Update key mismatch!");
+
+                        Program.DialogManager.PostLog(log + AppText.ERR_UPDATEKEY, true);
 
                         return false;
                     }
@@ -86,6 +95,9 @@ namespace DGD.Hub
                     DataUpdated?.Invoke();
                 }
 
+                Program.DialogManager.PostLog(log + "Mises à jour installées. "+
+                    $"Nouvelle version des données: {Program.Settings.DataGeneration}" , false);
+
                 Assert(Program.Settings.DataGeneration == updateManifest.DataGeneration);
             }
 
@@ -96,6 +108,7 @@ namespace DGD.Hub
         {
             //dl global manifest
             Log.LogEngin.PushFlash("Rechercher d'une mise à jour de l'application...");
+            const string logTxt = "Rechercher d'une mise à jour de l'application. ";
 
             string tmpFile = Path.GetTempFileName();
             using (new AutoReleaser(() => File.Delete(tmpFile)))
@@ -110,13 +123,21 @@ namespace DGD.Hub
                 if (ver == null || curVer.CompareTo(ver) >= 0)
                 {
                     Log.LogEngin.PushFlash("Vous disposez déjà de la dernière version de l’application.");
+                    Program.DialogManager.PostLog(logTxt + "Pas de nouvelle mise à jour" , false);
                     return;
                 }
 
                 Log.LogEngin.PushFlash($"Une nouvelle version de l'application est disponible ({ver}).");
+                Program.DialogManager.PostLog(logTxt + 
+                    $"Une nouvelle version de l'application est disponible, version: ({ver})", false);
+
+                const string setupTxtLog = "L'utilsateur a refuser d'installer la nouvelle version du HUB";
 
                 if (CanDownlaodAppUpdate?.Invoke() != true)
+                {
+                    Program.DialogManager.PostLog(setupTxtLog , false);
                     return;
+                }
 
                 Log.LogEngin.PushFlash($"Téléchargement de la mise à jour...");
 
@@ -130,11 +151,15 @@ namespace DGD.Hub
                 netEngin.Download(tmpFile , uri);
 
                 if (CanRunAppUpdate?.Invoke() != true)
+                {
+                    Program.DialogManager.PostLog(setupTxtLog , false); 
                     return;
+                }
 
                 string tmpDir = Path.GetTempPath();
                 FilesBag.Decompress(tmpFile , tmpDir);
                 System.Diagnostics.Process.Start(Path.Combine(tmpDir , "setup.exe"));
+                Program.DialogManager.PostLog("Lancement du programme d'installation de la mise à jour du HUB" , false);
                 System.Windows.Forms.Application.Exit();
             }
         }

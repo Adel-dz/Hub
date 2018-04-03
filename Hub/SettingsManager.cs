@@ -170,8 +170,8 @@ namespace DGD.Hub
         public static Uri ConnectionReqURI => Uris.GetConnectionReqUri(ServerURI);
         public static Uri ConnectionRespURI => Uris.GetConnectionRespUri(ServerURI);
         public static int DialogTimerInterval => 10 * 1000;
-        public static int UpdateTimerInterval => 1 * 60 * 1000;
-        public static int ConnectionTimerInterval => 10 * 1000;
+        public static int UpdateTimerInterval => 60 * 60 * 1000;
+        public static int ConnectionTimerInterval => 30 * 1000;
         public static int MaxConnectAttemps => 3;
         
 

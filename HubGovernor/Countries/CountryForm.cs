@@ -1,13 +1,13 @@
 ﻿using DGD.HubCore.DB;
 using easyLib;
 using easyLib.DB;
-using easyLib.Log;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Diagnostics.Debug;
 using easyLib.Extensions;
 using DGD.HubGovernor.Extensions;
+using DGD.HubGovernor.Log;
 
 namespace DGD.HubGovernor.Countries
 {
@@ -70,7 +70,7 @@ namespace DGD.HubGovernor.Countries
             try
             {
                 base.OnFormClosing(e);
-                m_ndxerCountries.Dispose();
+                m_ndxerCountries.Close();
             }
             catch (Exception ex)
             {                
@@ -202,7 +202,9 @@ namespace DGD.HubGovernor.Countries
 
                     if (m_datum == null)
                     {
-                        m_ndxerCountries.Source.Insert(ctry);
+                        AppContext.LogManager.LogUserActivity($"Action utilisateur :  Ajout d’un pays: {ctry}");
+                        m_ndxerCountries.Source.Insert(ctry);                        
+
                         m_tbIsoCode.Clear();
                         m_tbName.Clear();
                         m_nudInternalCode.Value = 0;
@@ -210,6 +212,9 @@ namespace DGD.HubGovernor.Countries
                     }
                     else
                     {
+                        AppContext.LogManager.LogUserActivity("Action utilisateur :  Remplacement d’un pays: " + 
+                            $"ancienne valeur: {m_datum}, nouvelle vaeur: {ctry}");
+
                         int ndx = m_ndxerCountries.IndexOf(id);
                         m_ndxerCountries.Source.Replace(ndx , ctry);
                         Close();                        
@@ -245,7 +250,7 @@ namespace DGD.HubGovernor.Countries
                     MessageBoxButtons.OK ,
                     MessageBoxIcon.Warning);
             else
-                TextLogger.Info("Enregistrement réussi.");
+                TextLogger.Info("Enregistrement réussi.");            
         }
         
         //handlers
