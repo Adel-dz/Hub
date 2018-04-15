@@ -67,6 +67,10 @@ namespace DGD.HubCore.Updating
         readonly List<FileData> m_files = new List<FileData>();
 
 
+        public event Action<string> FileCompressed;
+        public event Action<string> FileDecompressed;
+
+
         public void Add(string filePath)
         {
             Assert(!string.IsNullOrWhiteSpace(filePath));
@@ -176,11 +180,13 @@ namespace DGD.HubCore.Updating
                         writer.Write(fStream.Length);
                         fStream.CopyTo(gzs);
                     }
+
+                    FileCompressed?.Invoke(Path.Combine(fd.DestFolder ?? ".\\" , fd.FileName));
                 }
             }
         }
 
-        public static void Decompress(string filePath , string destFolder)
+        public void Decompress(string filePath , string destFolder)
         {
             using (FileStream fs = File.OpenRead(filePath))
             using (var gzs = new GZipStream(fs , CompressionMode.Decompress))
@@ -216,7 +222,9 @@ namespace DGD.HubCore.Updating
 
                     long fileLen = reader.ReadLong();
 
-                    CreateFile(gzs, file, fileLen);
+                    CreateFile(gzs , file , fileLen);
+
+                    FileDecompressed?.Invoke(file);
                 }
             }
         }
@@ -266,7 +274,6 @@ namespace DGD.HubCore.Updating
         //private:
         static byte[] Signature => Encoding.UTF8.GetBytes(SIGNATURE);
 
-
         static void CreateFile(Stream input , string filePath , long fileLen)
         {
             const int SZ_BUFFER = 1024;
@@ -276,9 +283,9 @@ namespace DGD.HubCore.Updating
             using (FileStream fs = File.Create(filePath))
             {
                 var reader = new BinaryReader(input , Encoding.UTF8 , true);
-                var writer = new BinaryWriter(fs , Encoding.UTF8);                
+                var writer = new BinaryWriter(fs , Encoding.UTF8);
 
-                while(fileLen > 0)
+                while (fileLen > 0)
                 {
                     int sz = Math.Min(SZ_BUFFER , (int)fileLen);
                     byte[] buffer = reader.ReadBytes(sz);

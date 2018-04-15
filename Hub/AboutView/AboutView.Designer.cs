@@ -67,6 +67,18 @@
             m_pbTitle.TabIndex = 0;
             m_pbTitle.TabStop = false;
             // 
+            // m_lblNB
+            // 
+            m_lblNB.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            m_lblNB.AutoSize = true;
+            m_lblNB.ForeColor = System.Drawing.Color.Gray;
+            m_lblNB.Location = new System.Drawing.Point(190, 504);
+            m_lblNB.Name = "m_lblNB";
+            m_lblNB.Size = new System.Drawing.Size(387, 13);
+            m_lblNB.TabIndex = 6;
+            m_lblNB.Text = "Copyright © 2018. Ce logiciel est la propriété exclusive des douanes algériennes." +
+    "";
+            // 
             // m_lblVersion
             // 
             this.m_lblVersion.Anchor = System.Windows.Forms.AnchorStyles.Top;
@@ -99,18 +111,6 @@
             this.m_lblUpdateKey.TabIndex = 5;
             this.m_lblUpdateKey.Text = "Clé de mise à jours:";
             this.m_lblUpdateKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // m_lblNB
-            // 
-            m_lblNB.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            m_lblNB.AutoSize = true;
-            m_lblNB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            m_lblNB.Location = new System.Drawing.Point(56, 504);
-            m_lblNB.Name = "m_lblNB";
-            m_lblNB.Size = new System.Drawing.Size(737, 13);
-            m_lblNB.TabIndex = 6;
-            m_lblNB.Text = "Les valeurs reprises dans ce logiciel sont à prendre à titre indicatif et sont à " +
-    "usage interne et exclusif aux services des douanes.";
             // 
             // AboutView
             // 

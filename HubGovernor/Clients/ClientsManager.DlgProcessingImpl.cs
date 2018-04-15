@@ -45,13 +45,13 @@ namespace DGD.HubGovernor.Clients
             if (client == null)
             {
                 AppContext.LogManager.LogSysActivity("Réception d’une notification de démarrage " +
-                  $"de la part d’un client inexistant ({ClientStrID(clID)}). Bannissement du client", true);
+                  $"de la part d’un client inexistant ({ClientStrID(clID)}). Réinitialisation du client" , true);
 
                 //maj du fichier gov
                 string srvDlgFile = AppPaths.GetLocalSrvDialogPath(clID);
 
                 //le client n'existe pas => son fichier gov n'existe pas
-                var clDlg = new ClientDialog(clID , ClientStatus_t.Banned , Enumerable.Empty<Message>());
+                var clDlg = new ClientDialog(clID , ClientStatus_t.Reseted , Enumerable.Empty<Message>());
                 DialogEngin.WriteSrvDialog(srvDlgFile , clDlg);
 
                 AddUpload(Path.GetFileName(srvDlgFile));
@@ -121,7 +121,16 @@ namespace DGD.HubGovernor.Clients
 
             if (client == null)
             {
-                AppContext.LogManager.LogSysActivity("Réception d’une requête de reprise émanant d’un client non enregistré. Requête rejetée.", true);
+                AppContext.LogManager.LogSysActivity("Réception d’une requête de reprise émanant d’un client non enregistré. Réinitialisation du client." , true);
+
+                //maj du fichier gov
+                string srvDlgFile = AppPaths.GetLocalSrvDialogPath(clID);
+
+                //le client n'existe pas => son fichier gov n'existe pas
+                var clDlg = new ClientDialog(clID , ClientStatus_t.Reseted , Enumerable.Empty<Message>());
+                DialogEngin.WriteSrvDialog(srvDlgFile , clDlg);
+
+                AddUpload(Path.GetFileName(srvDlgFile));
                 return msg.CreateResponse(++m_lastCnxRespMsgID , Message_t.Rejected , BitConverter.GetBytes(clID));
             }
 
@@ -407,13 +416,13 @@ namespace DGD.HubGovernor.Clients
             if(client == null)
             {
                 AppContext.LogManager.LogSysActivity("Réception d’une demande de synchronisation " +
-                        $"de la part d’un client inexistant ({ClientStrID(clID)}). Bannissement du client", true);
+                        $"de la part d’un client inexistant ({ClientStrID(clID)}). Réinitialisation du client" , true);
 
                 //maj du fichier gov
                 string srvDlgFile = AppPaths.GetLocalSrvDialogPath(clID);
 
                 //le client n'existe pas => son fichier gov n'existe pas
-                var clDlg = new ClientDialog(clID , ClientStatus_t.Banned , Enumerable.Empty<Message>());
+                var clDlg = new ClientDialog(clID , ClientStatus_t.Reseted , Enumerable.Empty<Message>());
                 DialogEngin.WriteSrvDialog(srvDlgFile , clDlg);
 
                 AddUpload(Path.GetFileName(srvDlgFile));
@@ -449,7 +458,17 @@ namespace DGD.HubGovernor.Clients
 
             if(ndx < 0)
             {
-                AppContext.LogManager.LogSysActivity("Mise à jour des information utilisateur d'un client inexistant.  Requête ignorée.", true);
+                AppContext.LogManager.LogSysActivity("Mise à jour des information utilisateur d'un client inexistant. Réinitialisation du client." , true);
+
+                //maj du fichier gov
+                string srvDlgFile = AppPaths.GetLocalSrvDialogPath(clID);
+
+                //le client n'existe pas => son fichier gov n'existe pas
+                var clDlg = new ClientDialog(clID , ClientStatus_t.Reseted , Enumerable.Empty<Message>());
+                DialogEngin.WriteSrvDialog(srvDlgFile , clDlg);
+
+                AddUpload(Path.GetFileName(srvDlgFile));
+
                 return null;
             }
 

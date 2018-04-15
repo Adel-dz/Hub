@@ -29,9 +29,9 @@ namespace DGD.HubGovernor
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
-                AppContext.LogManager.LogSysActivity("Démarrage du HUB Governor");
-                AppContext.LogManager.LogSysActivity($"Version des données: {AppContext.Settings.AppSettings.DataGeneration}");
+                AppContext.LogManager.LogSysActivity("Démarrage du HUB Governor");                
                 AppContext.LogManager.LogSysActivity($"Hub Governor version: {Assembly.GetExecutingAssembly().GetName().Version}");
+                AppContext.LogManager.LogSysActivity($"Version des données: {AppContext.Settings.AppSettings.DataGeneration}");
 
                 Application.Run(new MainWindow());
 

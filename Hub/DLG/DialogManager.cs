@@ -18,7 +18,7 @@ namespace DGD.Hub.DLG
 {
     sealed partial class DialogManager: IDisposable
     {
-        const int TTL_MAX = 10;
+        const int TTL_MAX = 24;
         readonly object m_lock = new object();
         readonly Timer m_dialogTimer;
         readonly Timer m_updateTimer;

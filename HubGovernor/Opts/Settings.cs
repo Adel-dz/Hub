@@ -9,10 +9,6 @@ namespace DGD.HubGovernor.Opts
 
     sealed class Settings
     {
-        const string USER_SETTING_FILE = "user.param";
-        const string APP_SETTING_FILE = "app.param";
-
-
         public Settings()
         {
             try
@@ -32,7 +28,7 @@ namespace DGD.HubGovernor.Opts
 
         public void Save()
         {
-            string appFilePath = AppFilePath;
+            string appFilePath = AppPaths.AppSettingsFilePath;
 
             using (FileStream fs = File.Create(appFilePath))
             using (var xs = new XorStream(fs))
@@ -43,7 +39,7 @@ namespace DGD.HubGovernor.Opts
             }
 
 
-            string userFilePath = UserFilePath;
+            string userFilePath = AppPaths.UserSettingsFilePath;
 
             using (FileStream fs = File.Create(userFilePath))
             using (var xs = new XorStream(fs))
@@ -57,7 +53,7 @@ namespace DGD.HubGovernor.Opts
 
         public void Load()
         {
-            string appFilePath = AppFilePath;
+            string appFilePath = AppPaths.AppSettingsFilePath;
 #if DEBUG
             System.Diagnostics.Debug.Print($"Lecture du ficher {appFilePath}...\n");
 #endif
@@ -71,7 +67,7 @@ namespace DGD.HubGovernor.Opts
             }
 
 
-            string userFilePath = UserFilePath;
+            string userFilePath = AppPaths.UserSettingsFilePath;
 #if DEBUG
             System.Diagnostics.Debug.Print($"Lecture du ficher {userFilePath}...\n");
 #endif
@@ -92,11 +88,5 @@ namespace DGD.HubGovernor.Opts
             AppSettings.Reset();
             UserSettings.Reset();
         }
-
-
-        //private:
-        static string UserFilePath => Path.Combine(AppPaths.UserDataFolder , USER_SETTING_FILE);
-        static string AppFilePath => Path.Combine(AppPaths.AppDataFolder , APP_SETTING_FILE);
-
     }
 }

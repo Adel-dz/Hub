@@ -1,9 +1,5 @@
 ﻿using easyLib;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DGD.Hub.Log
 {
@@ -27,13 +23,16 @@ namespace DGD.Hub.Log
         public static bool IsDisposed { get; private set; }
 
         public static void PushFlash(string msg)
-        {
+        {            
             lock (m_timer)
-            {               
-                m_timer.Restart();
-                m_msgVisible = true;
+            {
+                if (!IsDisposed)
+                {
+                    m_timer.Restart();
+                    m_msgVisible = true;
 
-                MessageReady?.Invoke(msg);
+                    MessageReady?.Invoke(msg);
+                }
             }
         }
 
@@ -41,11 +40,15 @@ namespace DGD.Hub.Log
         {
             lock (m_timer)
             {
-                if (m_msgVisible)
-                    CloseMessage();
+                if (!IsDisposed)
+                {
+                    if (m_msgVisible)
+                        CloseMessage();
 
-                m_msgVisible = true;
-                MessageReady?.Invoke(msg);
+                    m_msgVisible = true;
+                    MessageReady?.Invoke(msg);
+                }
+
                 return new AutoReleaser(CloseMessage);
             }
         }
@@ -66,16 +69,22 @@ namespace DGD.Hub.Log
         //private:
         static void CloseMessage()
         {
-            m_timer.Stop();
-            MessageTimeout?.Invoke();
+            if (!IsDisposed)
+            {
+                m_timer.Stop();
+                MessageTimeout?.Invoke();
+            }
         }
 
         static void ProcessTimer()
         {
             lock (m_timer)
             {
-                CloseMessage();
-                m_msgVisible = false;
+                if (!IsDisposed)
+                {
+                    CloseMessage();
+                    m_msgVisible = false;
+                }
             }
         }
 

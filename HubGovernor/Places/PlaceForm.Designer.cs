@@ -118,6 +118,7 @@
             this.m_tsbAddCountry.Name = "m_tsbAddCountry";
             this.m_tsbAddCountry.Size = new System.Drawing.Size(110, 22);
             this.m_tsbAddCountry.Text = "Ajouter un pays";
+            this.m_tsbAddCountry.Click += new System.EventHandler(this.AddCountry_Click);
             // 
             // toolStripSeparator3
             // 

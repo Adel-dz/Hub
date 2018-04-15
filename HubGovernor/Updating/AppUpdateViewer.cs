@@ -99,7 +99,7 @@ namespace DGD.HubGovernor.Updating
                 string fileName = m_update.ID.ToString("X");
                 string filePath = Path.Combine(AppPaths.AppUpdateFolder , fileName);
 
-                FilesBag.Decompress(filePath , dlg.SelectedPath);
+                new FilesBag().Decompress(filePath , dlg.SelectedPath);
             }
         }
     }

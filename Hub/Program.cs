@@ -1,6 +1,5 @@
 ﻿using DGD.Hub.DB;
 using DGD.HubCore;
-using DGD.HubCore.Updating;
 using System;
 using System.IO;
 using System.Threading;
@@ -24,12 +23,7 @@ namespace DGD.Hub
         public static DLG.DialogManager DialogManager => m_dlgManager;
         public static RunOnce.RunOnceManager RunOnceManager => m_runOnceManager;
 
-        public static AppArchitecture_t AppArchitecture =>
-#if WINXP
-            AppArchitecture_t.WinXP;
-#else
-            AppArchitecture_t.Win7SP1;
-#endif
+        public static AppArchitecture_t AppArchitecture => GetAppArchitecture();
 
         public static DialogResult ShowMessage(string msg, string caption = null, 
             MessageBoxButtons btn = MessageBoxButtons.OK, MessageBoxIcon icon = MessageBoxIcon.None)
@@ -67,6 +61,18 @@ namespace DGD.Hub
         }
 
         //private:
+        static AppArchitecture_t GetAppArchitecture()
+        {
+#if WINXP
+            return AppArchitecture_t.WinXP;
+#else
+            if (Environment.Is64BitOperatingSystem)
+                return AppArchitecture_t.Win7SP1X64;
+
+            return AppArchitecture_t.Win7SP1;
+#endif
+        }
+
 
         //Entry:
         [STAThread]
@@ -132,5 +138,7 @@ namespace DGD.Hub
             if (m_restarting)
                 Application.Restart();
         }
+
+
     }
 }

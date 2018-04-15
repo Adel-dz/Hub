@@ -187,9 +187,13 @@ namespace DGD.HubGovernor.Profiles
             {                
                 UserProfile prf = m_lvData.SelectedItems[0].Tag as UserProfile;
 
+                m_tsbAutoManagement.Enabled = true;
+
                 m_tsbAutoManagement.Checked =
                     AppContext.ClientsManager.GetProfileManagementMode(prf.ID) == ManagementMode_t.Auto;
             }
+            else
+                m_tsbAutoManagement.Enabled = false;
         }
 
         private void DeleteProfile_Click(object sender , EventArgs e)

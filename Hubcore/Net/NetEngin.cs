@@ -45,6 +45,7 @@ namespace DGD.HubCore.Net
                             try
                             {
                                 wClient.UploadFile(destFileURI , encFilePath);
+                                LogDbgInfo("Upload done.");
                                 break;
                             }
                             catch (Exception ex)
@@ -61,9 +62,10 @@ namespace DGD.HubCore.Net
                             }
                     }
                     else
+                    {
                         wClient.UploadFile(destFileURI , encFilePath);
-
-                LogDbgInfo("Upload done.");
+                        LogDbgInfo("Upload done.");
+                    }
             }
         }
 
@@ -94,6 +96,7 @@ namespace DGD.HubCore.Net
                                 try
                                 {
                                     wClient.UploadFile(destFileUri , encFilePath);
+                                    LogDbgInfo("Upload done.");
                                     break;
                                 }
                                 catch (Exception ex)
@@ -110,9 +113,11 @@ namespace DGD.HubCore.Net
                                 }
                         }
                         else
+                        {
                             wClient.UploadFile(destFileUri , encFilePath);
+                            LogDbgInfo("Upload done.");
+                        }
 
-                    LogDbgInfo("Upload done.");
                 }
             }
         }
@@ -136,6 +141,7 @@ namespace DGD.HubCore.Net
                         try
                         {
                             wClient.DownloadFile(srcURI , tmpFile);
+                            LogDbgInfo("Download done.");
                             break;
                         }
                         catch (Exception ex)
@@ -152,7 +158,10 @@ namespace DGD.HubCore.Net
                         }
                 }
                 else
+                {
                     wClient.DownloadFile(srcURI , tmpFile);
+                    LogDbgInfo("Download done.");
+                }
 
                 using (new AutoReleaser(() => File.Delete(tmpFile)))
                 {
@@ -166,7 +175,6 @@ namespace DGD.HubCore.Net
                         File.Move(decFilePath , destPath);
                     }
 
-                    LogDbgInfo("Download done.");
                 }
             }
         }
@@ -195,6 +203,7 @@ namespace DGD.HubCore.Net
                                 try
                                 {
                                     wClient.DownloadFile(srcUri , tmpFile);
+                                    LogDbgInfo("Download done.");
                                     break;
                                 }
                                 catch (Exception ex)
@@ -211,7 +220,10 @@ namespace DGD.HubCore.Net
                                 }
                         }
                         else
+                        {
                             wClient.DownloadFile(srcUri , tmpFile);
+                            LogDbgInfo("Download done.");
+                        }
 
 
                         string decFilePath = DecodeFile(tmpFile);
@@ -223,8 +235,6 @@ namespace DGD.HubCore.Net
                                 File.Delete(destPath);
 
                             File.Move(decFilePath , destPath);
-                            LogDbgInfo("Download done.");
-
                         }
                     }
             }

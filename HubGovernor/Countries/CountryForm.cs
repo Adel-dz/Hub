@@ -67,15 +67,8 @@ namespace DGD.HubGovernor.Countries
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            try
-            {
                 base.OnFormClosing(e);
                 m_ndxerCountries.Close();
-            }
-            catch (Exception ex)
-            {                
-                MessageBox.Show(ex.Message , null , MessageBoxButtons.OK , MessageBoxIcon.Error);
-            }
         }
 
 
@@ -86,6 +79,7 @@ namespace DGD.HubGovernor.Countries
             {
                 m_dialogEnded = true;
                 Exception ex = t.Exception.InnerException;
+            AppContext.LogManager.LogSysError("Lecture de la table des pays: " + ex.Message, true);
                 MessageBox.Show(ex.Message , null , MessageBoxButtons.OK , MessageBoxIcon.Error);
             };
 

@@ -153,7 +153,7 @@ namespace DGD.HubGovernor.Profiles
                 return false;
             }
 
-            var profile = new UserProfile(AppContext.TableManager.Products.CreateUniqID() , name , privilege);
+            var profile = new UserProfile(AppContext.TableManager.Profiles.CreateUniqID() , name , privilege);
 
             //ajouter gestion des profils
             var mgmntMode = new ProfileManagementMode(profile.ID);
@@ -171,7 +171,7 @@ namespace DGD.HubGovernor.Profiles
             return true;
         }
 
-        bool UpdateDatum(string name , HubCore.DLG.ProfilePrivilege_t privilege)
+        bool UpdateDatum(string name , ProfilePrivilege_t privilege)
         {
             if (string.Compare(name , m_datum.Name) == 0 && m_datum.Privilege == privilege)
             {

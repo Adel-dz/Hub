@@ -16,6 +16,9 @@ namespace DGD.HubGovernor
         const string CACHE_DIR = "Cache\\";
         const string DLG_DIR = "Dlg\\";
         const string LOG_DIR = "Log\\";
+        const string USER_SETTING_FILE = "user.param";
+        const string APP_SETTING_FILE = "app.param";
+
 
         public static string UserDataFolder =>
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) , APP_BASE_DIR);
@@ -23,6 +26,8 @@ namespace DGD.HubGovernor
         public static string AppDataFolder =>
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) , APP_BASE_DIR);
 
+        public static string UserSettingsFilePath => Path.Combine(UserDataFolder , USER_SETTING_FILE);
+        public static string AppSettingsFilePath => Path.Combine(AppDataFolder , APP_SETTING_FILE);
         public static string TablesFolder => Path.Combine(AppDataFolder , TABLES_DIR);
         public static string DataUpdateFolder => Path.Combine(AppDataFolder , DATA_UPDATE_DIR);
         public static string AppUpdateFolder => Path.Combine(AppDataFolder , APP_UPDATE_DIR);

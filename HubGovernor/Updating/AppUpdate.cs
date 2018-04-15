@@ -29,7 +29,7 @@ namespace DGD.HubGovernor.Updating
             DeployTime = NOT_YET;
         }
 
-        public AppUpdate(uint id , Version ver , AppArchitecture_t appArch = AppArchitecture_t.Win7SP1) :
+        public AppUpdate(uint id , Version ver , AppArchitecture_t appArch) :
             this(id , ver , appArch , DateTime.Now)
         { }
 

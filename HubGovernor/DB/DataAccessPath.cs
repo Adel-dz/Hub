@@ -47,7 +47,7 @@ namespace DGD.HubGovernor.DB
                 {
                     dp = AppContext.TableManager.GetTable(idTable).DataProvider;
                     dp.Connect();
-
+                    dp.AutoFlush = true;
                     m_providers.Add(dp);
                 }
 

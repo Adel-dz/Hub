@@ -48,7 +48,9 @@ namespace DGD.HubGovernor
 
             if (!AppContext.Settings.UserSettings.LogWindowHidden)
                 m_logWindow.Show(this);
-                                   
+
+            TextLogger.Info($"Hub Governor version: {Assembly.GetExecutingAssembly().GetName().Version}");
+            TextLogger.Info($"Version des données: {AppContext.Settings.AppSettings.DataGeneration}");
 
             base.OnLoad(e);
         }
@@ -117,6 +119,9 @@ namespace DGD.HubGovernor
             m_tsbLogView.Checked = m_logWindow.Visible;            
         }
 
-
+        private void Backup_Click(object sender , EventArgs e)
+        {
+            new Arch.BackupWindow().Show(this);
+        }
     }
 }

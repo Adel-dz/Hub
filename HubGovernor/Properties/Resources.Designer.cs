@@ -113,6 +113,26 @@ namespace DGD.HubGovernor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap backup_32 {
+            get {
+                object obj = ResourceManager.GetObject("backup_32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap backup_timer_32 {
+            get {
+                object obj = ResourceManager.GetObject("backup_timer_32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap banned_client_16 {
             get {
                 object obj = ResourceManager.GetObject("banned_client_16", resourceCulture);
@@ -313,6 +333,16 @@ namespace DGD.HubGovernor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap help_32 {
+            get {
+                object obj = ResourceManager.GetObject("help_32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap history_16 {
             get {
                 object obj = ResourceManager.GetObject("history_16", resourceCulture);
@@ -506,6 +536,26 @@ namespace DGD.HubGovernor.Properties {
         internal static System.Drawing.Bitmap reset_16 {
             get {
                 object obj = ResourceManager.GetObject("reset_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap restore_32 {
+            get {
+                object obj = ResourceManager.GetObject("restore_32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap restore_321 {
+            get {
+                object obj = ResourceManager.GetObject("restore_321", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

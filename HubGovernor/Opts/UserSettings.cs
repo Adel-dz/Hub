@@ -47,12 +47,13 @@ namespace DGD.HubGovernor.Opts
         public UserSettings()
         {
             DSVImportSettings = new DSVImportSettings();
+            BackupFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
         public bool LogWindowHidden { get; set; }
         public DSVImportSettings DSVImportSettings { get; }
         public WindowPlacementCollection WindowPlacement => new WindowPlacementCollection(this);
-
+        public string BackupFolder { get; set; }
 
         public void Load(BinaryReader reader)
         {

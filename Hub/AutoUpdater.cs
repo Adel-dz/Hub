@@ -157,7 +157,7 @@ namespace DGD.Hub
                 }
 
                 string tmpDir = Path.GetTempPath();
-                FilesBag.Decompress(tmpFile , tmpDir);
+                new FilesBag().Decompress(tmpFile , tmpDir);
                 System.Diagnostics.Process.Start(Path.Combine(tmpDir , "setup.exe"));
                 Program.DialogManager.PostLog("Lancement du programme d'installation de la mise à jour du HUB" , false);
                 System.Windows.Forms.Application.Exit();

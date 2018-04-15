@@ -1,6 +1,8 @@
 ﻿using DGD.HubGovernor.Log;
+using easyLib;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace DGD.HubGovernor.Clients
 {
@@ -108,14 +110,19 @@ namespace DGD.HubGovernor.Clients
 
         public IClientData Get(uint clID)
         {
-            Dbg.Assert(Contains(clID));
-
             ClientData clData;
 
             lock (m_clients)
                 m_clients.TryGetValue(clID , out clData);
 
             return clData;
+        }
+
+        public IDisposable Lock()
+        {
+            Monitor.Enter(m_clients);
+
+            return new AutoReleaser(() => Monitor.Exit(m_clients));
         }
     }
 }

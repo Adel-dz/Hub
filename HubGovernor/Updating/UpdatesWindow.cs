@@ -272,11 +272,12 @@ namespace DGD.HubGovernor.Updating
                         dp = AppContext.TableManager.AppUpdates.DataProvider;
                         dp.Connect();
 
-                        var update = new AppUpdate(AppContext.TableManager.AppUpdates.CreateUniqID() , dlg.Version);
+                        var update = new AppUpdate(AppContext.TableManager.AppUpdates.CreateUniqID() , dlg.Version, dlg.AppArchitecture);
                         bag.Compress(Path.Combine(AppPaths.AppUpdateFolder , update.ID.ToString("X")));
 
                         NormalizeAppUpdates(update);
                         dp.Insert(update);
+                        
                     };
 
 
@@ -309,7 +310,8 @@ namespace DGD.HubGovernor.Updating
         {
             var filesNames = new Dictionary<AppArchitecture_t , string>
                 {
-                    { AppArchitecture_t.Win7SP1, WIN7SP1_UPDATE_FILENAME },                    
+                    { AppArchitecture_t.Win7SP1, WIN7SP1_UPDATE_FILENAME },
+                    { AppArchitecture_t.Win7SP1X64, WIN7SP1X64_UPADTE_FILENAME },
                     { AppArchitecture_t.WinXP, WINXP_UPADTE_FILENAME }
                 };
 

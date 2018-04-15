@@ -94,6 +94,24 @@
       <DependentUpon>IntegrityCheckerDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="AppContext.cs" />
+    <Compile Include="Arch\BackupPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Arch\BackupPage.Designer.cs">
+      <DependentUpon>BackupPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Arch\BackupProcessingDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Arch\BackupProcessingDialog.Designer.cs">
+      <DependentUpon>BackupProcessingDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Arch\BackupWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Arch\BackupWindow.Designer.cs">
+      <DependentUpon>BackupWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Clients\ActiveClientsQueue.cs" />
     <Compile Include="Clients\ClientsManager.cs" />
     <Compile Include="Clients\ClientsManager.DlgProcessingImpl.cs" />
@@ -424,6 +442,15 @@
     <EmbeddedResource Include="Admin\IntegrityCheckerDialog.resx">
       <DependentUpon>IntegrityCheckerDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Arch\BackupPage.resx">
+      <DependentUpon>BackupPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Arch\BackupProcessingDialog.resx">
+      <DependentUpon>BackupProcessingDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Arch\BackupWindow.resx">
+      <DependentUpon>BackupWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Clients\ClientsManagmentWindow.resx">
       <DependentUpon>ClientsManagmentWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -678,6 +705,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Governor_app_ico.ico" />
+    <None Include="Resources\help_32.png" />
+    <None Include="Resources\backup_timer_32.png" />
+    <None Include="Resources\restore_322.png" />
+    <None Include="Resources\backup_322.png" />
+    <None Include="Resources\backup_16.png" />
+    <None Include="Resources\backup_321.png" />
+    <None Include="Resources\restore_321.png" />
+    <None Include="Resources\restore_32.png" />
+    <None Include="Resources\backup_32.png" />
     <None Include="Resources\SortDescending_16.png" />
     <None Include="Resources\SortAscending_16.png" />
     <None Include="Resources\filter_16.png" />

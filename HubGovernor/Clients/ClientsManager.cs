@@ -270,6 +270,45 @@ namespace DGD.HubGovernor.Clients
             return Enumerable.Empty<IEventLog>();
         }
 
+        public void DeleteClient(uint clID)
+        {
+            //remove client from running clients queue if present
+            using (m_onlineClients.Lock())
+                if (m_onlineClients.Contains(clID))
+                {
+                    m_onlineClients.Remove(clID);
+                    ClientClosed?.Invoke(clID);
+                    AppContext.LogManager.CloseLogger(clID);
+                }
+
+            // delete: env            
+            uint[] ids = (from HubClientEnvironment env in m_ndxerClientsEnv.Source.Enumerate()
+                                             where env.ClientID == clID
+                                             select env.ID).ToArray();
+
+            for (int i = ids.Length - 1; i >= 0; --i)
+            {
+                int ndx = m_ndxerClientsEnv.IndexOf(ids[i]);
+                m_ndxerClientsEnv.Source.Delete(ndx);
+                AppContext.LogManager.LogSysActivity($"Environnement du client {ClientsManager.ClientStrID(clID)} supprimé");
+            }
+
+
+            //delete status 
+            int ndxStatus = m_ndxerClientsStatus.IndexOf(clID);
+
+            if (ndxStatus >= 0)
+            {
+                m_ndxerClientsStatus.Source.Delete(ndxStatus);
+                AppContext.LogManager.LogSysActivity($"Status du client {ClientsManager.ClientStrID(clID)} supprimé");
+            }
+
+            //delete client.
+            int ndxClient = m_ndxerClients.IndexOf(clID);
+            m_ndxerClients.Source.Delete(ndxClient);
+            AppContext.LogManager.LogSysActivity($"Client {ClientsManager.ClientStrID(clID)} supprimé");
+        }
+
         public void Dispose()
         {
             if (!IsDisposed)
@@ -307,9 +346,9 @@ namespace DGD.HubGovernor.Clients
             {
                 AppContext.LogManager.LogSysError("Une erreur est survenue lors de l’initialisation du serveur: " +
                     ex.Message , true);
-            }            
+            }
         }
-        
+
         void StartTimer()
         {
             if (!IsDisposed)

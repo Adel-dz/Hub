@@ -31,6 +31,9 @@
             System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+            System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+            System.Windows.Forms.ToolStripButton m_tsbBackup;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             System.Windows.Forms.ToolStripMenuItem m_miCheckIntegrity;
             System.Windows.Forms.ToolStripButton m_tsbTR;
             System.Windows.Forms.ToolStripButton m_tsbUpdate;
@@ -38,8 +41,6 @@
             System.Windows.Forms.ToolStripButton m_tsbClientWindow;
             System.Windows.Forms.ToolStripButton m_tsbSysLog;
             System.Windows.Forms.ToolStripButton m_tsbSettings;
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            this.m_tsbLogView = new System.Windows.Forms.ToolStripButton();
             this.m_toolStrip = new System.Windows.Forms.ToolStrip();
             this.m_tsbMainMenu = new System.Windows.Forms.ToolStripDropDownButton();
             this.afficherLeJournalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,9 +48,12 @@
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.quitterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.m_tsbLogView = new System.Windows.Forms.ToolStripButton();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            m_tsbBackup = new System.Windows.Forms.ToolStripButton();
             m_miCheckIntegrity = new System.Windows.Forms.ToolStripMenuItem();
             m_tsbTR = new System.Windows.Forms.ToolStripButton();
             m_tsbUpdate = new System.Windows.Forms.ToolStripButton();
@@ -74,6 +78,21 @@
             // 
             toolStripSeparator4.Name = "toolStripSeparator4";
             toolStripSeparator4.Size = new System.Drawing.Size(6, 39);
+            // 
+            // toolStripSeparator5
+            // 
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            toolStripSeparator5.Size = new System.Drawing.Size(6, 39);
+            // 
+            // m_tsbBackup
+            // 
+            m_tsbBackup.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbBackup.Image = ((System.Drawing.Image)(resources.GetObject("m_tsbBackup.Image")));
+            m_tsbBackup.ImageTransparentColor = System.Drawing.Color.Magenta;
+            m_tsbBackup.Name = "m_tsbBackup";
+            m_tsbBackup.Size = new System.Drawing.Size(36, 36);
+            m_tsbBackup.Text = "Archiver...";
+            m_tsbBackup.Click += new System.EventHandler(this.Backup_Click);
             // 
             // m_miCheckIntegrity
             // 
@@ -143,18 +162,6 @@
             m_tsbSettings.Text = "Paramètres";
             m_tsbSettings.Click += new System.EventHandler(this.Settings_Click);
             // 
-            // m_tsbLogView
-            // 
-            this.m_tsbLogView.Checked = true;
-            this.m_tsbLogView.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.m_tsbLogView.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.m_tsbLogView.Image = global::DGD.HubGovernor.Properties.Resources.logviewer_32;
-            this.m_tsbLogView.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.m_tsbLogView.Name = "m_tsbLogView";
-            this.m_tsbLogView.Size = new System.Drawing.Size(36, 36);
-            this.m_tsbLogView.Text = "Afficher / Masquer la fenêtre du journal partial";
-            this.m_tsbLogView.Click += new System.EventHandler(this.LogView_Click);
-            // 
             // m_toolStrip
             // 
             this.m_toolStrip.ImageScalingSize = new System.Drawing.Size(32, 32);
@@ -170,6 +177,8 @@
             m_tsbSysLog,
             this.m_tsbLogView,
             toolStripSeparator4,
+            m_tsbBackup,
+            toolStripSeparator5,
             m_tsbSettings});
             this.m_toolStrip.Location = new System.Drawing.Point(0, 0);
             this.m_toolStrip.Name = "m_toolStrip";
@@ -223,6 +232,18 @@
             this.toolStripSeparator1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 39);
+            // 
+            // m_tsbLogView
+            // 
+            this.m_tsbLogView.Checked = true;
+            this.m_tsbLogView.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.m_tsbLogView.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.m_tsbLogView.Image = global::DGD.HubGovernor.Properties.Resources.logviewer_32;
+            this.m_tsbLogView.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.m_tsbLogView.Name = "m_tsbLogView";
+            this.m_tsbLogView.Size = new System.Drawing.Size(36, 36);
+            this.m_tsbLogView.Text = "Afficher / Masquer la fenêtre du journal partial";
+            this.m_tsbLogView.Click += new System.EventHandler(this.LogView_Click);
             // 
             // MainWindow
             // 

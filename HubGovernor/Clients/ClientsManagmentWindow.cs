@@ -66,6 +66,15 @@ namespace DGD.HubGovernor.Clients
             return null;
         }
 
+        TreeNode LocateProfileNode(uint profileID)
+        {
+            foreach (TreeNode node in m_tvClients.Nodes)
+                if ((node.Tag as UserProfile).ID == profileID)
+                    return node;
+
+            return null;
+        }
+
         TreeNode CreateClientNode(HubClient client)
         {
             var node = new TreeNode(client.ID.ToString("X"))
@@ -217,6 +226,7 @@ namespace DGD.HubGovernor.Clients
             AppContext.ClientsManager.ClientStarted -= ClientsManager_ClientStarted;
             m_ndxerStatus.DatumReplaced -= ClientStatus_DatumReplaced;
             m_ndxerClients.DatumReplaced -= Clients_DatumReplaced;
+            m_ndxerClients.DatumDeleted -= Clients_DatumDeleted;
             AppContext.LogManager.ClientLogAdded -= LogManager_ClientLogAdded;
         }
 
@@ -226,6 +236,7 @@ namespace DGD.HubGovernor.Clients
             AppContext.ClientsManager.ClientStarted += ClientsManager_ClientStarted;
             m_ndxerStatus.DatumReplaced += ClientStatus_DatumReplaced;
             m_ndxerClients.DatumReplaced += Clients_DatumReplaced;
+            m_ndxerClients.DatumDeleted += Clients_DatumDeleted;
             AppContext.LogManager.ClientLogAdded += LogManager_ClientLogAdded;
         }
 
@@ -393,7 +404,7 @@ namespace DGD.HubGovernor.Clients
 
                 if (logs != null)
                     foreach (IEventLog log in logs)
-                        AddLog(log);                
+                        AddLog(log);
             }
 
             AppContext.LogManager.ClientLogAdded += LogManager_ClientLogAdded;
@@ -413,6 +424,7 @@ namespace DGD.HubGovernor.Clients
             if (e.Node.Parent == null)
             {
                 ClearClientInfo();
+                ClearLog();
                 UpdateStatusButtons(ClientStatus_t.Unknown);
             }
             else
@@ -468,7 +480,7 @@ namespace DGD.HubGovernor.Clients
             if (InvokeRequired)
                 Invoke(new Action<uint>(ClientsManager_ClientStarted) , clID);
             else
-            {                
+            {
                 TreeNode clNode = LocateClientNode(clID);
 
                 if (clNode != null)
@@ -504,7 +516,7 @@ namespace DGD.HubGovernor.Clients
 
 
                         root.Nodes.Add(CreateClientNode(client));
-                        root.Expand();                
+                        root.Expand();
                     }
 
                     TreeNode selNode = m_tvClients.SelectedNode;
@@ -513,8 +525,8 @@ namespace DGD.HubGovernor.Clients
                     {
                         var hc = selNode.Tag as HubClient;
 
-                        if(hc.ID == clID)
-                        {                            
+                        if (hc.ID == clID)
+                        {
                             UpdateStatusButtons(ClientStatus_t.Enabled);
                             LoadClientLog(client.ID);
                             SetClientInfo(hc);
@@ -552,6 +564,10 @@ namespace DGD.HubGovernor.Clients
                     if (selNode == clNode)
                     {
                         ClearClientInfo();
+
+                        //if (!m_tsbShowActivityHistory.Checked)
+                        //    ClearLog();
+
                         UpdateStatusButtons(ClientStatus_t.Unknown);
                     }
                 }
@@ -600,10 +616,30 @@ namespace DGD.HubGovernor.Clients
             }
         }
 
+        void Clients_DatumDeleted(IDataRow row)
+        {
+            if (InvokeRequired)
+                BeginInvoke(new Action<IDataRow>(Clients_DatumDeleted) , row);
+            else
+            {
+                TreeNode node = LocateClientNode(row.ID);
+
+                if (node != null)
+                {
+                    var client = row as HubClient;
+                    TreeNode root = LocateProfileNode(client.ProfileID);
+                    root.Nodes.Remove(node);
+
+                    if (root.Nodes.Count == 0)
+                        m_tvClients.Nodes.Remove(root);
+                }
+            }
+        }
+
         private void Reset_Click(object sender , EventArgs e)
         {
             const string msg = "Vous êtes sur le point d’envoyer une demande de réinitialisation " +
-                "au client sélectionné, celle-ci entrainera ce dernier à s’enregistré une nouvelle " +
+                "au client sélectionné, celle-ci forcera ce dernier à s’enregistrer une nouvelle " +
                 "fois sous un autre ID. Voulez-vous poursuivre ?";
 
             if (MessageBox.Show(msg , Text , MessageBoxButtons.YesNo , MessageBoxIcon.Warning) != DialogResult.Yes)
@@ -654,6 +690,46 @@ namespace DGD.HubGovernor.Clients
 
             LoadClientLog((selNode.Tag as HubClient).ID);
 
+        }
+
+        private void DeleteClient_Click(object sender , EventArgs e)
+        {
+            TreeNode selNode = m_tvClients.SelectedNode;
+
+            Dbg.Assert(selNode != null && selNode.Parent != null);
+            var client = selNode.Tag as HubClient;
+            var clStatus = m_ndxerStatus.Get(client.ID) as ClientStatus;
+
+            if (clStatus.Status != ClientStatus_t.Reseted)
+            {
+                const string msg = "Vous ne supprimer le client sélectionné, " +
+                    "seuls les clients réinitialisés peuvent être supprimés.";
+
+                MessageBox.Show(msg , Text , MessageBoxButtons.OK);
+                return;
+            }
+
+            var waitDlg = new Jobs.ProcessingDialog();
+
+            Action<Task> onErr = t =>
+            {
+                AppContext.LogManager.LogSysError($"Erreur lors de la suppression du client {ClientsManager.ClientStrID(client.ID)}:" +
+                    t.Exception.InnerException.Message , true);
+
+                waitDlg.Close();
+            };
+
+            Action onSuccess = () =>
+            {
+                AppContext.LogManager.LogSysActivity($"Action utilisateur: Suppression du client {ClientsManager.ClientStrID(client.ID)}" , true);
+                waitDlg.Close();
+            };
+
+            var task = new Task(() => AppContext.ClientsManager.DeleteClient(client.ID) , TaskCreationOptions.LongRunning);
+            task.OnSuccess(onSuccess);
+            task.OnError(onErr);
+            task.Start();
+            waitDlg.ShowDialog(this);
         }
     }
 }

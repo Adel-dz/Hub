@@ -70,7 +70,7 @@ namespace DGD.HubGovernor.Places
             m_ndxerCountries.DatumDeleted += CountriesIndexer_DatumDeleted;
             m_ndxerCountries.DatumInserted += CountriesIndexer_DatumInserted;
             m_ndxerCountries.DatumReplaced += CountriesIndexer_DatumReplaced;
-            m_tsbAddCountry.Click += AddCountry_Click;
+            //m_tsbAddCountry.Click += AddCountry_Click;
             m_tsbSave.Click += Save_Click;
             m_tbName.TextChanged += delegate { UpdateUI(); };
             m_cbCountries.SelectedIndexChanged += Countries_SelectedIndexChanged;
@@ -349,7 +349,7 @@ namespace DGD.HubGovernor.Places
             if (InvokeRequired)
                 BeginInvoke(new Action(() => m_cbCountries.Items.Add(new CountryListEntry(row as Country))));
             else
-                m_cbCountries.Items.Add(row);
+                m_cbCountries.Items.Add(new CountryListEntry(row as Country));
         }
     
         private void CountriesIndexer_DatumDeleted(IDataRow row)
@@ -428,6 +428,5 @@ namespace DGD.HubGovernor.Places
                 this.ShowError(ex.Message);
             }
         }
-
     }
 }
