@@ -78,6 +78,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Arch\ArchiveContent.cs" />
+    <Compile Include="Arch\ArchiveEngin.cs" />
     <Compile Include="ClientEnvironment.cs" />
     <Compile Include="DB\ClientEnvironmentRow.cs" />
     <Compile Include="DB\DatumFactory.cs" />

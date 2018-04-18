@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -17,7 +18,22 @@ namespace GovDataGuard
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new BackupWindow(args));
+
+            try
+            {
+                int action = int.Parse(args[0]);
+
+                if (action == 0)
+                    Application.Run(new BackupWindow(args[1] , args[2]));
+                else if (action == 1)
+                    Application.Run(new RestoreWindow(args[1] , args[2]));
+            }
+            catch(Exception ex)
+            {
+                File.WriteAllText("ArchLog.txt" , ex.Message + "\n\n" + ex.StackTrace);
+            }
+
+            System.Diagnostics.Process.Start(Path.Combine(@".\" , "HubGovernor.exe"));
         }
     }
 }

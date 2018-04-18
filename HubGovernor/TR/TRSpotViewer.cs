@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Diagnostics.Debug;
 
 
 namespace DGD.HubGovernor.TR
@@ -108,6 +107,8 @@ namespace DGD.HubGovernor.TR
                 m_lvData.Items.AddRange(t.Result);
                 m_lvData.EndUpdate();
                 wb.LeaveWaitMode();
+
+                m_slRowCount.Text = $"{m_lvData.Items.Count} enregistrement(s)";
             };
 
             Action<Task> onErr = t =>
@@ -179,6 +180,8 @@ namespace DGD.HubGovernor.TR
                 };
 
                 m_lvData.Items.Add(lvi);
+
+                m_slRowCount.Text = $"{m_lvData.Items.Count} enregistrement(s)";
             }
         }
 

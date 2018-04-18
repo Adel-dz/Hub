@@ -583,6 +583,16 @@ namespace DGD.HubGovernor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap show_data_preview_16 {
+            get {
+                object obj = ResourceManager.GetObject("show_data_preview_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap SortAscending_16 {
             get {
                 object obj = ResourceManager.GetObject("SortAscending_16", resourceCulture);

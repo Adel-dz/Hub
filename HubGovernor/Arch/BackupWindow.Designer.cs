@@ -103,6 +103,7 @@
             m_lblRestore.TabStop = true;
             m_lblRestore.Text = "Restauration";
             m_lblRestore.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            m_lblRestore.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.Restore_LinkClicked);
             // 
             // m_lblBackup
             // 

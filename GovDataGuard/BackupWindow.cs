@@ -1,29 +1,24 @@
-﻿using System;
+﻿using DGD.HubCore.Arch;
+using easyLib.Extensions;
+using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GovDataGuard
 {
     public partial class BackupWindow: Form
     {
-        readonly string m_destFolder;
-        readonly BackupFirstStagePage m_firstPage;
-        BackupLastStagePage m_lastPage;
-        readonly uint m_dataVersion;
+        readonly string m_srcFolder;
+        readonly string m_filePath;
 
 
-        public BackupWindow(string[] args)
+        public BackupWindow(string filePath, string srcFolder)
         {
             InitializeComponent();
 
-            m_destFolder = args[0];
-            m_dataVersion = uint.Parse(args[1]);
-
-            m_firstPage = new BackupFirstStagePage();
-            m_firstPage.EndProcessing += RunLastStage;
-
-            Controls.Add(m_firstPage);
-            m_firstPage.Dock = DockStyle.Fill;                        
+            m_srcFolder = srcFolder;
+            m_filePath = filePath;
         }
 
 
@@ -32,41 +27,54 @@ namespace GovDataGuard
         {
             base.OnLoad(e);
 
-            File.Delete(AppPaths.LogFilePath);
+            Action<Task> onErr = t =>
+            {
+                File.Delete(m_filePath);
+                Close();
+            };
 
-            try
-            {
-                m_firstPage.Start();
-            }
-            catch(Exception ex)
-            {
-                File.WriteAllText(AppPaths.LogFilePath , ex.Message);
-                System.Diagnostics.Process.Start(Path.Combine(@".\" , "HubGovernor.exe"));
-                Application.Exit();
-            }
+
+            var task = new Task(CreateBackup , TaskCreationOptions.LongRunning);
+            task.OnError(onErr);
+
+            task.Start();
+            
         }
 
+
         //private:
-        void RunLastStage()
+        void SetMessage(string txt)
         {
             if (InvokeRequired)
-                BeginInvoke(new Action(RunLastStage));
+                BeginInvoke(new Action<string>(SetMessage) , txt);
             else
-            {
+                m_lblMessage.Text = txt;
+        }
 
-                m_lastPage = new BackupLastStagePage();
-                m_lastPage.DataSourceFile = m_firstPage.DataBackupFile;
-                m_lastPage.UpdatesSourceFile = m_firstPage.UpdatesBackupFile;
-                m_lastPage.LogsSourceFile = m_firstPage.LogsBackupFile;
-                m_lastPage.SysSourceFile = m_firstPage.SysBackupFile;
-                m_lastPage.DataVersion = m_dataVersion;
-                m_lastPage.DestFolder = m_destFolder;
-                                
-                Controls.Clear();
-                Controls.Add(m_lastPage);
-                m_lastPage.Dock = DockStyle.Fill;
-                m_lastPage.Start();
-            }
-        }      
+        void CreateBackup()
+        {
+            var bkupEngin = new ArchiveEngin();
+
+            bkupEngin.Compressing += BkupEngin_Compressing;
+            bkupEngin.Initializing += BkupEngin_Initializing;
+            bkupEngin.Done += BkupEngin_Done;
+
+            byte[] header = File.ReadAllBytes(m_filePath);
+
+            bkupEngin.Backup(m_filePath , m_srcFolder , header);
+        }
+
+        private void BkupEngin_Done()
+        {
+            if (InvokeRequired)
+                BeginInvoke(new Action(Close));
+            else
+                Close();
+        }
+
+
+        //handlers:
+        private void BkupEngin_Initializing() => SetMessage("Initialisation...");
+        private void BkupEngin_Compressing() => SetMessage("Compression...");
     }
 }

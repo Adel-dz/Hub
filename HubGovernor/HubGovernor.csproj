@@ -94,23 +94,29 @@
       <DependentUpon>IntegrityCheckerDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="AppContext.cs" />
+    <Compile Include="Arch\ArchiveViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Arch\ArchiveViewer.Designer.cs">
+      <DependentUpon>ArchiveViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Arch\BackupPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Arch\BackupPage.Designer.cs">
       <DependentUpon>BackupPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Arch\BackupProcessingDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Arch\BackupProcessingDialog.Designer.cs">
-      <DependentUpon>BackupProcessingDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="Arch\BackupWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Arch\BackupWindow.Designer.cs">
       <DependentUpon>BackupWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Arch\RestorePage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Arch\RestorePage.Designer.cs">
+      <DependentUpon>RestorePage.cs</DependentUpon>
     </Compile>
     <Compile Include="Clients\ActiveClientsQueue.cs" />
     <Compile Include="Clients\ClientsManager.cs" />
@@ -442,14 +448,17 @@
     <EmbeddedResource Include="Admin\IntegrityCheckerDialog.resx">
       <DependentUpon>IntegrityCheckerDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Arch\ArchiveViewer.resx">
+      <DependentUpon>ArchiveViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Arch\BackupPage.resx">
       <DependentUpon>BackupPage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Arch\BackupProcessingDialog.resx">
-      <DependentUpon>BackupProcessingDialog.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Arch\BackupWindow.resx">
       <DependentUpon>BackupWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Arch\RestorePage.resx">
+      <DependentUpon>RestorePage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Clients\ClientsManagmentWindow.resx">
       <DependentUpon>ClientsManagmentWindow.cs</DependentUpon>
@@ -705,6 +714,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Governor_app_ico.ico" />
+    <None Include="Resources\show_data_preview_16.png" />
     <None Include="Resources\help_32.png" />
     <None Include="Resources\backup_timer_32.png" />
     <None Include="Resources\restore_322.png" />

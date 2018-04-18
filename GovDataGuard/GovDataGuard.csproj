@@ -52,18 +52,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppPaths.cs" />
-    <Compile Include="BackupFirstStagePage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="BackupFirstStagePage.Designer.cs">
-      <DependentUpon>BackupFirstStagePage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="BackupLastStagePage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="BackupLastStagePage.Designer.cs">
-      <DependentUpon>BackupLastStagePage.cs</DependentUpon>
-    </Compile>
     <Compile Include="BackupWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -73,12 +61,12 @@
     <Compile Include="Defs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="BackupFirstStagePage.resx">
-      <DependentUpon>BackupFirstStagePage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="BackupLastStagePage.resx">
-      <DependentUpon>BackupLastStagePage.cs</DependentUpon>
-    </EmbeddedResource>
+    <Compile Include="RestoreWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RestoreWindow.Designer.cs">
+      <DependentUpon>RestoreWindow.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="BackupWindow.resx">
       <DependentUpon>BackupWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -91,6 +79,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="RestoreWindow.resx">
+      <DependentUpon>RestoreWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

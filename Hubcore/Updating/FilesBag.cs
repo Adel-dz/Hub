@@ -123,6 +123,57 @@ namespace DGD.HubCore.Updating
 
         public bool Contains(string filePath , string destFolder) => m_files.Contains(FileData.Create(filePath , destFolder));
 
+        public void Compress(FileStream fs)
+        {
+            //build folders list
+            var folders = new List<string>();
+
+            var seq = from fd in m_files
+                      where fd.DestFolder != null
+                      select fd.DestFolder;
+
+
+            folders.AddRange(seq.Distinct(StringComparer.OrdinalIgnoreCase));
+            
+            using (var gzs = new GZipStream(fs , CompressionMode.Compress))
+            {
+                var writer = new RawDataWriter(gzs , Encoding.UTF8);
+
+                writer.Write(Signature);
+                writer.Write(folders.Count);
+
+                foreach (string folder in folders)
+                    writer.Write(folder);
+
+                writer.Write(m_files.Count);
+
+                foreach (FileData fd in m_files)
+                {
+                    writer.Write(fd.FileName);
+
+                    if (fd.DestFolder == null)
+                        writer.Write(NDX_CUR_FOLDER);
+                    else
+                    {
+                        string dir = fd.DestFolder;
+                        int ndx = folders.FindIndex(x => string.Compare(dir , x , true) == 0);
+
+                        Assert(ndx >= 0);
+
+                        writer.Write(ndx);
+                    }
+
+                    using (FileStream fStream = File.OpenRead(fd.FilePath))
+                    {
+                        writer.Write(fStream.Length);
+                        fStream.CopyTo(gzs);
+                    }
+
+                    FileCompressed?.Invoke(Path.Combine(fd.DestFolder ?? ".\\" , fd.FileName));
+                }
+            }
+        }
+
         public void Compress(string filePath)
         {
             /*
@@ -229,6 +280,48 @@ namespace DGD.HubCore.Updating
             }
         }
 
+        public void Decompress(FileStream fs , string destFolder)
+        {            
+            using (var gzs = new GZipStream(fs , CompressionMode.Decompress))
+            {
+                var reader = new RawDataReader(gzs , Encoding.UTF8);
+
+                foreach (byte b in Signature)
+                    if (b != reader.ReadByte())
+                        throw new CorruptedStreamException();
+
+                int nbDir = reader.ReadInt();
+                var folders = new List<string>(nbDir);
+
+                for (int i = 0; i < nbDir; ++i)
+                {
+                    string dir = Path.Combine(destFolder , reader.ReadString());
+                    folders.Add(dir);
+                    Directory.CreateDirectory(dir);
+                }
+
+
+                int nbFile = reader.ReadInt();
+
+                for (int i = 0; i < nbFile; ++i)
+                {
+                    string file = reader.ReadString();
+                    int ndxDir = reader.ReadInt();
+
+                    if (ndxDir == NDX_CUR_FOLDER)
+                        file = Path.Combine(destFolder , file);
+                    else
+                        file = Path.Combine(folders[ndxDir] , file);
+
+                    long fileLen = reader.ReadLong();
+
+                    CreateFile(gzs , file , fileLen);
+
+                    FileDecompressed?.Invoke(file);
+                }
+            }
+        }
+
         public static IEnumerable<string> GetContent(string filePath)
         {
             using (FileStream fs = File.OpenRead(filePath))
@@ -239,6 +332,46 @@ namespace DGD.HubCore.Updating
                 foreach (byte b in Signature)
                     if (b != reader.ReadByte())
                         throw new CorruptedFileException(filePath);
+
+                int nbDir = reader.ReadInt();
+                var folders = new List<string>(nbDir);
+
+                for (int i = 0; i < nbDir; ++i)
+                {
+                    string dir = reader.ReadString();
+                    folders.Add(dir);
+                }
+
+
+                int nbFile = reader.ReadInt();
+                var files = new List<string>(nbFile);
+
+                for (int i = 0; i < nbFile; ++i)
+                {
+                    string file = reader.ReadString();
+                    int ndxDir = reader.ReadInt();
+
+                    if (ndxDir != NDX_CUR_FOLDER)
+                        file = Path.Combine(folders[ndxDir] , file);
+
+                    files.Add(file);
+                    long fileLen = reader.ReadLong();
+                    reader.Skip((int)fileLen);
+                }
+
+                return files;
+            }
+        }
+
+        public static IEnumerable<string> GetContent(FileStream fs)
+        {            
+            using (var gzs = new GZipStream(fs , CompressionMode.Decompress))
+            {
+                var reader = new RawDataReader(gzs , Encoding.UTF8);
+
+                foreach (byte b in Signature)
+                    if (b != reader.ReadByte())
+                        throw new CorruptedStreamException();
 
                 int nbDir = reader.ReadInt();
                 var folders = new List<string>(nbDir);

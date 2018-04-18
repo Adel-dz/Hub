@@ -12,12 +12,16 @@ namespace DGD.HubGovernor.Arch
 {
     public partial class BackupWindow: Form
     {
-        readonly BackupPage m_bkupPage;       
+        readonly BackupPage m_bkupPage;
+        readonly RestorePage m_restorePage;
 
 
         public BackupWindow()
         {
             InitializeComponent();
+
+            m_restorePage = new RestorePage();
+            m_restorePage.Dock = DockStyle.Fill;
 
             m_bkupPage = new BackupPage();
             m_bkupPage.Dock = DockStyle.Fill;
@@ -33,13 +37,26 @@ namespace DGD.HubGovernor.Arch
         //private:
         Control CurrentPage => m_pagesPanel.Controls[0];
 
-
+        //handlerq:
         private void Backup_LinkClicked(object sender , LinkLabelLinkClickedEventArgs e)
         {
             if (CurrentPage != m_bkupPage)
             {
-                m_pagesPanel.Controls.Clear();
+                CurrentPage.Hide();
+                m_pagesPanel.Controls.Remove(CurrentPage);                
                 m_pagesPanel.Controls.Add(m_bkupPage);
+                CurrentPage.Show();
+            }
+        }
+
+        private void Restore_LinkClicked(object sender , LinkLabelLinkClickedEventArgs e)
+        {
+            if(CurrentPage != m_restorePage)
+            {
+                CurrentPage.Hide();
+                m_pagesPanel.Controls.Remove(CurrentPage);
+                m_pagesPanel.Controls.Add(m_restorePage);
+                CurrentPage.Show();
             }
         }
     }
