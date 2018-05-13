@@ -137,7 +137,7 @@ namespace DGD.HubGovernor.Updating
             }
         }
 
-     
+
         //handlers
         private void BuildDataUpdate_Click(object sender , EventArgs e)
         {
@@ -156,8 +156,8 @@ namespace DGD.HubGovernor.Updating
                 m_tsbBuildUpdate.Enabled = false;
                 m_tsbUploadDataUpdates.Enabled = true;
 
-                if(firstUpdate)
-                    m_sslUpdateKey.Text = 
+                if (firstUpdate)
+                    m_sslUpdateKey.Text =
                         $"Clé de mise à jour: {AppContext.Settings.AppSettings.UpdateKey}";
 
             };
@@ -272,12 +272,12 @@ namespace DGD.HubGovernor.Updating
                         dp = AppContext.TableManager.AppUpdates.DataProvider;
                         dp.Connect();
 
-                        var update = new AppUpdate(AppContext.TableManager.AppUpdates.CreateUniqID() , dlg.Version, dlg.AppArchitecture);
+                        var update = new AppUpdate(AppContext.TableManager.AppUpdates.CreateUniqID() , dlg.Version , dlg.AppArchitecture);
                         bag.Compress(Path.Combine(AppPaths.AppUpdateFolder , update.ID.ToString("X")));
 
                         NormalizeAppUpdates(update);
                         dp.Insert(update);
-                        
+
                     };
 
 
@@ -323,9 +323,9 @@ namespace DGD.HubGovernor.Updating
             {
                 KeyIndexer ndxer = AppContext.AccessPath.GetKeyIndexer(InternalTablesID.APP_UPDATE);
 
-                var seq = from AppUpdate up in ndxer.Source.Enumerate()
-                          where up.DeployTime == AppUpdate.NOT_YET
-                          select up;
+                var seq = (from AppUpdate up in ndxer.Source.Enumerate()
+                           where up.DeployTime == AppUpdate.NOT_YET
+                           select up).ToArray();
 
                 //maj app manifest + manifest global
                 Dictionary<AppArchitecture_t , string> appManifest;
@@ -340,7 +340,7 @@ namespace DGD.HubGovernor.Updating
                     TextLogger.Warning(ex.Message);
                     appManifest = new Dictionary<AppArchitecture_t , string>();
                 }
-                                
+
 
 
                 IUpdateManifest gManifest;
@@ -358,7 +358,7 @@ namespace DGD.HubGovernor.Updating
 
 
                 var netEngin = new NetEngin(AppContext.Settings.AppSettings);
-                
+
                 foreach (AppUpdate up in seq)
                 {
                     gManifest.Versions[up.AppArchitecture] = up.Version;
@@ -418,7 +418,7 @@ namespace DGD.HubGovernor.Updating
                     Tag = row
                 };
 
-                m_lvDataUpdates.Items.Add(lvi);               
+                m_lvDataUpdates.Items.Add(lvi);
             }
         }
 
