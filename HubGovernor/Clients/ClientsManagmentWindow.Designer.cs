@@ -77,6 +77,7 @@
             this.m_lblCreationTime = new System.Windows.Forms.Label();
             this.m_rtbClientLog = new System.Windows.Forms.RichTextBox();
             this.m_tsbRunningClientsOnly = new System.Windows.Forms.ToolStripButton();
+            this.m_btnDeleteClient = new System.Windows.Forms.ToolStripButton();
             this.m_tsbEnableClient = new System.Windows.Forms.ToolStripButton();
             this.m_tsbDisableClient = new System.Windows.Forms.ToolStripButton();
             this.m_tsbBanishClient = new System.Windows.Forms.ToolStripButton();
@@ -85,7 +86,6 @@
             this.m_tsbChat = new System.Windows.Forms.ToolStripButton();
             this.m_sslClientsCount = new System.Windows.Forms.ToolStripStatusLabel();
             this.m_sslRunningClientsCount = new System.Windows.Forms.ToolStripStatusLabel();
-            this.m_btnDeleteClient = new System.Windows.Forms.ToolStripButton();
             m_mainSplitter = new System.Windows.Forms.SplitContainer();
             m_ilSmall = new System.Windows.Forms.ImageList(this.components);
             m_detailSplitter = new System.Windows.Forms.SplitContainer();
@@ -672,6 +672,17 @@
             this.m_tsbRunningClientsOnly.Text = "Afficher uniquement les clients en ligne";
             this.m_tsbRunningClientsOnly.Click += new System.EventHandler(this.RunningClientsOnly_Click);
             // 
+            // m_btnDeleteClient
+            // 
+            this.m_btnDeleteClient.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.m_btnDeleteClient.Enabled = false;
+            this.m_btnDeleteClient.Image = global::DGD.HubGovernor.Properties.Resources.delete_16;
+            this.m_btnDeleteClient.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.m_btnDeleteClient.Name = "m_btnDeleteClient";
+            this.m_btnDeleteClient.Size = new System.Drawing.Size(23, 22);
+            this.m_btnDeleteClient.Text = "Supprimer";
+            this.m_btnDeleteClient.Click += new System.EventHandler(this.DeleteClient_Click);
+            // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
@@ -802,16 +813,6 @@
             // 
             this.m_sslRunningClientsCount.Name = "m_sslRunningClientsCount";
             this.m_sslRunningClientsCount.Size = new System.Drawing.Size(0, 17);
-            // 
-            // m_btnDeleteClient
-            // 
-            this.m_btnDeleteClient.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.m_btnDeleteClient.Image = global::DGD.HubGovernor.Properties.Resources.delete_16;
-            this.m_btnDeleteClient.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.m_btnDeleteClient.Name = "m_btnDeleteClient";
-            this.m_btnDeleteClient.Size = new System.Drawing.Size(23, 22);
-            this.m_btnDeleteClient.Text = "Supprimer";
-            this.m_btnDeleteClient.Click += new System.EventHandler(this.DeleteClient_Click);
             // 
             // ClientsManagmentWindow
             // 

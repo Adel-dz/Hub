@@ -1,12 +1,11 @@
 ﻿using easyLib;
-using easyLib.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Threading;
-using System.Threading.Tasks;
 using static easyLib.DebugHelper;
 
 
@@ -15,22 +14,23 @@ namespace DGD.HubCore.Net
     public class NetEngin
     {
         static readonly int[] m_waitTimes = { 2 , 3 , 5 };// , 7 , 11 , 13 , 17 , 19 , 23 , 29 };
-        readonly ICredential m_credential;
+        readonly IConnectionParam m_cxnParam;
 
-        public NetEngin(ICredential credential)
+        public NetEngin(IConnectionParam connectionParam)
         {
-            m_credential = credential;
+            Assert(connectionParam != null);
+
+            m_cxnParam = connectionParam;
         }
 
 
-        public void Upload(Uri destFileURI , string srcFilePath , bool retryOnErr = false)
+        public void Upload(string destFilePath , string srcFilePath , bool retryOnErr = false)
         {
-            using (var wClient = new WebClient())
-            {
-                if (m_credential != null)
-                    wClient.Credentials = new NetworkCredential(m_credential.UserName , m_credential.Password);
+            Assert(Uri.IsWellFormedUriString(destFilePath , UriKind.Relative));
 
-                LogDbgInfo($"uploading {srcFilePath} to {destFileURI}");
+            using (var ftpClient = CreateFtpClient())
+            {
+                LogDbgInfo($"uploading {srcFilePath} to {destFilePath}");
 
                 string encFilePath;
                 using (FileLocker.Lock(srcFilePath))
@@ -44,7 +44,10 @@ namespace DGD.HubCore.Net
                         while (true)
                             try
                             {
-                                wClient.UploadFile(destFileURI , encFilePath);
+                                if (!ftpClient.IsConnected)
+                                    ftpClient.Connect();
+
+                                ftpClient.UploadFile(encFilePath , destFilePath);
                                 LogDbgInfo("Upload done.");
                                 break;
                             }
@@ -63,24 +66,26 @@ namespace DGD.HubCore.Net
                     }
                     else
                     {
-                        wClient.UploadFile(destFileURI , encFilePath);
+                        ftpClient.Connect();
+                        ftpClient.UploadFile(encFilePath , destFilePath);
                         LogDbgInfo("Upload done.");
                     }
             }
         }
 
-        public void Upload(Uri destDirUri , IEnumerable<string> srcPaths , bool retryOnErr = false)
+        public void Upload(string destDir , IEnumerable<string> srcPaths , bool retryOnErr = false)
         {
-            using (var wClient = new WebClient())
-            {
-                if (m_credential != null)
-                    wClient.Credentials = new NetworkCredential(m_credential.UserName , m_credential.Password);
+            Assert(Uri.IsWellFormedUriString(destDir , UriKind.Relative));
 
+            if (!destDir.EndsWith("/"))
+                destDir += '/';
+
+            using (var ftpClient = CreateFtpClient())
                 foreach (string srcFilePath in srcPaths)
                 {
-                    var destFileUri = new Uri(destDirUri , Path.GetFileName(srcFilePath));
+                    var destFilePath = destDir + Path.GetFileName(srcFilePath);
 
-                    LogDbgInfo($"uploading {srcFilePath} to {destFileUri}");
+                    LogDbgInfo($"uploading {srcFilePath} to {destFilePath}");
 
                     string encFilePath;
 
@@ -95,7 +100,10 @@ namespace DGD.HubCore.Net
                             while (true)
                                 try
                                 {
-                                    wClient.UploadFile(destFileUri , encFilePath);
+                                    if (!ftpClient.IsConnected)
+                                        ftpClient.Connect();
+
+                                    ftpClient.UploadFile(encFilePath , destFilePath);
                                     LogDbgInfo("Upload done.");
                                     break;
                                 }
@@ -114,22 +122,20 @@ namespace DGD.HubCore.Net
                         }
                         else
                         {
-                            wClient.UploadFile(destFileUri , encFilePath);
+                            ftpClient.Connect();
+                            ftpClient.UploadFile(encFilePath , destFilePath);
                             LogDbgInfo("Upload done.");
                         }
-
                 }
-            }
         }
 
-        public void Download(string destPath , Uri srcURI , bool retryOnErr = false)
+        public void Download(string destPath , string srcFilePath , bool retryOnErr = false)
         {
-            using (var wClient = new WebClient())
-            {
-                if (m_credential != null)
-                    wClient.Credentials = new NetworkCredential(m_credential.UserName , m_credential.Password);
+            Assert(Uri.IsWellFormedUriString(srcFilePath , UriKind.Relative));
 
-                LogDbgInfo($"Downloading {srcURI} to {destPath}");
+            using (var ftpClient = CreateFtpClient())
+            {
+                LogDbgInfo($"Downloading {srcFilePath} to {destPath}");
 
                 string tmpFile = Path.GetTempFileName();
 
@@ -140,7 +146,10 @@ namespace DGD.HubCore.Net
                     while (true)
                         try
                         {
-                            wClient.DownloadFile(srcURI , tmpFile);
+                            if (!ftpClient.IsConnected)
+                                ftpClient.Connect();
+
+                            ftpClient.DownloadFile(tmpFile , srcFilePath);
                             LogDbgInfo("Download done.");
                             break;
                         }
@@ -159,7 +168,8 @@ namespace DGD.HubCore.Net
                 }
                 else
                 {
-                    wClient.DownloadFile(srcURI , tmpFile);
+                    ftpClient.Connect();
+                    ftpClient.DownloadFile(tmpFile , srcFilePath);
                     LogDbgInfo("Download done.");
                 }
 
@@ -179,21 +189,20 @@ namespace DGD.HubCore.Net
             }
         }
 
-        public void Download(string destFolder , IEnumerable<Uri> srcUris , bool retryOnErr = false)
+        public void Download(string destFolder , IEnumerable<string> srcURLs , bool retryOnErr = false)
         {
-            using (var wClient = new WebClient())
-            {
-                if (m_credential != null)
-                    wClient.Credentials = new NetworkCredential(m_credential.UserName , m_credential.Password);
+            Assert(!srcURLs.Any(s => Uri.IsWellFormedUriString(s, UriKind.Relative) == false));
 
+            using (var ftpClient = CreateFtpClient())
+            {
                 string tmpFile = Path.GetTempFileName();
 
                 using (new AutoReleaser(() => File.Delete(tmpFile)))
-                    foreach (Uri srcUri in srcUris)
+                    foreach (string srcUrl in srcURLs)
                     {
-                        string destPath = Path.Combine(destFolder , Path.GetFileName(srcUri.ToString()));
+                        string destPath = Path.Combine(destFolder , Path.GetFileName(srcUrl));
 
-                        LogDbgInfo($"Downloading {srcUri} to {destPath}");
+                        LogDbgInfo($"Downloading {srcUrl} to {destPath}");
 
                         if (retryOnErr)
                         {
@@ -202,7 +211,10 @@ namespace DGD.HubCore.Net
                             while (true)
                                 try
                                 {
-                                    wClient.DownloadFile(srcUri , tmpFile);
+                                    if (!ftpClient.IsConnected)
+                                        ftpClient.Connect();
+
+                                    ftpClient.DownloadFile(tmpFile , srcUrl);
                                     LogDbgInfo("Download done.");
                                     break;
                                 }
@@ -221,14 +233,14 @@ namespace DGD.HubCore.Net
                         }
                         else
                         {
-                            wClient.DownloadFile(srcUri , tmpFile);
+                            ftpClient.Connect();
+                            ftpClient.DownloadFile(tmpFile , srcUrl);
                             LogDbgInfo("Download done.");
                         }
 
 
                         string decFilePath = DecodeFile(tmpFile);
-
-
+                        
                         using (FileLocker.Lock(destPath))
                         {
                             if (File.Exists(destPath))
@@ -242,23 +254,26 @@ namespace DGD.HubCore.Net
 
 
         //private:
-        void DummyUpload(Uri destURI , string srcPath)
+        FluentFTP.IFtpClient CreateFtpClient()
         {
-            using (var wClient = new WebClient())
-            {
-                System.Diagnostics.Debug.Print($"Uploading from {srcPath} to {destURI}");
-                wClient.UploadFile(destURI , srcPath);
-            }
+            FluentFTP.IFtpClient ftpClient;
 
-        }
-
-        void DummyDownload(string destPath , Uri srcURI)
-        {
-            using (var wClient = new WebClient())
+            if (m_cxnParam.Proxy != null)
             {
-                System.Diagnostics.Debug.Print($"Downloading from {srcURI} to {destPath}");
-                wClient.DownloadFile(srcURI , destPath);
+                var proxy = new FluentFTP.Proxy.ProxyInfo();
+                proxy.Host = m_cxnParam.Proxy.Host;
+                proxy.Port = m_cxnParam.Proxy.Port;
+                ftpClient = new FluentFTP.Proxy.FtpClientHttp11Proxy(proxy);
+                ftpClient.Host = m_cxnParam.Host;
+                ftpClient.DataConnectionType = FluentFTP.FtpDataConnectionType.PASV;
             }
+            else
+                ftpClient = new FluentFTP.FtpClient(m_cxnParam.Host);
+
+            if (m_cxnParam.Credential != null)
+                ftpClient.Credentials = new NetworkCredential(m_cxnParam.Credential.UserName , m_cxnParam.Credential.Password);
+
+            return ftpClient;
         }
 
         string EncodeFile(string filePath)

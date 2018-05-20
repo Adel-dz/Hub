@@ -123,13 +123,15 @@
     <Compile Include="DLG\ProfilePrivileges.cs" />
     <Compile Include="DLG\DialogEngin.cs" />
     <Compile Include="FileLocker.cs" />
+    <Compile Include="Net\ConnectionParam.cs" />
+    <Compile Include="Net\Proxy.cs" />
     <Compile Include="RunOnce\ClearTableData.cs" />
     <Compile Include="RunOnce\RunOnceAction.cs" />
     <Compile Include="Updating\FilesBag.cs" />
     <Compile Include="Names.cs" />
     <Compile Include="Net\Credential.cs" />
     <Compile Include="Net\NetEngin.cs" />
-    <Compile Include="Net\Uris.cs" />
+    <Compile Include="Net\Urls.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SubHeading.cs" />
     <Compile Include="Updating\TableUpdate.cs" />

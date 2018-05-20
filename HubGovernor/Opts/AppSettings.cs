@@ -26,6 +26,9 @@ namespace DGD.HubGovernor.Opts
         public string ServerURL { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
+        public bool EnableProxy { get; set; }
+        public string ProxyAddress { get; set; } = "";
+        public ushort ProxyPort { get; set; } = 8080;
         public int DialogTimerInterval { get; set; } = 30 * 1000;
         public int DialogInitializationInterval { get; set; } = 10000;
         
@@ -42,6 +45,9 @@ namespace DGD.HubGovernor.Opts
             writer.Write(ServerURL ?? "");  //ftp://douane.gov.dz
             writer.Write(UserName ?? "");
             writer.Write(Password ?? "");
+            writer.Write(EnableProxy);
+            writer.Write(ProxyAddress ?? "");
+            writer.Write(ProxyPort);
         }
 
         public void Load(BinaryReader reader)
@@ -61,6 +67,9 @@ namespace DGD.HubGovernor.Opts
             ServerURL = reader.ReadString();
             UserName = reader.ReadString();
             Password = reader.ReadString();
+            EnableProxy = reader.ReadBoolean();
+            ProxyAddress = reader.ReadString();
+            ProxyPort = reader.ReadUInt16();
         }
 
         public void Reset()

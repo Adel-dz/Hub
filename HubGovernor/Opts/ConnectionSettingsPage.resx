@@ -133,7 +133,7 @@
   <data name="m_pbLogo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAN8AAAA0CAYAAAAKeu1tAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        wQAADsEBuJFr7QAAABl0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC4xOdTWsmQAAFqmSURBVHhenbwH
+        vwAADr8BOAVTJAAAABl0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC4xOdTWsmQAAFqmSURBVHhenbwH
         WJXZtf+/LfReBETFAoKigKAgKvbeRUFEEURFFMSKvffu2KZPZiaTTMpNcjM3M8kkN5M6N5NMS6Z3e++j
         0yfJb/6f71s4hyMzSf4+z+cBzrvf/e691vqutfY5oNG/Ueb/NRtp/gF/bz7CfAGftRhuPoGPWw4zt/2G
         mVt+Q81N/6HmRsBQcz1wiLkWNMRcDR5irsDlEAgdbC6FQThEDDYXIyEKogebCyJmsDkfO8icczjbyuZM
@@ -523,4 +523,13 @@
         o0VgrBkdgNhgpD8C80NgMKRltBkkWiA2YYkuyvRvHmn6Nvv/ALSThz/gCPf/AAAAAElFTkSuQmCC
 </value>
   </data>
+  <metadata name="m_groupBox.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <metadata name="m_lblProxyPort.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <metadata name="m_lblProxyHost.GenerateMember" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
 </root>

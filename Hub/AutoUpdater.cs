@@ -38,8 +38,8 @@ namespace DGD.Hub
             string manifest = Path.GetTempFileName();
             using (new AutoReleaser(() => File.Delete(manifest)))
             {
-                var netEngin = new NetEngin(Program.Settings);
-                netEngin.Download(manifest , SettingsManager.ManifestURI);
+                var netEngin = new NetEngin(Program.NetworkSettings);
+                netEngin.Download(manifest , Urls.ManifestURL);
                 IUpdateManifest updateManifest = UpdateEngin.ReadUpdateManifest(manifest);
 
                 string log = "Recherche de mise à jour des données. Version actulle des données: " + 
@@ -74,7 +74,7 @@ namespace DGD.Hub
                 using (Log.LogEngin.PushMessage("Installation des mises à jour..."))
                 using (new AutoReleaser(() => File.Delete(dataManifest)))
                 {
-                    netEngin.Download(dataManifest , SettingsManager.DataManifestURI);
+                    netEngin.Download(dataManifest , Urls.DataManifestURL);
 
                     var uris = new List<UpdateURI>(UpdateEngin.ReadDataManifest(dataManifest , Program.Settings.DataGeneration));
 
@@ -85,7 +85,7 @@ namespace DGD.Hub
                             string updateFile = Path.GetTempFileName();
                             using (new AutoReleaser(() => File.Delete(updateFile)))
                             {
-                                netEngin.Download(updateFile , new Uri(SettingsManager.DataUpdateDirURI , uu.FileURI));
+                                netEngin.Download(updateFile , Urls.DataUpdateDirURL + uu.FileURI);
                                 ApplyUpdate(updateFile);
                                 Program.Settings.DataGeneration = uu.DataPostGeneration;
                             }
@@ -113,8 +113,8 @@ namespace DGD.Hub
             string tmpFile = Path.GetTempFileName();
             using (new AutoReleaser(() => File.Delete(tmpFile)))
             {
-                var netEngin = new NetEngin(Program.Settings);
-                netEngin.Download(tmpFile , SettingsManager.ManifestURI);
+                var netEngin = new NetEngin(Program.NetworkSettings);
+                netEngin.Download(tmpFile , Urls.ManifestURL);
                 IUpdateManifest updateManifest = UpdateEngin.ReadUpdateManifest(tmpFile);
 
                 Version curVer = Assembly.GetExecutingAssembly().GetName().Version;
@@ -142,13 +142,13 @@ namespace DGD.Hub
                 Log.LogEngin.PushFlash($"Téléchargement de la mise à jour...");
 
                 //dl app manifest
-                netEngin.Download(tmpFile , SettingsManager.AppManifestURI);
+                netEngin.Download(tmpFile , Urls.AppManifestURL);
                 Dictionary<AppArchitecture_t , string> upFiles = UpdateEngin.ReadAppManifest(tmpFile);
                 string fileName = upFiles[Program.AppArchitecture];
 
                 //dl update file
-                var uri = new Uri(SettingsManager.AppUpdateDirURI , fileName);
-                netEngin.Download(tmpFile , uri);
+                var url = Urls.AppUpdateDirURL + fileName;
+                netEngin.Download(tmpFile , url);
 
                 if (CanRunAppUpdate?.Invoke() != true)
                 {

@@ -48,7 +48,7 @@ namespace DGD.HubGovernor.Clients
                   $"de la part d’un client inexistant ({ClientStrID(clID)}). Réinitialisation du client" , true);
 
                 //maj du fichier gov
-                string srvDlgFile = AppPaths.GetLocalSrvDialogPath(clID);
+                string srvDlgFile = AppPaths.GetSrvDialogFilePath(clID);
 
                 //le client n'existe pas => son fichier gov n'existe pas
                 var clDlg = new ClientDialog(clID , ClientStatus_t.Reseted , Enumerable.Empty<Message>());
@@ -73,14 +73,14 @@ namespace DGD.HubGovernor.Clients
 
 
             //reset dlg files                
-            DialogEngin.WriteHubDialog(AppPaths.GetLocalClientDilogPath(clID) , clID , Enumerable.Empty<Message>());
-            DialogEngin.WriteSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) ,
+            DialogEngin.WriteHubDialog(AppPaths.GetClientDilogFilePath(clID) , clID , Enumerable.Empty<Message>());
+            DialogEngin.WriteSrvDialog(AppPaths.GetSrvDialogFilePath(clID) ,
                 new ClientDialog(clID , clStatus.Status , Enumerable.Empty<Message>()));
 
             try
             {
-                new NetEngin(AppContext.Settings.AppSettings).Upload(AppPaths.RemoteDialogDirUri ,
-                    new string[] { AppPaths.GetLocalClientDilogPath(clID) , AppPaths.GetLocalSrvDialogPath(clID) });
+                new NetEngin(AppContext.Settings.NetworkSettings).Upload(Urls.DialogDirURL ,
+                    new string[] { AppPaths.GetClientDilogFilePath(clID) , AppPaths.GetSrvDialogFilePath(clID) });
             }
             catch (Exception ex)
             {
@@ -124,7 +124,7 @@ namespace DGD.HubGovernor.Clients
                 AppContext.LogManager.LogSysActivity("Réception d’une requête de reprise émanant d’un client non enregistré. Réinitialisation du client." , true);
 
                 //maj du fichier gov
-                string srvDlgFile = AppPaths.GetLocalSrvDialogPath(clID);
+                string srvDlgFile = AppPaths.GetSrvDialogFilePath(clID);
 
                 //le client n'existe pas => son fichier gov n'existe pas
                 var clDlg = new ClientDialog(clID , ClientStatus_t.Reseted , Enumerable.Empty<Message>());
@@ -176,7 +176,7 @@ namespace DGD.HubGovernor.Clients
                 m_ndxerClientsStatus.Source.Replace(ndxCurClient , curClStatus);
 
                 //maj du fichier distant g
-                string curClFilePath = AppPaths.GetLocalSrvDialogPath(curClient.ID);
+                string curClFilePath = AppPaths.GetSrvDialogFilePath(curClient.ID);
                 var curClDlg = new ClientDialog(curClient.ID , ClientStatus_t.Banned , Enumerable.Empty<Message>());
                 DialogEngin.WriteSrvDialog(curClFilePath , curClDlg);
                 AddUpload(Names.GetSrvDialogFile(curClient.ID));
@@ -187,14 +187,14 @@ namespace DGD.HubGovernor.Clients
             //activation du client demandeur            
 
             //reset dlg files
-            DialogEngin.WriteHubDialog(AppPaths.GetLocalClientDilogPath(clID) , clID , Enumerable.Empty<Message>());
-            DialogEngin.WriteSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) ,
+            DialogEngin.WriteHubDialog(AppPaths.GetClientDilogFilePath(clID) , clID , Enumerable.Empty<Message>());
+            DialogEngin.WriteSrvDialog(AppPaths.GetSrvDialogFilePath(clID) ,
                 new ClientDialog(clID , ClientStatus_t.Enabled , Enumerable.Empty<Message>()));
 
             try
             {
-                new NetEngin(AppContext.Settings.AppSettings).Upload(AppPaths.RemoteDialogDirUri ,
-                    new string[] { AppPaths.GetLocalClientDilogPath(clID) , AppPaths.GetLocalSrvDialogPath(clID) });
+                new NetEngin(AppContext.Settings.NetworkSettings).Upload(Urls.DialogDirURL ,
+                    new string[] { AppPaths.GetClientDilogFilePath(clID) , AppPaths.GetSrvDialogFilePath(clID) });
             }
             catch (Exception ex)
             {
@@ -308,7 +308,7 @@ namespace DGD.HubGovernor.Clients
 
 
                 //maj des fichiers de dialogue de old client
-                string filePath = AppPaths.GetLocalSrvDialogPath(oldClient.ID);
+                string filePath = AppPaths.GetSrvDialogFilePath(oldClient.ID);
                 ClientDialog clDlg = new ClientDialog(oldClient.ID , ClientStatus_t.Disabled , Enumerable.Empty<Message>());
                 DialogEngin.WriteSrvDialog(filePath , clDlg);
                 AddUpload(Names.GetSrvDialogFile(oldClient.ID));
@@ -316,16 +316,16 @@ namespace DGD.HubGovernor.Clients
 
 
             //creer le fichier dialogue 
-            string srvDlgPath = AppPaths.GetLocalSrvDialogPath(clInfo.ClientID);
+            string srvDlgPath = AppPaths.GetSrvDialogFilePath(clInfo.ClientID);
             DialogEngin.WriteSrvDialog(srvDlgPath , new ClientDialog(clInfo.ClientID ,
                  ClientStatus_t.Enabled , Enumerable.Empty<Message>()));
-            DialogEngin.WriteHubDialog(AppPaths.GetLocalClientDilogPath(clInfo.ClientID) ,
+            DialogEngin.WriteHubDialog(AppPaths.GetClientDilogFilePath(clInfo.ClientID) ,
                 clInfo.ClientID , Enumerable.Empty<Message>());
 
             try
             {
-                new NetEngin(AppContext.Settings.AppSettings).Upload(AppPaths.RemoteDialogDirUri ,
-                    new string[] { AppPaths.GetLocalClientDilogPath(clInfo.ClientID) , AppPaths.GetLocalSrvDialogPath(clInfo.ClientID) });
+                new NetEngin(AppContext.Settings.NetworkSettings).Upload(Urls.DialogDirURL ,
+                    new string[] { AppPaths.GetClientDilogFilePath(clInfo.ClientID) , AppPaths.GetSrvDialogFilePath(clInfo.ClientID) });
             }
             catch (Exception ex)
             {
@@ -399,7 +399,7 @@ namespace DGD.HubGovernor.Clients
                 clData.TimeToLive = ActiveClientsQueue.InitTimeToLive;
                 var resp = new Message(++clData.LastSrvMessageID , 0 , Message_t.Null);
 
-                DialogEngin.AppendSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) , resp);
+                DialogEngin.AppendSrvDialog(AppPaths.GetSrvDialogFilePath(clID) , resp);
                 AddUpload(Names.GetSrvDialogFile(clID));
 
                 //maj status
@@ -419,7 +419,7 @@ namespace DGD.HubGovernor.Clients
                         $"de la part d’un client inexistant ({ClientStrID(clID)}). Réinitialisation du client" , true);
 
                 //maj du fichier gov
-                string srvDlgFile = AppPaths.GetLocalSrvDialogPath(clID);
+                string srvDlgFile = AppPaths.GetSrvDialogFilePath(clID);
 
                 //le client n'existe pas => son fichier gov n'existe pas
                 var clDlg = new ClientDialog(clID , ClientStatus_t.Reseted , Enumerable.Empty<Message>());
@@ -433,7 +433,7 @@ namespace DGD.HubGovernor.Clients
             var status = m_ndxerClientsStatus.Get(clID) as ClientStatus;                        
             var respMsg = new Message(++srvMsgID , 0 , Message_t.Null);
             var dlg = new ClientDialog(clID , status.Status , new Message[] { respMsg });
-            DialogEngin.WriteSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) , dlg); 
+            DialogEngin.WriteSrvDialog(AppPaths.GetSrvDialogFilePath(clID) , dlg); 
             AddUpload(Names.GetSrvDialogFile(clID));
 
             if(status.Status == ClientStatus_t.Enabled)
@@ -461,7 +461,7 @@ namespace DGD.HubGovernor.Clients
                 AppContext.LogManager.LogSysActivity("Mise à jour des information utilisateur d'un client inexistant. Réinitialisation du client." , true);
 
                 //maj du fichier gov
-                string srvDlgFile = AppPaths.GetLocalSrvDialogPath(clID);
+                string srvDlgFile = AppPaths.GetSrvDialogFilePath(clID);
 
                 //le client n'existe pas => son fichier gov n'existe pas
                 var clDlg = new ClientDialog(clID , ClientStatus_t.Reseted , Enumerable.Empty<Message>());

@@ -70,13 +70,15 @@ namespace DGD.Hub
         {
             base.OnFormClosing(e);
 
+            if (m_curView != null)
+                m_curView.Deactivate(m_viewsPanel);
+
             AutoUpdater.CanDownlaodAppUpdate -= AutoUpdater_CanDownlaodAppUpdate;
             AutoUpdater.CanRunAppUpdate -= AutoUpdater_CanRunAppUpdate;
 
             Log.LogEngin.MessageReady -= LogEngin_MessageReady;
             Log.LogEngin.MessageTimeout -= LogEngin_MessageTimeout;
-
-
+            
 
             if (Program.DialogManager.IsRunning)
                 Program.DialogManager.Stop();
@@ -218,7 +220,7 @@ namespace DGD.Hub
                     MessageBoxIcon.Question) != DialogResult.Yes)
                 return false;
 
-            Program.DialogManager.Stop(true);            
+            Program.DialogManager.Stop(true);
             return true;
         }
 

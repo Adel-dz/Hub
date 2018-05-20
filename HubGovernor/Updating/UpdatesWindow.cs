@@ -203,18 +203,18 @@ namespace DGD.HubGovernor.Updating
                                         where inc.IsDeployed == false
                                         select inc.ID;
 
-                var netEngin = new NetEngin(AppContext.Settings.AppSettings);
+                var netEngin = new NetEngin(AppContext.Settings.NetworkSettings);
 
                 foreach (var id in ids)
                 {
                     string fileName = id.ToString("X");
                     string src = Path.Combine(AppPaths.DataUpdateFolder , fileName);
-                    Uri dst = new Uri(AppPaths.RemoteDataUpdateDirUri , fileName);
+                    string dst = Urls.DataUpdateDirURL + fileName;
                     netEngin.Upload(dst , src);
                 }
 
-                netEngin.Upload(AppPaths.RemoteDataMainfestURI , AppPaths.LocalDataManifestPath);
-                netEngin.Upload(AppPaths.RemoteManifestURI , AppPaths.LocalManifestPath);
+                netEngin.Upload(Urls.DataManifestURL , AppPaths.DataManifestPath);
+                netEngin.Upload(Urls.ManifestURL , AppPaths.ManifestPath);
 
                 foreach (uint id in ids)
                 {
@@ -332,7 +332,7 @@ namespace DGD.HubGovernor.Updating
 
                 try
                 {
-                    appManifest = UpdateEngin.ReadAppManifest(AppPaths.LocalAppManifestPath);
+                    appManifest = UpdateEngin.ReadAppManifest(AppPaths.AppManifestPath);
 
                 }
                 catch (Exception ex)
@@ -347,7 +347,7 @@ namespace DGD.HubGovernor.Updating
 
                 try
                 {
-                    gManifest = UpdateEngin.ReadUpdateManifest(AppPaths.LocalManifestPath);
+                    gManifest = UpdateEngin.ReadUpdateManifest(AppPaths.ManifestPath);
                 }
                 catch (Exception ex)
                 {
@@ -357,7 +357,7 @@ namespace DGD.HubGovernor.Updating
 
 
 
-                var netEngin = new NetEngin(AppContext.Settings.AppSettings);
+                var netEngin = new NetEngin(AppContext.Settings.NetworkSettings);
 
                 foreach (AppUpdate up in seq)
                 {
@@ -366,7 +366,7 @@ namespace DGD.HubGovernor.Updating
 
                     string srcFileName = up.ID.ToString("X");
                     string destFileName = filesNames[up.AppArchitecture];
-                    Uri dst = new Uri(AppPaths.RemoteAppUpdateDirUri , destFileName);
+                    string dst = Urls.AppUpdateDirURL + destFileName;
 
                     waitDlg.Message = $"Transfert du fichier {destFileName}. Cette opération peut durer plusieurs minutes.";
                     netEngin.Upload(dst , Path.Combine(AppPaths.AppUpdateFolder , srcFileName));
@@ -376,12 +376,12 @@ namespace DGD.HubGovernor.Updating
                 }
 
                 waitDlg.Message = "Transfert du manifest des applications...";
-                UpdateEngin.WriteAppManifest(AppPaths.LocalAppManifestPath , appManifest);
-                netEngin.Upload(AppPaths.RemoteAppMainfestURI , AppPaths.LocalAppManifestPath);
+                UpdateEngin.WriteAppManifest(AppPaths.AppManifestPath , appManifest);
+                netEngin.Upload(Urls.AppManifestURL , AppPaths.AppManifestPath);
 
                 waitDlg.Message = "Transfert du manifest global...";
-                UpdateEngin.WriteUpdateManifest(gManifest , AppPaths.LocalManifestPath);
-                netEngin.Upload(AppPaths.RemoteManifestURI , AppPaths.LocalManifestPath);
+                UpdateEngin.WriteUpdateManifest(gManifest , AppPaths.ManifestPath);
+                netEngin.Upload(Urls.ManifestURL , AppPaths.ManifestPath);
             };
 
 

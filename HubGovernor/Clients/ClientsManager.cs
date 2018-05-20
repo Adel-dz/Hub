@@ -167,7 +167,7 @@ namespace DGD.HubGovernor.Clients
                 oldClStatus.Status = ClientStatus_t.Disabled;
                 m_ndxerClientsStatus.Source.Replace(ndx , oldClStatus);
 
-                string oldClFilePath = AppPaths.GetLocalSrvDialogPath(oldClient.ID);
+                string oldClFilePath = AppPaths.GetSrvDialogFilePath(oldClient.ID);
 
                 try
                 {
@@ -196,7 +196,7 @@ namespace DGD.HubGovernor.Clients
             clStatus.Status = status;
             m_ndxerClientsStatus.Source.Replace(ndxStatus , clStatus);
 
-            string filePath = AppPaths.GetLocalSrvDialogPath(client.ID);
+            string filePath = AppPaths.GetSrvDialogFilePath(client.ID);
             try
             {
                 ClientDialog clDlg = DialogEngin.ReadSrvDialog(filePath);
@@ -327,18 +327,18 @@ namespace DGD.HubGovernor.Clients
         {
             AppContext.LogManager.LogSysActivity("Démarrage de la réinitialisation des fichiers sur le serveur" , true);
 
-            string reqFilePath = AppPaths.LocalConnectionReqPath;
+            string reqFilePath = AppPaths.ConnectionReqPath;
             DialogEngin.WriteConnectionsReq(reqFilePath , Enumerable.Empty<Message>());
 
-            string respFilePath = AppPaths.LocalConnectionRespPath;
+            string respFilePath = AppPaths.ConnectionRespPath;
             DialogEngin.WriteConnectionsResp(respFilePath , Enumerable.Empty<Message>());
 
 
             try
             {
-                var netEngin = new NetEngin(AppContext.Settings.AppSettings);
-                netEngin.Upload(AppPaths.RemoteConnectionReqUri , reqFilePath);
-                netEngin.Upload(AppPaths.RemoteConnectionRespUri , respFilePath);
+                var netEngin = new NetEngin(AppContext.Settings.NetworkSettings);
+                netEngin.Upload(Urls.ConnectionReqURL , reqFilePath);
+                netEngin.Upload(Urls.ConnectionRespURL , respFilePath);
                 m_initializationDone = true;
                 AppContext.LogManager.LogSysActivity("Réinitialisation des fichiers sur le serveur terminée" , true);
             }
@@ -386,7 +386,7 @@ namespace DGD.HubGovernor.Clients
         {
             AppContext.LogManager.LogSysActivity("Lancement de la mise à jour des profils sur serveur" , true);
 
-            string filePath = AppPaths.LocalProfilesPath;
+            string filePath = AppPaths.ProfilesPath;
 
             var seq = from UserProfile usrPro in m_ndxerProfiles.Source.Enumerate().Cast<ProfileRow>()
                       select new ProfileInfo(usrPro.ID , usrPro.Name , usrPro.Privilege);
@@ -437,7 +437,7 @@ namespace DGD.HubGovernor.Clients
 
                 if (respList.Count > 0)
                 {
-                    DialogEngin.AppendSrvDialog(AppPaths.GetLocalSrvDialogPath(clientID) , respList);
+                    DialogEngin.AppendSrvDialog(AppPaths.GetSrvDialogFilePath(clientID) , respList);
                     AddUpload(Names.GetSrvDialogFile(clientID));
                 }
 
@@ -473,7 +473,7 @@ namespace DGD.HubGovernor.Clients
                         respList.Add(resp);
                 }
 
-                string respFile = AppPaths.LocalConnectionRespPath;
+                string respFile = AppPaths.ConnectionRespPath;
                 DialogEngin.AppendConnectionsResp(respFile , respList);
                 AddUpload(Names.ConnectionRespFile);
             }
@@ -513,15 +513,15 @@ namespace DGD.HubGovernor.Clients
 
             if (files != null)
             {
-                string dlgFolder = AppPaths.LocalDialogFolderPath;
-                var netEngin = new NetEngin(AppContext.Settings.AppSettings);
+                string dlgFolder = AppPaths.DialogFolderPath;
+                var netEngin = new NetEngin(AppContext.Settings.NetworkSettings);
 
                 for (int i = files.Count - 1; i >= 0; --i)
                 {
-                    string localDlgDir = AppPaths.LocalDialogFolderPath;
+                    string localDlgDir = AppPaths.DialogFolderPath;
                     string fileName = files[i];
                     string srcPath = Path.Combine(localDlgDir , fileName);
-                    var destURI = new Uri(AppPaths.RemoteDialogDirUri , fileName);
+                    string destURI = Urls.DialogDirURL + fileName;
 
 
                     try
@@ -554,21 +554,20 @@ namespace DGD.HubGovernor.Clients
 
             if (files != null)
             {
-                Uri remoteDlgDir = AppPaths.RemoteDialogDirUri;
-                string localDlgFolder = AppPaths.LocalDialogFolderPath;
+                string localDlgFolder = AppPaths.DialogFolderPath;
                 string cxnReqFile = Names.ConnectionReqFile;
-                var netEngin = new NetEngin(AppContext.Settings.AppSettings);
+                var netEngin = new NetEngin(AppContext.Settings.NetworkSettings);
 
                 for (int i = files.Count - 1; i >= 0; --i)
                 {
                     string fileName = files[i];
                     string destPath = Path.Combine(localDlgFolder , fileName);
-                    var srcURI = new Uri(remoteDlgDir , fileName);
+                    string srcURL = Urls.DialogDirURL + fileName;
 
 
                     try
                     {
-                        netEngin.Download(destPath , srcURI);
+                        netEngin.Download(destPath , srcURL);
                     }
                     catch (Exception ex)
                     {
@@ -581,7 +580,7 @@ namespace DGD.HubGovernor.Clients
 
                         try
                         {
-                            ProcessConnectionReq(DialogEngin.ReadConnectionsReq(AppPaths.LocalConnectionReqPath));
+                            ProcessConnectionReq(DialogEngin.ReadConnectionsReq(AppPaths.ConnectionReqPath));
                         }
                         catch (Exception ex)
                         {
@@ -650,7 +649,7 @@ namespace DGD.HubGovernor.Clients
                 {
                     AppContext.LogManager.LogSysActivity($"Envoi d'un message de synchronisation au client {ClientStrID(clID)}" , true);
                     var msg = new Message(++clData.LastSrvMessageID , 0 , Message_t.Sync); //delegate status update to processdialog method
-                    DialogEngin.AppendSrvDialog(AppPaths.GetLocalSrvDialogPath(clID) , msg);
+                    DialogEngin.AppendSrvDialog(AppPaths.GetSrvDialogFilePath(clID) , msg);
                     AddUpload(Names.GetSrvDialogFile(clID));
                 }
             }

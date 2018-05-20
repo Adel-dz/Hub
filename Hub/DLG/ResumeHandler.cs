@@ -45,8 +45,8 @@ namespace DGD.Hub.DLG
             //maj du ID req
             Action init = () =>
             {
-                var netEngin = new NetEngin(Program.Settings);
-                netEngin.Download(m_cxnReqFile , SettingsManager.ConnectionReqURI , true);
+                var netEngin = new NetEngin(Program.NetworkSettings);
+                netEngin.Download(m_cxnReqFile , Urls.ConnectionReqURL , true);
 
                 IEnumerable<Message> msgs = DialogEngin.ReadConnectionsReq(m_cxnReqFile);
 
@@ -79,11 +79,11 @@ namespace DGD.Hub.DLG
                 IEnumerable<Message> msgs = DialogEngin.ReadConnectionsReq(m_cxnReqFile);
                 DialogEngin.WriteConnectionsReq(m_cxnReqFile , msgs.Add(msg));
 
-                var netEngin = new NetEngin(Program.Settings);
+                var netEngin = new NetEngin(Program.NetworkSettings);
 
                 try
                 {
-                    netEngin.Upload(SettingsManager.ConnectionReqURI , m_cxnReqFile , true);
+                    netEngin.Upload(Urls.ConnectionReqURL , m_cxnReqFile , true);
                     m_timer.Change(TIMER_INTERVALL , TIMER_INTERVALL);
                 }
                 catch(Exception ex)
@@ -101,11 +101,10 @@ namespace DGD.Hub.DLG
         {
             m_timer.Change(Timeout.Infinite , Timeout.Infinite);
 
-            var netEngin = new NetEngin(Program.Settings);
-            Uri respFileURI = SettingsManager.ConnectionRespURI;
+            var netEngin = new NetEngin(Program.NetworkSettings);            
             string tmpFile = Path.GetTempFileName();
 
-            netEngin.Download(tmpFile, respFileURI, true);
+            netEngin.Download(tmpFile, Urls.ConnectionRespURL , true);
 
             var seq = from msg in DialogEngin.ReadConnectionsResp(tmpFile)
                       where msg.ReqID >= m_lastMsgID
@@ -131,7 +130,7 @@ namespace DGD.Hub.DLG
                         {
                             string dlgFile = SettingsManager.GetClientDialogFilePath(m_clientID);
                             DialogEngin.WriteHubDialog(dlgFile , m_clientID , Enumerable.Empty<Message>());
-                            netEngin.Upload(SettingsManager.GetClientDialogURI(m_clientID) , dlgFile , true);
+                            netEngin.Upload(SettingsManager.GetClientDialogURL(m_clientID) , dlgFile , true);
                             m_callback(Result_t.Ok);
                         }
                         catch(Exception ex)

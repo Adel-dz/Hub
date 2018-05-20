@@ -72,11 +72,11 @@ namespace DGD.Hub.DLG
 
             //posting to cnx file
             string tmpFile = Path.GetTempFileName();
-            var netEngin = new NetEngin(Program.Settings);
+            var netEngin = new NetEngin(Program.NetworkSettings);
 
             try
             {
-                netEngin.Download(tmpFile , SettingsManager.ConnectionReqURI , true);
+                netEngin.Download(tmpFile , Urls.ConnectionReqURL , true);
 
                 IEnumerable<Message> msgsCnx = DialogEngin.ReadConnectionsReq(tmpFile);
 
@@ -87,7 +87,7 @@ namespace DGD.Hub.DLG
 
                 Message req = new Message(++m_reqID , 0 , Message_t.Start , m_msgData);
                 DialogEngin.WriteConnectionsReq(tmpFile , msgsCnx.Add(req));
-                netEngin.Upload(SettingsManager.ConnectionReqURI , tmpFile , true);
+                netEngin.Upload(Urls.ConnectionReqURL , tmpFile , true);
                 m_cnxAttempts = 0;
                 Dbg.Log("Posting start msg done.");
             }
@@ -108,11 +108,11 @@ namespace DGD.Hub.DLG
             Dbg.Log("Processing start notification resp...");
 
             string tmpFile = Path.GetTempFileName();
-            var netEngin = new NetEngin(Program.Settings);
+            var netEngin = new NetEngin(Program.NetworkSettings);
 
             try
             {
-                netEngin.Download(tmpFile , SettingsManager.ConnectionRespURI , true);
+                netEngin.Download(tmpFile , Urls.ConnectionRespURL , true);
 
                 IEnumerable<Message> resps = from msg in DialogEngin.ReadConnectionsResp(tmpFile)
                                              where msg.ReqID >= m_reqID

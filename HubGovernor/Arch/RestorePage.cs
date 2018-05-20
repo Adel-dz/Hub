@@ -28,8 +28,6 @@ namespace DGD.HubGovernor.Arch
         //private:
         void UpdateUI()
         {
-            FileStream fs = null;
-
             if (m_filePath != null)
                 try
                 {

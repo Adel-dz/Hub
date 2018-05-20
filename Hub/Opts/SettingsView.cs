@@ -30,6 +30,11 @@ namespace DGD.Hub.Opts
             SettingsManager opt = Program.Settings;
             m_chkUseInternalCode.Checked = opt.UseCountryCode;
 
+            m_chkEnableProxy.Checked = opt.EnableProxy;
+            m_chkDetectProxy.Checked = opt.AutoDetectProxy;
+            m_tbHost.Text = opt.ProxyHost;
+            m_nudPort.Value = opt.ProxyPort;
+
             parent.Controls.Add(this);
             Dock = DockStyle.Fill;
 
@@ -42,20 +47,13 @@ namespace DGD.Hub.Opts
 
             SettingsManager opt = Program.Settings;
 
-            bool useCtryCode = m_chkUseInternalCode.Checked;
-
-            if (opt.UseCountryCode != useCtryCode)
-            {
-                opt.UseCountryCode = useCtryCode;
-                CountryPrefernceChanged?.Invoke();
-
-                string txt = $"Paramètres:  l’utilisateur préfère utiliser {(useCtryCode ? "les codes pays" : "le nom des pays")}";
-                Program.DialogManager.PostLog(txt , false);
-            }
+            ApplyCountrySettings(opt);
+            ApplyProxySettings(opt);
 
             parent.Controls.Remove(this);
             Hide();
         }
+
 
         //protected:
         protected override void OnLoad(EventArgs e)
@@ -74,7 +72,7 @@ namespace DGD.Hub.Opts
 
                     try
                     {
-                        new NetEngin(Program.Settings).Download(tmpFile , SettingsManager.ProfilesURI);
+                        new NetEngin(Program.NetworkSettings).Download(tmpFile , Urls.ProfilesURL);
                         ProfileInfo pi = DialogEngin.ReadProfiles(tmpFile).SingleOrDefault(p =>
                             p.ProfileID == clInfo.ProfileID);
 
@@ -106,6 +104,32 @@ namespace DGD.Hub.Opts
 
 
         //private:
+        void ApplyCountrySettings(SettingsManager opt)
+        {
+            bool useCtryCode = m_chkUseInternalCode.Checked;
+
+            if (opt.UseCountryCode != useCtryCode)
+            {
+                opt.UseCountryCode = useCtryCode;
+                CountryPrefernceChanged?.Invoke();
+
+                string txt = $"Paramètres:  l’utilisateur préfère utiliser {(useCtryCode ? "les codes pays" : "le nom des pays")}";
+                Program.DialogManager.PostLog(txt , false);
+            }
+        }
+
+        void ApplyProxySettings(SettingsManager opt)
+        {
+            opt.AutoDetectProxy = m_chkDetectProxy.Checked;
+            opt.EnableProxy = m_chkEnableProxy.Checked;
+
+            if (opt.EnableProxy)
+            {
+                opt.ProxyHost = m_tbHost.Text;
+                opt.ProxyPort = (ushort)m_nudPort.Value;
+            }
+        }
+
         void UpdateUI()
         {
             Dbg.Assert(!InvokeRequired);
@@ -193,13 +217,13 @@ namespace DGD.Hub.Opts
                 if (t.Exception != null)
                 {
                     Dbg.Log(t.Exception.InnerException.Message);
-                    Program.DialogManager.PostLog("Changement des informations utilisateur. Erreur lors de l'envoi: " + 
+                    Program.DialogManager.PostLog("Changement des informations utilisateur. Erreur lors de l'envoi: " +
                         t.Exception.InnerException.Message , true);
                 }
 
                 MessageBox.Show("Impossible de se connecter au serveur distant. Veuillez réessayer ultérieurement." ,
                     null ,
-                    MessageBoxButtons.OK);                    
+                    MessageBoxButtons.OK);
 
             };
 
@@ -208,7 +232,7 @@ namespace DGD.Hub.Opts
                 if (t.Result == false)
                     onErr(t);
                 else
-                {                    
+                {
                     Program.Settings.ClientInfo = clInfo;
                     ClientInfoChanged?.Invoke();
                     dlg.Dispose();
@@ -220,7 +244,7 @@ namespace DGD.Hub.Opts
             task.OnError(onErr);
             task.Start();
             dlg.ShowDialog();
-         
+
         }
 
         //handlers:
@@ -233,7 +257,7 @@ namespace DGD.Hub.Opts
             string phone = m_tbPhone.Text.Trim();
 
             if ((email.Length > 0 && !ValidateEMail(email)) || (phone.Length > 0 && !ValidatePhoneNumber(phone)))
-            { 
+            {
                 MessageBox.Show("Veuillez fournir un numéro de téléphone ou/et une adresse e-mail valide."
                     , null);
                 return;
@@ -243,5 +267,11 @@ namespace DGD.Hub.Opts
         }
 
         private void Input_TextChanged(object sender , EventArgs e) => UpdateUI();
+
+        private void EnableProxy_CheckedChanged(object sender , EventArgs e)
+        {
+            bool enableProxy = m_chkEnableProxy.Checked;
+            m_tbHost.Enabled = m_nudPort.Enabled = enableProxy;
+        }
     }
 }

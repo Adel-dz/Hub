@@ -158,7 +158,7 @@ namespace DGD.Hub.DLG
 
             m_exHandler = RespExceptionHandler;
 
-            var netEngin = new NetEngin(Program.Settings);
+            var netEngin = new NetEngin(Program.NetworkSettings);
 
             using (new AutoReleaser(() => File.Delete(tmpFile)))
             {
@@ -166,7 +166,7 @@ namespace DGD.Hub.DLG
 
                 try
                 {
-                    netEngin.Download(tmpFile , SettingsManager.ConnectionRespURI);
+                    netEngin.Download(tmpFile , Urls.ConnectionRespURL);
                 }
                 catch(Exception ex)
                 {
@@ -221,7 +221,7 @@ namespace DGD.Hub.DLG
          
                         try
                         {
-                            netEngin.Upload(SettingsManager.GetClientDialogURI(clID) , dlgFile , true);
+                            netEngin.Upload(SettingsManager.GetClientDialogURL(clID) , dlgFile , true);
                         }
                         catch(Exception ex)
                         {
@@ -300,11 +300,11 @@ namespace DGD.Hub.DLG
 
             using (new AutoReleaser(() => File.Delete(tmpFile)))
             {
-                var netEngin = new NetEngin(Program.Settings);
+                var netEngin = new NetEngin(Program.NetworkSettings);
 
                 SetProgressMessage("Envoi des données au serveur...");
 
-                netEngin.Download(tmpFile , SettingsManager.ConnectionReqURI);
+                netEngin.Download(tmpFile , Urls.ConnectionReqURL);
                 List<HubCore.DLG.Message> msgs = DialogEngin.ReadConnectionsReq(tmpFile).ToList();
                 m_msgID = msgs.Count == 0 ? 1 : msgs.Max(m => m.ID) + 1;
 
@@ -318,7 +318,7 @@ namespace DGD.Hub.DLG
                 msgs.Add(msg);
 
                 DialogEngin.WriteConnectionsReq(tmpFile , msgs);
-                netEngin.Upload(SettingsManager.ConnectionReqURI , tmpFile);
+                netEngin.Upload(Urls.ConnectionReqURL , tmpFile);
                 StartTimer();
 
                 SetProgressMessage("Attente de la réponse du serveur...");

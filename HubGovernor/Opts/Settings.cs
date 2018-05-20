@@ -1,4 +1,5 @@
-﻿using DGD.HubGovernor.Log;
+﻿using DGD.HubCore.Net;
+using DGD.HubGovernor.Log;
 using easyLib;
 using System;
 using System.IO;
@@ -25,6 +26,30 @@ namespace DGD.HubGovernor.Opts
 
         public AppSettings AppSettings { get; } = new AppSettings();
         public UserSettings UserSettings { get; } = new UserSettings();
+
+        public IConnectionParam NetworkSettings
+        {
+            get
+            {
+                string host = AppSettings.ServerURL;
+                ICredential credantial = null;
+                IProxy proxy = null;
+
+                if (string.IsNullOrWhiteSpace(host))
+                    host = "ftp://douane.gov.dz";
+
+                string user = AppSettings.UserName;
+                string pass = AppSettings.Password;
+
+                if (!string.IsNullOrWhiteSpace(user) && !string.IsNullOrWhiteSpace(pass))
+                    credantial = new Credential(user , pass);
+
+                if(AppSettings.EnableProxy)
+                    proxy = new Proxy(AppSettings.ProxyAddress , AppSettings.ProxyPort);
+
+                return new ConnectionParam(host , credantial , proxy);
+            }
+        }
 
         public void Save()
         {

@@ -1,5 +1,6 @@
 ﻿using DGD.Hub.Log;
 using DGD.Hub.RunOnce;
+using DGD.HubCore;
 using DGD.HubCore.DB;
 using DGD.HubCore.DLG;
 using DGD.HubCore.Net;
@@ -59,7 +60,7 @@ namespace DGD.Hub.DLG
                 using (new AutoReleaser(() => File.Delete(tmpFile)))
                 using (LogEngin.PushMessage("Récupération de la liste des profils à partir du serveur des douanes…"))
                 {
-                    new NetEngin(Program.Settings).Download(tmpFile , SettingsManager.ProfilesURI);
+                    new NetEngin(Program.NetworkSettings).Download(tmpFile , Urls.ProfilesURL);
                     return DialogEngin.ReadProfiles(tmpFile);
                 }
             }
@@ -102,8 +103,8 @@ namespace DGD.Hub.DLG
 
             Action start = () =>
             {
-                var netEngin = new NetEngin(Program.Settings);
-                netEngin.Download(tmpFile , SettingsManager.GetServerDialogURI(m_clInfo.ClientID) , true);
+                var netEngin = new NetEngin(Program.NetworkSettings);
+                netEngin.Download(tmpFile , SettingsManager.GetServerDialogURL(m_clInfo.ClientID) , true);
             };
 
             Action onSuccess = () =>
@@ -221,11 +222,11 @@ namespace DGD.Hub.DLG
 
             try
             {
-                Uri dest = SettingsManager.GetClientDialogURI(m_clInfo.ClientID);
+                string dest = SettingsManager.GetClientDialogURL(m_clInfo.ClientID);
                 string src = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
 
                 DialogEngin.AppendHubDialog(src , m_clInfo.ClientID , msg);
-                new NetEngin(Program.Settings).Upload(dest , src);
+                new NetEngin(Program.NetworkSettings).Upload(dest , src);
 
                 return msg.ID;
             }
@@ -240,11 +241,11 @@ namespace DGD.Hub.DLG
         public Message ReceiveMessage(uint reqID)
         {
             string tmpFile = Path.GetTempFileName();
-            Uri src = SettingsManager.GetServerDialogURI(m_clInfo.ClientID);
+            string src = SettingsManager.GetServerDialogURL(m_clInfo.ClientID);
 
             try
             {
-                new NetEngin(Program.Settings).Download(tmpFile , src);
+                new NetEngin(Program.NetworkSettings).Download(tmpFile , src);
                 ClientDialog clDlg = DialogEngin.ReadSrvDialog(tmpFile);
 
                 Message msg = clDlg.Messages.SingleOrDefault(m => m.ReqID == reqID);
@@ -417,14 +418,14 @@ namespace DGD.Hub.DLG
 
             Dbg.Log("Processing dialog timer...");
 
-            Uri srvDlgURI = SettingsManager.GetServerDialogURI(m_clInfo.ClientID);
+            string srvDlgURI = SettingsManager.GetServerDialogURL(m_clInfo.ClientID);
             string tmpFile = Path.GetTempFileName();
 
             LogEngin.PushFlash("Interrogation du serveur...");
 
             try
             {
-                new NetEngin(Program.Settings).Download(tmpFile , srvDlgURI , true);
+                new NetEngin(Program.NetworkSettings).Download(tmpFile , srvDlgURI , true);
             }
             catch (Exception ex)
             {
@@ -504,7 +505,7 @@ namespace DGD.Hub.DLG
                 if (m_needUpload)
                 {
                     string clFilePath = SettingsManager.GetClientDialogFilePath(m_clInfo.ClientID);
-                    new NetEngin(Program.Settings).Upload(SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , clFilePath , true);
+                    new NetEngin(Program.NetworkSettings).Upload(SettingsManager.GetClientDialogURL(m_clInfo.ClientID) , clFilePath , true);
                     m_needUpload = false;
                 }
 
@@ -562,7 +563,7 @@ namespace DGD.Hub.DLG
 
             try
             {
-                new NetEngin(Program.Settings).Upload(SettingsManager.GetClientDialogURI(m_clInfo.ClientID) , dlgFile);
+                new NetEngin(Program.NetworkSettings).Upload(SettingsManager.GetClientDialogURL(m_clInfo.ClientID) , dlgFile);
             }
             catch { }
         }
@@ -571,7 +572,7 @@ namespace DGD.Hub.DLG
         {
             Action post = () =>
             {
-                var netEngin = new NetEngin(Program.Settings);
+                var netEngin = new NetEngin(Program.NetworkSettings);
                 string tmpFile = Path.GetTempFileName();
                 var ms = new MemoryStream();
                 var writer = new RawDataWriter(ms , Encoding.UTF8);
@@ -582,7 +583,7 @@ namespace DGD.Hub.DLG
 
                 try
                 {
-                    netEngin.Download(tmpFile , SettingsManager.ConnectionReqURI);
+                    netEngin.Download(tmpFile , Urls.ConnectionReqURL);
                     var seq = DialogEngin.ReadConnectionsReq(tmpFile);
                     uint msgID = 0;
 
@@ -591,7 +592,7 @@ namespace DGD.Hub.DLG
 
                     var msg = new Message(msgID + 1 , 0 , Message_t.Sync , msgData);
                     DialogEngin.AppendConnectionsReq(tmpFile , new Message[] { msg });
-                    netEngin.Upload(SettingsManager.ConnectionReqURI , tmpFile);
+                    netEngin.Upload(Urls.ConnectionReqURL , tmpFile);
                 }
                 catch { }
                 finally

@@ -94,7 +94,7 @@ namespace DGD.HubGovernor.Updating
 
             AppContext.TableManager.Transactions.Reset();
 
-            string dataMainfest = AppPaths.LocalDataManifestPath;
+            string dataMainfest = AppPaths.DataManifestPath;
             UpdateEngin.UpdateDataManifest(dataMainfest , new UpdateURI(incFileName , opt.DataGeneration));
 
             if (opt.DataGeneration++ == 0)
@@ -102,7 +102,7 @@ namespace DGD.HubGovernor.Updating
 
             AppContext.Settings.Save();
 
-            string manifestFile = AppPaths.LocalManifestPath;
+            string manifestFile = AppPaths.ManifestPath;
 
 
             try

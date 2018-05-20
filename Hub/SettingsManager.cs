@@ -12,7 +12,7 @@ using System.Text;
 
 namespace DGD.Hub
 {
-    sealed class SettingsManager: IDisposable, ICredential
+    sealed class SettingsManager: IDisposable
     {
         const string APP_SETTINGS_SIGNATURE = "HUBAPPPARAM1";
         const string USER_SETTINGS_SIGNATURE = "HUBUSERPARAM1";
@@ -46,6 +46,10 @@ namespace DGD.Hub
         public string Password => DecodeString(new byte[] { 137 , 158 , 147 , 154 , 138 , 141 });
         public bool IsMaximized { get; set; }
         public Rectangle FrameRectangle { get; set; }
+        public bool AutoDetectProxy { get; set; } = true;
+        public bool EnableProxy { get; set; }
+        public string ProxyHost { get; set; } = "";
+        public ushort ProxyPort { get; set; } = 8080;
         public MRUList<SubHeading> MRUSubHeading { get; private set; }
 
         public int MRUSubHeadingSize
@@ -160,15 +164,7 @@ namespace DGD.Hub
 
         public bool UseCountryCode { get; set; }
 
-        public static Uri ServerURI => new Uri("ftp://douane.gov.dz");
-        public static Uri DataUpdateDirURI => Uris.GetDataUpdateDirUri(ServerURI);
-        public static Uri AppUpdateDirURI => Uris.GetAppUpdateDirUri(ServerURI);
-        public static Uri ManifestURI => Uris.GetManifestURI(ServerURI);
-        public static Uri DataManifestURI => Uris.GetDataMainfestURI(ServerURI);
-        public static Uri AppManifestURI => Uris.GetAppMainfestURI(ServerURI);
-        public static Uri ProfilesURI => Uris.GetProfilesURI(ServerURI);
-        public static Uri ConnectionReqURI => Uris.GetConnectionReqUri(ServerURI);
-        public static Uri ConnectionRespURI => Uris.GetConnectionRespUri(ServerURI);
+        public static string ServerURL => "ftp://douane.gov.dz";
         public static int DialogTimerInterval => 30 * 1000;
         public static int UpdateTimerInterval => 60 * 60 * 1000;
         public static int ConnectionTimerInterval => 30 * 1000;
@@ -184,20 +180,17 @@ namespace DGD.Hub
         public static string TablesFolder => Path.Combine(AppDataFolder , "Tbl");
         public static string DialogFolder => Path.Combine(AppDataFolder , "Dlg");
         public static string RunOnceFilePath => Path.Combine(AppDataFolder , "runonce");
-        public static Uri DialogDirUri => Uris.GetDialogDirUri(ServerURI);
         
 
         public static string GetClientDialogFilePath(uint idClient) =>
             Path.Combine(DialogFolder , Names.GetClientDialogFile(idClient));
 
-        public static Uri GetClientDialogURI(uint clientID) =>
-            new Uri(Uris.GetDialogDirUri(ServerURI) , Names.GetClientDialogFile(clientID));
+        public static string GetClientDialogURL(uint clientID) => Urls.DialogDirURL + Names.GetClientDialogFile(clientID);
 
         public static string GetSrvDialogFilePath(uint idClient) =>
             Path.Combine(DialogFolder , Names.GetSrvDialogFile(idClient));
 
-        public static Uri GetServerDialogURI(uint clientID) =>
-          new Uri(Uris.GetDialogDirUri(ServerURI) , Names.GetSrvDialogFile(clientID));
+        public static string GetServerDialogURL(uint clientID) => Urls.DialogDirURL + Names.GetSrvDialogFile(clientID);
 
         public void Dispose()
         {
@@ -265,6 +258,11 @@ namespace DGD.Hub
                 foreach (SubHeading sh in MRUSubHeading)
                     writer.Write(sh.Value);
 
+                writer.Write(AutoDetectProxy);
+                writer.Write(EnableProxy);
+                writer.Write(ProxyHost ?? "");
+                writer.Write(ProxyPort);
+
             }
         }
 
@@ -300,6 +298,11 @@ namespace DGD.Hub
 
                 for (int i = 0; i < mruCount; ++i)
                     MRUSubHeading.Add(new SubHeading(reader.ReadULong()));
+
+                AutoDetectProxy = reader.ReadBoolean();
+                EnableProxy = reader.ReadBoolean();
+                ProxyHost = reader.ReadString();
+                ProxyPort = reader.ReadUShort();
             }
         }
 

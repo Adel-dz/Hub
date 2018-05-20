@@ -34,11 +34,18 @@
             System.Windows.Forms.Label m_lblPhone;
             System.Windows.Forms.Label m_lblContact;
             System.Windows.Forms.PictureBox m_pbLogo;
+            System.Windows.Forms.GroupBox m_grpProxy;
+            System.Windows.Forms.Label label1;
+            System.Windows.Forms.Label m_lblHost;
             this.m_btnSave = new System.Windows.Forms.Button();
             this.m_tbEmail = new System.Windows.Forms.TextBox();
             this.m_tbPhone = new System.Windows.Forms.TextBox();
             this.m_lblProfile = new System.Windows.Forms.Label();
             this.m_tbContact = new System.Windows.Forms.TextBox();
+            this.m_nudPort = new System.Windows.Forms.NumericUpDown();
+            this.m_tbHost = new System.Windows.Forms.TextBox();
+            this.m_chkEnableProxy = new System.Windows.Forms.CheckBox();
+            this.m_chkDetectProxy = new System.Windows.Forms.CheckBox();
             this.m_chkUseInternalCode = new System.Windows.Forms.CheckBox();
             this.m_grpOtherOpt = new System.Windows.Forms.GroupBox();
             m_grpClientInfo = new System.Windows.Forms.GroupBox();
@@ -47,8 +54,13 @@
             m_lblPhone = new System.Windows.Forms.Label();
             m_lblContact = new System.Windows.Forms.Label();
             m_pbLogo = new System.Windows.Forms.PictureBox();
+            m_grpProxy = new System.Windows.Forms.GroupBox();
+            label1 = new System.Windows.Forms.Label();
+            m_lblHost = new System.Windows.Forms.Label();
             m_grpClientInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(m_pbLogo)).BeginInit();
+            m_grpProxy.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.m_nudPort)).BeginInit();
             this.m_grpOtherOpt.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -164,6 +176,88 @@
             m_pbLogo.TabIndex = 2;
             m_pbLogo.TabStop = false;
             // 
+            // m_grpProxy
+            // 
+            m_grpProxy.Controls.Add(this.m_nudPort);
+            m_grpProxy.Controls.Add(label1);
+            m_grpProxy.Controls.Add(this.m_tbHost);
+            m_grpProxy.Controls.Add(m_lblHost);
+            m_grpProxy.Controls.Add(this.m_chkEnableProxy);
+            m_grpProxy.Controls.Add(this.m_chkDetectProxy);
+            m_grpProxy.Location = new System.Drawing.Point(15, 226);
+            m_grpProxy.Name = "m_grpProxy";
+            m_grpProxy.Size = new System.Drawing.Size(368, 156);
+            m_grpProxy.TabIndex = 4;
+            m_grpProxy.TabStop = false;
+            m_grpProxy.Text = " Proxy ";
+            // 
+            // m_nudPort
+            // 
+            this.m_nudPort.Enabled = false;
+            this.m_nudPort.Location = new System.Drawing.Point(90, 117);
+            this.m_nudPort.Maximum = new decimal(new int[] {
+            65535,
+            0,
+            0,
+            0});
+            this.m_nudPort.Name = "m_nudPort";
+            this.m_nudPort.Size = new System.Drawing.Size(67, 20);
+            this.m_nudPort.TabIndex = 5;
+            this.m_nudPort.Value = new decimal(new int[] {
+            8080,
+            0,
+            0,
+            0});
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(7, 121);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(29, 13);
+            label1.TabIndex = 4;
+            label1.Text = "Port:";
+            // 
+            // m_tbHost
+            // 
+            this.m_tbHost.Enabled = false;
+            this.m_tbHost.Location = new System.Drawing.Point(90, 84);
+            this.m_tbHost.Name = "m_tbHost";
+            this.m_tbHost.Size = new System.Drawing.Size(189, 20);
+            this.m_tbHost.TabIndex = 3;
+            // 
+            // m_lblHost
+            // 
+            m_lblHost.AutoSize = true;
+            m_lblHost.Location = new System.Drawing.Point(7, 88);
+            m_lblHost.Name = "m_lblHost";
+            m_lblHost.Size = new System.Drawing.Size(76, 13);
+            m_lblHost.TabIndex = 2;
+            m_lblHost.Text = "Adresse proxy:";
+            // 
+            // m_chkEnableProxy
+            // 
+            this.m_chkEnableProxy.AutoSize = true;
+            this.m_chkEnableProxy.Location = new System.Drawing.Point(7, 60);
+            this.m_chkEnableProxy.Name = "m_chkEnableProxy";
+            this.m_chkEnableProxy.Size = new System.Drawing.Size(280, 17);
+            this.m_chkEnableProxy.TabIndex = 1;
+            this.m_chkEnableProxy.Text = "Je me connecte à Internet via un serveur proxy HTTP";
+            this.m_chkEnableProxy.UseVisualStyleBackColor = true;
+            this.m_chkEnableProxy.CheckedChanged += new System.EventHandler(this.EnableProxy_CheckedChanged);
+            // 
+            // m_chkDetectProxy
+            // 
+            this.m_chkDetectProxy.AutoSize = true;
+            this.m_chkDetectProxy.Checked = true;
+            this.m_chkDetectProxy.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.m_chkDetectProxy.Location = new System.Drawing.Point(7, 20);
+            this.m_chkDetectProxy.Name = "m_chkDetectProxy";
+            this.m_chkDetectProxy.Size = new System.Drawing.Size(287, 17);
+            this.m_chkDetectProxy.TabIndex = 0;
+            this.m_chkDetectProxy.Text = "Détecter les paramètres du serveur proxy au démarrage";
+            this.m_chkDetectProxy.UseVisualStyleBackColor = true;
+            // 
             // m_chkUseInternalCode
             // 
             this.m_chkUseInternalCode.AutoSize = true;
@@ -177,7 +271,7 @@
             // m_grpOtherOpt
             // 
             this.m_grpOtherOpt.Controls.Add(this.m_chkUseInternalCode);
-            this.m_grpOtherOpt.Location = new System.Drawing.Point(15, 240);
+            this.m_grpOtherOpt.Location = new System.Drawing.Point(15, 392);
             this.m_grpOtherOpt.Name = "m_grpOtherOpt";
             this.m_grpOtherOpt.Size = new System.Drawing.Size(368, 63);
             this.m_grpOtherOpt.TabIndex = 3;
@@ -190,6 +284,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.SystemColors.Window;
+            this.Controls.Add(m_grpProxy);
             this.Controls.Add(this.m_grpOtherOpt);
             this.Controls.Add(m_pbLogo);
             this.Controls.Add(m_grpClientInfo);
@@ -199,6 +294,9 @@
             m_grpClientInfo.ResumeLayout(false);
             m_grpClientInfo.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(m_pbLogo)).EndInit();
+            m_grpProxy.ResumeLayout(false);
+            m_grpProxy.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.m_nudPort)).EndInit();
             this.m_grpOtherOpt.ResumeLayout(false);
             this.m_grpOtherOpt.PerformLayout();
             this.ResumeLayout(false);
@@ -214,5 +312,9 @@
         private System.Windows.Forms.CheckBox m_chkUseInternalCode;
         private System.Windows.Forms.Button m_btnSave;
         private System.Windows.Forms.GroupBox m_grpOtherOpt;
+        private System.Windows.Forms.NumericUpDown m_nudPort;
+        private System.Windows.Forms.TextBox m_tbHost;
+        private System.Windows.Forms.CheckBox m_chkEnableProxy;
+        private System.Windows.Forms.CheckBox m_chkDetectProxy;
     }
 }
