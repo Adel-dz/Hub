@@ -100,8 +100,8 @@ namespace DGD.Hub
 
             try
             {
-                using (m_settings = new SettingsManager())
                 using (m_runOnceManager = new RunOnce.RunOnceManager())
+                using (m_settings = new SettingsManager())                
                 {
                     var ssEngin = new Jobs.SplashScreenEngin();
                     ssEngin.Start();                    

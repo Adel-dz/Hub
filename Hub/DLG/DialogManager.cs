@@ -143,16 +143,7 @@ namespace DGD.Hub.DLG
                 //assume client enabled
                 m_clStatus = ClientStatus_t.Enabled;
                 new StartHandler(m_clInfo.ClientID , StartResp).Start();
-
-                //System.Windows.Forms.MessageBox.Show(
-                //    "Impossible de se connecter au serveur distant. Veuillez réessayer ultérieurement." ,
-                //    null ,
-                //    System.Windows.Forms.MessageBoxButtons.OK ,
-                //    System.Windows.Forms.MessageBoxIcon.Error);
-
-                //File.Delete(tmpFile);
-                //Exit();
-            };
+           };
 
             var task = new Task(start , TaskCreationOptions.LongRunning);
             task.OnSuccess(onSuccess);
@@ -284,7 +275,7 @@ namespace DGD.Hub.DLG
             RunOnceManager runOnceMgr = Program.RunOnceManager;
 
             foreach (string filePath in Program.TablesManager.TablesFilePath)
-                runOnceMgr.Add(new ClearTable(filePath));
+                runOnceMgr.Add(new DeleteFile(filePath));
 
             runOnceMgr.Add(new ResetClientInfo());
             runOnceMgr.Add(new ResetUpdateInfo());

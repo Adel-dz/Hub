@@ -22,7 +22,7 @@ namespace DGD.Hub.RunOnce
         {
             m_actBuilder = new Dictionary<RunOnceAction_t , Func<IRunOnceAction>>
             {
-                { RunOnceAction_t.ClearTable, () => new ClearTable() },
+                { RunOnceAction_t.DeleteFile, () => new DeleteFile() },
                 { RunOnceAction_t.ResetClientInfo, () => new ResetClientInfo() },
                 { RunOnceAction_t.ResetUpdateInfo, () => new ResetUpdateInfo() }
             };

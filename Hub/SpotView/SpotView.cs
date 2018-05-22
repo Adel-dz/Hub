@@ -17,31 +17,6 @@ namespace DGD.Hub.SpotView
 {
     sealed partial class SpotView: UserControl, IView
     {
-        class CountryEntry
-        {
-            public CountryEntry(Country cntry)
-            {
-                Country = cntry;
-            }
-
-            public Country Country { get; }
-
-            public static bool UseCountryCode { get; set; }
-
-            public override string ToString()
-            {
-                if (Country == null)
-                    return AppText.UNSPECIFIED;
-
-                if (UseCountryCode)
-                    return Country.InternalCode.ToString("000");
-
-                return Country.Name;
-            }
-
-        }
-
-
         readonly Dictionary<ColumnDataType_t , IColumnSorter> m_colSorters = new Dictionary<ColumnDataType_t , IColumnSorter>();
         bool m_emptyMode;
 
@@ -52,40 +27,14 @@ namespace DGD.Hub.SpotView
 
             SetupColumns();
 
-            if (Program.Settings.MRUSubHeadingSize > 0)
-            {
-                var autoCompleteSrc = new AutoCompleteStringCollection();
-                string[] strs = Program.Settings.MRUSubHeading.Select(sh => sh.ToString()).ToArray();
-                autoCompleteSrc.AddRange(strs);
-
-                m_tbSubHeading.AutoCompleteCustomSource = autoCompleteSrc;
-            }
+            Opts.SettingsView.CountryPrefernceChanged += SettingsView_CountryPrefernceChanged;
         }
 
         public void Activate(Control parent)
         {
             Assert(parent != null);
 
-            bool useCountryCode = Program.Settings.UseCountryCode;
-
-            if (m_cbOrigin.Items.Count == 0 || CountryEntry.UseCountryCode != useCountryCode)
-            {
-                CountryEntry.UseCountryCode = useCountryCode;
-
-                if (useCountryCode)
-                {
-                    m_cbOrigin.Size = new Size(77 , 21);
-                    m_lblCountryInfo.Location = new Point(505 , 109);
-                }
-                else
-                {
-                    m_cbOrigin.Size = new Size(161 , 21);
-                    m_lblCountryInfo.Location = new Point(581 , 109);
-                }
-
-
-                LoadCountries();
-            }
+            Opts.SettingsView.CountryPrefernceChanged -= SettingsView_CountryPrefernceChanged;
 
             parent.Controls.Add(this);
             RegisterHandlers();
@@ -100,13 +49,22 @@ namespace DGD.Hub.SpotView
             Hide();
             UnregisterHandlers();
             parent.Controls.Remove(this);
+
+            Opts.SettingsView.CountryPrefernceChanged += SettingsView_CountryPrefernceChanged;
         }
 
         //protected:
 
         protected override void OnLoad(EventArgs e)
         {
-            LoadIncoterms();
+            if (Program.Settings.UseCountryCode)
+                SetupOriginLayout(true);
+
+            var loader = new DataLoader(this);
+            loader.LoadAutoCompleteSourceAsync();
+            loader.LoadIncotermsAsync();
+            loader.LoadCountriesAsync();
+
             base.OnLoad(e);
         }
 
@@ -147,6 +105,20 @@ namespace DGD.Hub.SpotView
 
                 m_emptyMode = value;
                 m_lvSearchResult.Enabled = !value;
+            }
+        }
+
+        void SetupOriginLayout(bool useCountryCode)
+        {
+            if (useCountryCode)
+            {
+                m_cbOrigin.Size = new Size(77 , 21);
+                m_lblCountryInfo.Location = new Point(505 , 109);
+            }
+            else
+            {
+                m_cbOrigin.Size = new Size(161 , 21);
+                m_lblCountryInfo.Location = new Point(581 , 109);
             }
         }
 
@@ -196,7 +168,7 @@ namespace DGD.Hub.SpotView
             tablesManager.GetDataProvider(TablesID.INCOTERM).SourceCleared += Incoterms_SourceCleared;
 
             AutoUpdater.BeginTableUpdate += BeginTableProcessing_Handler;
-            AutoUpdater.EndTableUpdate += EndTableProcessing_Handler;
+            AutoUpdater.EndTableUpdate += EndTableProcessing_Handler;            
         }
 
         void UnregisterHandlers()
@@ -209,37 +181,9 @@ namespace DGD.Hub.SpotView
             tablesManager.GetDataProvider(TablesID.INCOTERM).SourceCleared -= Incoterms_SourceCleared;
 
             AutoUpdater.BeginTableUpdate -= BeginTableProcessing_Handler;
-            AutoUpdater.EndTableUpdate -= EndTableProcessing_Handler;
+            AutoUpdater.EndTableUpdate -= EndTableProcessing_Handler;            
         }
-
-        void LoadCountries()
-        {
-            IEnumerable<CountryEntry> countries = from Country ctry in Program.TablesManager.GetDataProvider(TablesID.COUNTRY).Enumerate()
-                                                  orderby ctry.Name
-                                                  select new CountryEntry(ctry);
-
-            m_cbOrigin.Items.Clear();
-            m_cbOrigin.Items.Add(new CountryEntry(null));
-            m_cbOrigin.Items.AddRange(countries.ToArray());
-
-            m_cbOrigin.SelectedIndex = 0;
-        }
-
-        void LoadIncoterms()
-        {
-            IEnumerable<Incoterm> icts = from Incoterm ict in Program.TablesManager.GetDataProvider(TablesID.INCOTERM).Enumerate()
-                                         orderby ict.Name
-                                         select ict;
-
-            var emptyICT = new Incoterm(0 , AppText.UNSPECIFIED);
-
-            m_cbIncoterm.Items.Clear();
-            m_cbIncoterm.Items.Add(emptyICT);
-            m_cbIncoterm.Items.AddRange(icts.ToArray());
-            m_cbIncoterm.DisplayMember = "Name";
-            m_cbIncoterm.SelectedIndex = 0;
-        }
-
+        
         void SearchAsyncSubHeading(SubHeading subHeading , DateTime date , Incoterm ict , Country origin)
         {
             IDisposable releaser = Log.LogEngin.PushMessage("Recherche en cours...");
@@ -383,10 +327,6 @@ namespace DGD.Hub.SpotView
                 return;
             }
 
-            if (Program.Settings.MRUSubHeading.Add(subHeading))
-                m_tbSubHeading.AutoCompleteCustomSource.Add(subHeading.ToString());
-
-
             DateTime date = m_dtpSpotDate.Value;
             var ict = m_cbIncoterm.SelectedItem as Incoterm;
             var ctry = (m_cbOrigin.SelectedItem as CountryEntry).Country;
@@ -396,33 +336,18 @@ namespace DGD.Hub.SpotView
 
         private void EndTableProcessing_Handler(uint tableID)
         {
-            if (InvokeRequired)
-                BeginInvoke(new Action<uint>(EndTableProcessing_Handler) , tableID);
-            else
+            if (tableID == TablesID.COUNTRY)
             {
-                try
-                {
-                    if (tableID == TablesID.COUNTRY)
-                    {
-                        m_cbOrigin.Enabled = true;
-                        LoadCountries();
-                    }
-                    else if (tableID == TablesID.INCOTERM)
-                    {
-                        m_cbIncoterm.Enabled = true;
-                        LoadIncoterms();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Program.DialogManager.PostLog($"Erreur fin de traitement de la table {tableID}: " +
-                        ex.Message, true);
-
-                    MessageBox.Show(this , ex.Message , null , MessageBoxButtons.OK , MessageBoxIcon.Error);
-                }
-
-                m_tsbSearch.Enabled = true;
+                new DataLoader(this).LoadCountriesAsync();
+                m_cbOrigin.Enabled = true;
             }
+            else if (tableID == TablesID.INCOTERM)
+            {
+                new DataLoader(this).LoadIncotermsAsync();
+                m_cbIncoterm.Enabled = true;
+            }
+
+            m_tsbSearch.Enabled = true;
         }
 
         private void BeginTableProcessing_Handler(uint tableID)
@@ -546,21 +471,20 @@ namespace DGD.Hub.SpotView
                 SortOrder.Ascending);
         }
 
-        private void Incoterms_SourceCleared()
-        {
-            if (InvokeRequired)
-                Invoke(new Action(LoadIncoterms));
-            else
-                LoadIncoterms();
-        }
+        private void Incoterms_SourceCleared() => new DataLoader(this).LoadIncotermsAsync();
 
-        private void Countries_SourceCleared()
-        {
-            if (InvokeRequired)
-                Invoke(new Action(LoadCountries));
-            else
-                LoadCountries();
-        }
+        private void Countries_SourceCleared() => new DataLoader(this).LoadIncotermsAsync();
 
+        private void SettingsView_CountryPrefernceChanged()
+        {
+            bool useCountryCode = Program.Settings.UseCountryCode;
+
+            if (InvokeRequired)
+                Invoke(new Action<bool>(SetupOriginLayout) , useCountryCode);
+            else
+                SetupOriginLayout(useCountryCode);
+
+            new DataLoader(this).LoadCountriesAsync();
+        }
     }
 }

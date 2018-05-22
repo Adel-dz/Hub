@@ -5,7 +5,7 @@ namespace DGD.HubCore.RunOnce
     public enum RunOnceAction_t
     {
         None,
-        ClearTable,
+        DeleteFile,
         ResetClientInfo,
         ResetUpdateInfo
     }

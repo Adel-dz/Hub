@@ -125,7 +125,7 @@
     <Compile Include="FileLocker.cs" />
     <Compile Include="Net\ConnectionParam.cs" />
     <Compile Include="Net\Proxy.cs" />
-    <Compile Include="RunOnce\ClearTableData.cs" />
+    <Compile Include="RunOnce\DeleteFile.cs" />
     <Compile Include="RunOnce\RunOnceAction.cs" />
     <Compile Include="Updating\FilesBag.cs" />
     <Compile Include="Names.cs" />
