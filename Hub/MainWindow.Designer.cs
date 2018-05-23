@@ -44,7 +44,6 @@
             this.m_mainToolStrip = new System.Windows.Forms.ToolStrip();
             this.m_tsbSpotView = new System.Windows.Forms.ToolStripButton();
             this.m_tsbMachinery = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.m_viewsPanel = new System.Windows.Forms.Panel();
             m_mainMenu = new System.Windows.Forms.MenuStrip();
             m_mpFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -176,7 +175,6 @@
             this.m_tsbRangeValue,
             toolStripSeparator2,
             this.m_tsbMachinery,
-            this.toolStripButton2,
             this.m_tsbQuad,
             this.m_tsbJetSki,
             toolStripSeparator3,
@@ -208,14 +206,6 @@
             this.m_tsbMachinery.Size = new System.Drawing.Size(50, 52);
             this.m_tsbMachinery.Text = "Engins BTP";
             this.m_tsbMachinery.Click += new System.EventHandler(this.SetView_Handler);
-            // 
-            // toolStripButton2
-            // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(50, 4);
-            this.toolStripButton2.Text = "toolStripButton2";
             // 
             // m_viewsPanel
             // 
@@ -252,7 +242,6 @@
         #endregion
 
         private System.Windows.Forms.ToolStripButton m_tsbMachinery;
-        private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.ToolStripButton m_tsbSpotView;
         private System.Windows.Forms.Panel m_viewsPanel;
         private System.Windows.Forms.ToolStrip m_mainToolStrip;

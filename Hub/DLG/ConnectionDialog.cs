@@ -166,7 +166,7 @@ namespace DGD.Hub.DLG
 
                 try
                 {
-                    netEngin.Download(tmpFile , Urls.ConnectionRespURL);
+                    netEngin.Download(tmpFile , Urls.ConnectionRespURL, true);
                 }
                 catch(Exception ex)
                 {
@@ -304,7 +304,7 @@ namespace DGD.Hub.DLG
 
                 SetProgressMessage("Envoi des données au serveur...");
 
-                netEngin.Download(tmpFile , Urls.ConnectionReqURL);
+                netEngin.Download(tmpFile , Urls.ConnectionReqURL, true);
                 List<HubCore.DLG.Message> msgs = DialogEngin.ReadConnectionsReq(tmpFile).ToList();
                 m_msgID = msgs.Count == 0 ? 1 : msgs.Max(m => m.ID) + 1;
 
@@ -318,7 +318,7 @@ namespace DGD.Hub.DLG
                 msgs.Add(msg);
 
                 DialogEngin.WriteConnectionsReq(tmpFile , msgs);
-                netEngin.Upload(Urls.ConnectionReqURL , tmpFile);
+                netEngin.Upload(Urls.ConnectionReqURL , tmpFile, true);
                 StartTimer();
 
                 SetProgressMessage("Attente de la réponse du serveur...");

@@ -98,6 +98,7 @@ namespace DGD.Hub
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+
             try
             {
                 using (m_runOnceManager = new RunOnce.RunOnceManager())
@@ -175,10 +176,10 @@ namespace DGD.Hub
                 Application.Restart();
         }
 
-        private static void Initialize(Jobs.SplashScreen ss)
-        {
+        //private static void Initialize(Jobs.SplashScreen ss)
+        //{
 
-        }
+        //}
 
     }
 }

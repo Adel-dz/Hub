@@ -60,10 +60,8 @@ namespace DGD.HubCore
         {
 
             lock(m_locks)
-            {
                 if (--fLock.LockCount == 0)
                     m_locks.Remove(fLock);
-            }
 
             Monitor.Exit(fLock);
         }

@@ -16,6 +16,13 @@ namespace DGD.HubCore.Net
         static readonly int[] m_waitTimes = { 2 , 3 , 5 };// , 7 , 11 , 13 , 17 , 19 , 23 , 29 };
         readonly IConnectionParam m_cxnParam;
 
+        static NetEngin()
+        {
+#if !DEBUG
+            FluentFTP.FtpTrace.EnableTracing = false;
+#endif
+        }
+
         public NetEngin(IConnectionParam connectionParam)
         {
             Assert(connectionParam != null);
@@ -30,45 +37,20 @@ namespace DGD.HubCore.Net
 
             using (var ftpClient = CreateFtpClient())
             {
-                LogDbgInfo($"uploading {srcFilePath} to {destFilePath}");
+                string encFilePath = EncodeFile(srcFilePath);
 
-                string encFilePath;
-                using (FileLocker.Lock(srcFilePath))
-                    encFilePath = EncodeFile(srcFilePath);
+                FluentFTP.FtpVerify flags = FluentFTP.FtpVerify.Throw | FluentFTP.FtpVerify.OnlyChecksum;
+                flags |= FluentFTP.FtpVerify.Retry;
 
                 using (new AutoReleaser(() => File.Delete(encFilePath)))
-                    if (retryOnErr)
-                    {
-                        int ndxSleepTime = 0;
-
-                        while (true)
-                            try
-                            {
-                                if (!ftpClient.IsConnected)
-                                    ftpClient.Connect();
-
-                                ftpClient.UploadFile(encFilePath , destFilePath);
-                                LogDbgInfo("Upload done.");
-                                break;
-                            }
-                            catch (Exception ex)
-                            {
-                                LogDbgInfo(ex.Message);
-
-                                if (ndxSleepTime == m_waitTimes.Length)
-                                    throw;
-
-                                LogDbgInfo($"Seleeping {m_waitTimes[ndxSleepTime]} seconds.");
-                                Thread.Sleep(m_waitTimes[ndxSleepTime++] * 1000);
-                                LogDbgInfo("Retrying...");
-                                continue;
-                            }
-                    }
-                    else
+                    try
                     {
                         ftpClient.Connect();
-                        ftpClient.UploadFile(encFilePath , destFilePath);
-                        LogDbgInfo("Upload done.");
+                        ftpClient.UploadFile(encFilePath , destFilePath , createRemoteDir: true , verifyOptions: flags);
+                    }
+                    catch (FluentFTP.FtpException ex)
+                    {
+                        throw ex.InnerException ?? ex;
                     }
             }
         }
@@ -77,55 +59,34 @@ namespace DGD.HubCore.Net
         {
             Assert(Uri.IsWellFormedUriString(destDir , UriKind.Relative));
 
-            if (!destDir.EndsWith("/"))
-                destDir += '/';
+            List<FileInfo> files = new List<FileInfo>();
+
+            foreach(string src in srcPaths)
+            {
+                string tmpFile = EncodeFile(src);
+                string destPath = Path.Combine(Path.GetDirectoryName(tmpFile) , Path.GetFileName(src));
+
+                if (File.Exists(destPath))
+                    File.Delete(destPath);
+
+                File.Move(tmpFile , destPath);
+                files.Add(new FileInfo(destPath));
+            }
+
+            FluentFTP.FtpVerify flags = FluentFTP.FtpVerify.Throw | FluentFTP.FtpVerify.OnlyChecksum;
+            flags |= FluentFTP.FtpVerify.Retry;
 
             using (var ftpClient = CreateFtpClient())
-                foreach (string srcFilePath in srcPaths)
+            using (new AutoReleaser(() => files.ForEach((fi) => fi.Delete())))
+                try
                 {
-                    var destFilePath = destDir + Path.GetFileName(srcFilePath);
-
-                    LogDbgInfo($"uploading {srcFilePath} to {destFilePath}");
-
-                    string encFilePath;
-
-                    using (FileLocker.Lock(srcFilePath))
-                        encFilePath = EncodeFile(srcFilePath);
-
-                    using (new AutoReleaser(() => File.Delete(encFilePath)))
-                        if (retryOnErr)
-                        {
-                            int ndxSleepTime = 0;
-
-                            while (true)
-                                try
-                                {
-                                    if (!ftpClient.IsConnected)
-                                        ftpClient.Connect();
-
-                                    ftpClient.UploadFile(encFilePath , destFilePath);
-                                    LogDbgInfo("Upload done.");
-                                    break;
-                                }
-                                catch (Exception ex)
-                                {
-                                    LogDbgInfo(ex.Message);
-
-                                    if (ndxSleepTime == m_waitTimes.Length)
-                                        throw;
-
-                                    LogDbgInfo($"Seleeping {m_waitTimes[ndxSleepTime]} seconds.");
-                                    Thread.Sleep(m_waitTimes[ndxSleepTime++] * 1000);
-                                    LogDbgInfo("Retrying...");
-                                    continue;
-                                }
-                        }
-                        else
-                        {
-                            ftpClient.Connect();
-                            ftpClient.UploadFile(encFilePath , destFilePath);
-                            LogDbgInfo("Upload done.");
-                        }
+                    ftpClient.Connect();
+                    ftpClient.UploadFiles(files , destDir , createRemoteDir: true ,
+                        verifyOptions: flags , errorHandling: FluentFTP.FtpError.Throw);
+                }
+                catch (FluentFTP.FtpException ex)
+                {
+                    throw ex.InnerException ?? ex;
                 }
         }
 
@@ -133,122 +94,75 @@ namespace DGD.HubCore.Net
         {
             Assert(Uri.IsWellFormedUriString(srcFilePath , UriKind.Relative));
 
+            string tmpFile = Path.GetTempFileName();
+
+            FluentFTP.FtpVerify flags = FluentFTP.FtpVerify.Throw | FluentFTP.FtpVerify.OnlyChecksum;
+            flags |= FluentFTP.FtpVerify.Retry;
+
             using (var ftpClient = CreateFtpClient())
-            {
-                LogDbgInfo($"Downloading {srcFilePath} to {destPath}");
-
-                string tmpFile = Path.GetTempFileName();
-
-                if (retryOnErr)
-                {
-                    int ndxSleepTime = 0;
-
-                    while (true)
-                        try
-                        {
-                            if (!ftpClient.IsConnected)
-                                ftpClient.Connect();
-
-                            ftpClient.DownloadFile(tmpFile , srcFilePath);
-                            LogDbgInfo("Download done.");
-                            break;
-                        }
-                        catch (Exception ex)
-                        {
-                            LogDbgInfo(ex.Message);
-
-                            if (ndxSleepTime == m_waitTimes.Length)
-                                throw;
-
-                            LogDbgInfo($"Seleeping {m_waitTimes[ndxSleepTime]} seconds.");
-                            Thread.Sleep(m_waitTimes[ndxSleepTime++] * 1000);
-                            LogDbgInfo("Retrying...");
-                            continue;
-                        }
-                }
-                else
+                try
                 {
                     ftpClient.Connect();
-                    ftpClient.DownloadFile(tmpFile , srcFilePath);
-                    LogDbgInfo("Download done.");
+                    ftpClient.DownloadFile(tmpFile , srcFilePath , verifyOptions: flags);
+                }
+                catch (FluentFTP.FtpException ex)
+                {
+                    throw ex.InnerException ?? ex;
                 }
 
-                using (new AutoReleaser(() => File.Delete(tmpFile)))
+            using (new AutoReleaser(() => File.Delete(tmpFile)))
+            {
+                string decFilePath = DecodeFile(tmpFile);
+
+                using (FileLocker.Lock(destPath))
                 {
-                    string decFilePath = DecodeFile(tmpFile);
+                    if (File.Exists(destPath))
+                        File.Delete(destPath);
 
-                    using (FileLocker.Lock(destPath))
-                    {
-                        if (File.Exists(destPath))
-                            File.Delete(destPath);
-
-                        File.Move(decFilePath , destPath);
-                    }
-
+                    File.Move(decFilePath , destPath);
                 }
             }
         }
 
         public void Download(string destFolder , IEnumerable<string> srcURLs , bool retryOnErr = false)
         {
-            Assert(!srcURLs.Any(s => Uri.IsWellFormedUriString(s, UriKind.Relative) == false));
+            Assert(!srcURLs.Any(s => Uri.IsWellFormedUriString(s , UriKind.Relative) == false));
+
+            string tmpDir = Path.GetTempPath();
+
+            FluentFTP.FtpVerify flags = FluentFTP.FtpVerify.Throw | FluentFTP.FtpVerify.OnlyChecksum;
+            flags |= FluentFTP.FtpVerify.Retry;
 
             using (var ftpClient = CreateFtpClient())
+                try
+                {
+                    ftpClient.Connect();
+                    ftpClient.DownloadFiles(tmpDir , srcURLs , verifyOptions: flags , errorHandling: FluentFTP.FtpError.Throw);
+                }
+                catch (FluentFTP.FtpException ex)
+                {
+                    throw ex.InnerException ?? ex;
+                }
+
+
+            foreach (string src in srcURLs)
             {
-                string tmpFile = Path.GetTempFileName();
+                string srcFile = Path.GetFileName(src);
+                string dlFile = Path.Combine(tmpDir , srcFile);
 
-                using (new AutoReleaser(() => File.Delete(tmpFile)))
-                    foreach (string srcUrl in srcURLs)
-                    {
-                        string destPath = Path.Combine(destFolder , Path.GetFileName(srcUrl));
+                string decFilePath = DecodeFile(dlFile);
 
-                        LogDbgInfo($"Downloading {srcUrl} to {destPath}");
+                string destPath = Path.Combine(destFolder , srcFile);
 
-                        if (retryOnErr)
-                        {
-                            int ndxSleepTime = 0;
+                using (FileLocker.Lock(destPath))
+                {
+                    if (File.Exists(destPath))
+                        File.Delete(destPath);
 
-                            while (true)
-                                try
-                                {
-                                    if (!ftpClient.IsConnected)
-                                        ftpClient.Connect();
+                    File.Move(decFilePath , destPath);
+                }
 
-                                    ftpClient.DownloadFile(tmpFile , srcUrl);
-                                    LogDbgInfo("Download done.");
-                                    break;
-                                }
-                                catch (Exception ex)
-                                {
-                                    LogDbgInfo(ex.Message);
-
-                                    if (ndxSleepTime == m_waitTimes.Length)
-                                        throw;
-
-                                    LogDbgInfo($"Seleeping {m_waitTimes[ndxSleepTime]} seconds.");
-                                    Thread.Sleep(m_waitTimes[ndxSleepTime++] * 1000);
-                                    LogDbgInfo("Retrying...");
-                                    continue;
-                                }
-                        }
-                        else
-                        {
-                            ftpClient.Connect();
-                            ftpClient.DownloadFile(tmpFile , srcUrl);
-                            LogDbgInfo("Download done.");
-                        }
-
-
-                        string decFilePath = DecodeFile(tmpFile);
-                        
-                        using (FileLocker.Lock(destPath))
-                        {
-                            if (File.Exists(destPath))
-                                File.Delete(destPath);
-
-                            File.Move(decFilePath , destPath);
-                        }
-                    }
+                File.Delete(dlFile);
             }
         }
 
@@ -282,8 +196,11 @@ namespace DGD.HubCore.Net
             using (FileStream ofs = File.OpenWrite(tmpFile))
             using (var xs = new XorStream(ofs))
             using (var gzs = new GZipStream(xs , CompressionMode.Compress))
-            using (FileStream ifs = File.OpenRead(filePath))
-                ifs.CopyTo(gzs);
+            {
+                using (FileLocker.Lock(filePath))
+                using (FileStream ifs = File.OpenRead(filePath))
+                    ifs.CopyTo(gzs);
+            }
 
             return tmpFile;
         }

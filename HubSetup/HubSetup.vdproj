@@ -15,8 +15,14 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_380D2096F8237562F0B4AE3F53C2A4D7"
+        "MsmKey" = "8:_12666F6512823C936C934F43AC490672"
         "OwnerKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_12666F6512823C936C934F43AC490672"
+        "OwnerKey" = "8:_B1CAD10EF995E7930CB27FBF45B8EC7C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -27,8 +33,26 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_B1CAD10EF995E7930CB27FBF45B8EC7C"
+        "OwnerKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_B6BF4A155058F8F3508777B1ACDB8745"
         "OwnerKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BD5948F9F16840BBA504F7A0C4ECFE14"
+        "OwnerKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BD5948F9F16840BBA504F7A0C4ECFE14"
+        "OwnerKey" = "8:_B1CAD10EF995E7930CB27FBF45B8EC7C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -39,18 +63,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D927DA59ED9749E988776CECE320C758"
-        "OwnerKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D927DA59ED9749E988776CECE320C758"
-        "OwnerKey" = "8:_380D2096F8237562F0B4AE3F53C2A4D7"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_7D35B06CE69A400A8C4846740E33B15B"
         "MsmSig" = "8:_UNDEFINED"
@@ -58,13 +70,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_380D2096F8237562F0B4AE3F53C2A4D7"
+        "OwnerKey" = "8:_B1CAD10EF995E7930CB27FBF45B8EC7C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D927DA59ED9749E988776CECE320C758"
+        "OwnerKey" = "8:_12666F6512823C936C934F43AC490672"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_BD5948F9F16840BBA504F7A0C4ECFE14"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -168,13 +186,49 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_380D2096F8237562F0B4AE3F53C2A4D7"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_12666F6512823C936C934F43AC490672"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.9.6651.35340, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:FluentFTP, Version=19.2.2.0, Culture=neutral, PublicKeyToken=f4af092b1d8df44f, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_12666F6512823C936C934F43AC490672"
+                    {
+                    "Name" = "8:FluentFTP.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:FluentFTP.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_114A8C0A7E7C4E8EA4AB4AD535913F2E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B1CAD10EF995E7930CB27FBF45B8EC7C"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.14.6716.20549, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_B1CAD10EF995E7930CB27FBF45B8EC7C"
+                    {
+                    "Name" = "8:Hubcore.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:Hubcore.dll"
             "TargetName" = "8:"
@@ -201,8 +255,44 @@
             "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
                 "ScatterAssemblies"
                 {
+                    "_B6BF4A155058F8F3508777B1ACDB8745"
+                    {
+                    "Name" = "8:System.Net.Http.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:System.Net.Http.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_114A8C0A7E7C4E8EA4AB4AD535913F2E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_BD5948F9F16840BBA504F7A0C4ECFE14"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.10.6716.20549, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_BD5948F9F16840BBA504F7A0C4ECFE14"
+                    {
+                    "Name" = "8:ezLib.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:ezLib.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_114A8C0A7E7C4E8EA4AB4AD535913F2E"
@@ -238,32 +328,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D927DA59ED9749E988776CECE320C758"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.5.6651.17906, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                }
-            "SourcePath" = "8:ezLib.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_114A8C0A7E7C4E8EA4AB4AD535913F2E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
         }
@@ -322,15 +386,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Hub de la Valeur en Douane"
-        "ProductCode" = "8:{5F8D2EDA-F1D5-4D45-9183-57247DE80602}"
-        "PackageCode" = "8:{1F2F627C-396A-4C20-B274-E53F1C96D22B}"
+        "ProductCode" = "8:{A986B72B-2F47-4332-863F-EC95BA8319AA}"
+        "PackageCode" = "8:{AF16E249-932D-46B5-8AE7-C12BF4E45EC5}"
         "UpgradeCode" = "8:{09E42667-45AD-4BDE-8CBB-57A72FB06158}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.13.6676"
+        "ProductVersion" = "8:0.14.6716"
         "Manufacturer" = "8:Douane Algérienne"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

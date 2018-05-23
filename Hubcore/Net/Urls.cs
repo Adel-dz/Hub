@@ -5,9 +5,9 @@ namespace DGD.HubCore.Net
     public static class Urls
     {
 #if DEBUG
-        const string ROOT_DIR = "hub_tst/";
+        const string ROOT_DIR = "/hub_tst/";
 #else
-        const string ROOT_DIR = "hub/";
+        const string ROOT_DIR = "/hub/";
 #endif
 
 

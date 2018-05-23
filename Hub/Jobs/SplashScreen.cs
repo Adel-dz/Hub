@@ -40,9 +40,8 @@ namespace DGD.Hub.Jobs
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            m_timer.TimeElapsed -= Timer_TimeElapsed;
-            m_timer.Stop();
             m_timer.Dispose();
+            m_timer.TimeElapsed -= Timer_TimeElapsed;
 
             base.OnClosing(e);
         }

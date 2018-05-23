@@ -163,9 +163,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
+            this.Controls.Add(this.m_btnStart);
             this.Controls.Add(m_lblCaption);
             this.Controls.Add(m_toolStrip);
-            this.Controls.Add(this.m_btnStart);
             this.Controls.Add(this.m_lblArchiveInfo);
             this.Controls.Add(this.m_lblSource);
             this.Controls.Add(this.m_pbLogo);

@@ -267,19 +267,20 @@ namespace DGD.HubGovernor.Clients
 
         static string GetComprehensiveTime(DateTime dt)
         {
-            DateTime now = DateTime.Now;
-            TimeSpan ts = now.Subtract(dt);
+            return $"{dt.ToShortDateString()} à {dt.ToShortTimeString()}";
+            
+            //TimeSpan ts = now.Subtract(dt);
 
-            if (ts.Days > 0)
-                return dt.ToString();
+            //if (ts.Days > 0)
+            //    return dt.ToString();
 
-            if (ts.Hours > 0)
-                return $"{ts.Hours} heure(s) et {ts.Minutes} Minute(s)";
+            //if (ts.Hours > 0)
+            //    return $"{ts.Hours} heure(s) et {ts.Minutes} Minute(s)";
 
-            if (ts.Minutes > 0)
-                return $"{ts.Minutes} Minute(s)";
+            //if (ts.Minutes > 0)
+            //    return $"{ts.Minutes} Minute(s)";
 
-            return "Quelques secondes";
+            //return "Quelques secondes";
 
         }
 
@@ -312,7 +313,7 @@ namespace DGD.HubGovernor.Clients
                 var clStatus = m_ndxerStatus.Get(hubClient.ID) as ClientStatus;
 
                 m_lblContact.Text = hubClient.ContactName;
-                m_lblCreationTime.Text = hubClient.CreationTime.ToString();
+                m_lblCreationTime.Text = GetComprehensiveTime(hubClient.CreationTime);
                 m_lblEMail.Text = hubClient.ContaclEMail;
                 m_lblHubArchitecture.Text = AppArchitectures.GetArchitectureName(clEnv.HubArchitecture);
                 m_lblHubVersion.Text = clEnv.HubVersion;

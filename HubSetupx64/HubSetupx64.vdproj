@@ -21,6 +21,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_80E5B7093758D30B1442EBE2FE73B4BE"
+        "OwnerKey" = "8:_F0ED60E404BC424F9C287B5747689817"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_80E5B7093758D30B1442EBE2FE73B4BE"
+        "OwnerKey" = "8:_8D996BF201B693918AFFD5ECC76D4931"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_8D996BF201B693918AFFD5ECC76D4931"
         "OwnerKey" = "8:_F0ED60E404BC424F9C287B5747689817"
         "MsmSig" = "8:_UNDEFINED"
@@ -59,6 +71,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_8D996BF201B693918AFFD5ECC76D4931"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_80E5B7093758D30B1442EBE2FE73B4BE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -188,13 +206,49 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_80E5B7093758D30B1442EBE2FE73B4BE"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:FluentFTP, Version=19.2.2.0, Culture=neutral, PublicKeyToken=f4af092b1d8df44f, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_80E5B7093758D30B1442EBE2FE73B4BE"
+                    {
+                    "Name" = "8:FluentFTP.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:FluentFTP.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_2DD04DD083914E2F9DB58DA96EA90F77"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_8D996BF201B693918AFFD5ECC76D4931"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.11.6668.18443, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.14.6716.20549, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_8D996BF201B693918AFFD5ECC76D4931"
+                    {
+                    "Name" = "8:Hubcore.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:Hubcore.dll"
             "TargetName" = "8:"
@@ -218,9 +272,14 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.7.6668.18441, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.10.6716.20549, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
+                    "_A36AF53A5AB803DB2AC2702037F3661A"
+                    {
+                    "Name" = "8:ezLib.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:ezLib.dll"
             "TargetName" = "8:"
@@ -247,6 +306,11 @@
             "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
                 "ScatterAssemblies"
                 {
+                    "_DA4662414A58411D82BA3662853B7E93"
+                    {
+                    "Name" = "8:System.Net.Http.dll"
+                    "Attributes" = "3:512"
+                    }
                 }
             "SourcePath" = "8:System.Net.Http.dll"
             "TargetName" = "8:"
@@ -322,15 +386,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Hub de la Valeur en Douane"
-        "ProductCode" = "8:{45644584-69FB-4F6B-9AE4-012B95B80C3F}"
-        "PackageCode" = "8:{CC1885D5-CDC2-46BD-BF29-34EFC4A31C27}"
+        "ProductCode" = "8:{EA55D84B-69F0-4D33-AB6B-B427C31243C6}"
+        "PackageCode" = "8:{4C40C40B-A734-4A44-8C1D-A3BDF5B576CE}"
         "UpgradeCode" = "8:{AB529E85-5504-489A-BF87-BFB25BE86868}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.13.6676"
+        "ProductVersion" = "8:0.14.6716"
         "Manufacturer" = "8:Douane Algérienne"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

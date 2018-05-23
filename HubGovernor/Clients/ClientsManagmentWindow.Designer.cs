@@ -579,7 +579,7 @@
             m_lblLastActivityLabel.Name = "m_lblLastActivityLabel";
             m_lblLastActivityLabel.Size = new System.Drawing.Size(110, 14);
             m_lblLastActivityLabel.TabIndex = 11;
-            m_lblLastActivityLabel.Text = "Dernière activité:";
+            m_lblLastActivityLabel.Text = "Dernière activité le:";
             m_lblLastActivityLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // m_lblCreationTimeLabel

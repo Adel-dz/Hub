@@ -78,6 +78,7 @@
             // 
             m_lblPlanning.ActiveLinkColor = System.Drawing.Color.Blue;
             m_lblPlanning.BackColor = System.Drawing.Color.Transparent;
+            m_lblPlanning.Enabled = false;
             m_lblPlanning.Image = global::DGD.HubGovernor.Properties.Resources.backup_timer_32;
             m_lblPlanning.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             m_lblPlanning.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;

@@ -1,6 +1,5 @@
 ﻿using DGD.Hub.Log;
 using DGD.Hub.RunOnce;
-using DGD.HubCore;
 using DGD.HubCore.DB;
 using DGD.HubCore.DLG;
 using DGD.HubCore.Net;
@@ -83,10 +82,10 @@ namespace DGD.Hub.DLG
                 {
                     m_clStatus = ClientStatus_t.Enabled;
                     m_dialogTimer.Start();
-                    m_updateTimer.Start(true);
+                    m_updateTimer.Start();
                     m_dialogRunning = true;
 
-                    var updateTask = new Task(AutoUpdater.UpdateApp , TaskCreationOptions.LongRunning);
+                    var updateTask = new Task(AutoUpdater.Update , TaskCreationOptions.LongRunning);
                     updateTask.Start();
                 }
 
@@ -143,24 +142,25 @@ namespace DGD.Hub.DLG
                 //assume client enabled
                 m_clStatus = ClientStatus_t.Enabled;
                 new StartHandler(m_clInfo.ClientID , StartResp).Start();
-           };
+            };
 
             var task = new Task(start , TaskCreationOptions.LongRunning);
             task.OnSuccess(onSuccess);
             task.OnError(onErr);
 
             task.Start();
-
-            var appUpdateTask = new Task(AutoUpdater.UpdateApp , TaskCreationOptions.LongRunning);
-            appUpdateTask.Start();
         }
 
         public void Stop(bool ignoreCloseNotification = false)
         {
             if (IsRunning)
             {
-                m_updateTimer.Stop();
-                m_dialogTimer.Stop();
+
+                if (!m_updateTimer.IsDisposed)
+                    m_updateTimer.Stop();
+
+                if (!m_dialogTimer.IsDisposed)
+                    m_dialogTimer.Stop();
 
                 Opts.SettingsView.ClientInfoChanged -= SettingsView_ClientInfoChaned;
 
@@ -293,9 +293,16 @@ namespace DGD.Hub.DLG
         {
             if (ok)
             {
-                m_dialogTimer.Start();
-                m_updateTimer.Start(true);
+                if (!m_dialogTimer.IsDisposed)
+                    m_dialogTimer.Start();
+
+                if (!m_updateTimer.IsDisposed)
+                    m_updateTimer.Start();
+
                 m_dialogRunning = true;
+
+                var appUpdateTask = new Task(AutoUpdater.Update , TaskCreationOptions.LongRunning);
+                appUpdateTask.Start();
             }
             else
             {
@@ -322,9 +329,18 @@ namespace DGD.Hub.DLG
                 break;
 
                 case ResumeHandler.Result_t.Ok:
-                m_dialogTimer.Start();
-                m_updateTimer.Start(true);
+
+                if (!m_dialogTimer.IsDisposed)
+                    m_dialogTimer.Start();
+
+                if (!m_dialogTimer.IsDisposed)
+                    m_updateTimer.Start();
+
                 m_dialogRunning = true;
+
+                var appUpdateTask = new Task(AutoUpdater.Update , TaskCreationOptions.LongRunning);
+                appUpdateTask.Start();
+
                 break;
 
                 case ResumeHandler.Result_t.Rejected:
@@ -348,7 +364,7 @@ namespace DGD.Hub.DLG
             Action<Task> onErr = t =>
             {
                 busyDlg.Dispose();
-                System.Windows.Forms.MessageBox.Show(t.Exception.InnerException.Message , null);
+                //System.Windows.Forms.MessageBox.Show(t.Exception.InnerException.Message , null);
             };
 
             IEnumerable<ProfileInfo> profiles = null;
@@ -381,7 +397,6 @@ namespace DGD.Hub.DLG
                 clInfo.ContaclEMail = dlg.ContactEMail;
                 clInfo.ContactName = dlg.Contact;
                 clInfo.ContactPhone = dlg.ContactPhone;
-                //clInfo.MachineName = Environment.MachineName;
             }
 
 
@@ -405,7 +420,8 @@ namespace DGD.Hub.DLG
 
         void ProcessDialogTimer()
         {
-            m_dialogTimer.Stop();
+            if (!m_dialogTimer.IsDisposed)
+                m_dialogTimer.Stop();
 
             Dbg.Log("Processing dialog timer...");
 
@@ -503,12 +519,15 @@ namespace DGD.Hub.DLG
                 if (--m_timeToLive <= 0)
                     PostSyncMessage();
 
-                m_dialogTimer.Start();
+                if (!m_dialogTimer.IsDisposed)
+                    m_dialogTimer.Start();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
-                m_dialogTimer.Start();
+
+                if (!m_dialogTimer.IsDisposed)
+                    m_dialogTimer.Start();
             }
         }
 
@@ -556,7 +575,10 @@ namespace DGD.Hub.DLG
             {
                 new NetEngin(Program.NetworkSettings).Upload(SettingsManager.GetClientDialogURL(m_clInfo.ClientID) , dlgFile);
             }
-            catch { }
+            catch(Exception ex)
+            {
+                Dbg.Log("PostCloseMessage: " + ex.Message);
+            }
         }
 
         void PostSyncMessage()
@@ -585,7 +607,10 @@ namespace DGD.Hub.DLG
                     DialogEngin.AppendConnectionsReq(tmpFile , new Message[] { msg });
                     netEngin.Upload(Urls.ConnectionReqURL , tmpFile);
                 }
-                catch { }
+                catch(Exception ex)
+                {
+                    Dbg.Log("PostSyncMessage: " + ex.Message);
+                }
                 finally
                 {
                     File.Delete(tmpFile);

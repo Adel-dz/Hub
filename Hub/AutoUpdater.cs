@@ -9,6 +9,7 @@ using System.Linq;
 using DGD.HubCore.Net;
 using System.Reflection;
 using DGD.HubCore;
+using System.Threading;
 
 namespace DGD.Hub
 {
@@ -37,69 +38,74 @@ namespace DGD.Hub
 
             string manifest = Path.GetTempFileName();
             using (new AutoReleaser(() => File.Delete(manifest)))
-            {
-                var netEngin = new NetEngin(Program.NetworkSettings);
-                netEngin.Download(manifest , Urls.ManifestURL);
-                IUpdateManifest updateManifest = UpdateEngin.ReadUpdateManifest(manifest);
-
-                string log = "Recherche de mise à jour des données. Version actulle des données: " + 
-                    $"{Program.Settings.DataGeneration}. ";
-
-
-                if (updateManifest.DataGeneration == Program.Settings.DataGeneration)
+                try
                 {
-                    Program.DialogManager.PostLog(log + " Les données sont à jour", false);
-                    return true;
-                }
+                    var netEngin = new NetEngin(Program.NetworkSettings);
+                    netEngin.Download(manifest , Urls.ManifestURL);
+                    IUpdateManifest updateManifest = UpdateEngin.ReadUpdateManifest(manifest);
 
-                if (Program.Settings.UpdateKey != updateManifest.UpdateKey)
-                {
-                    if (Program.Settings.UpdateKey == 0)
-                        Program.Settings.UpdateKey = updateManifest.UpdateKey;
-                    else
+                    string log = "Recherche de mise à jour des données. Version actulle des données: " +
+                        $"{Program.Settings.DataGeneration}. ";
+
+
+                    if (updateManifest.DataGeneration == Program.Settings.DataGeneration)
                     {
-                        Log.LogEngin.PushFlash(AppText.ERR_UPDATEKEY);
-                        Dbg.Log("Update key mismatch!");
-
-                        Program.DialogManager.PostLog(log + AppText.ERR_UPDATEKEY, true);
-
-                        return false;
+                        Program.DialogManager.PostLog(log + " Les données sont à jour" , false);
+                        return true;
                     }
-                }
 
-                //TODO: signaler l'erreur si DataGeneration < manifest.DataGeneration            
-
-                string dataManifest = Path.GetTempFileName();
-
-                using (Log.LogEngin.PushMessage("Installation des mises à jour..."))
-                using (new AutoReleaser(() => File.Delete(dataManifest)))
-                {
-                    netEngin.Download(dataManifest , Urls.DataManifestURL);
-
-                    var uris = new List<UpdateURI>(UpdateEngin.ReadDataManifest(dataManifest , Program.Settings.DataGeneration));
-
-                    foreach (UpdateURI uu in uris.OrderBy(u => u.DataPreGeneration))
+                    if (Program.Settings.UpdateKey != updateManifest.UpdateKey)
                     {
-                        if (uu.DataPreGeneration == Program.Settings.DataGeneration)
+                        if (Program.Settings.UpdateKey == 0)
+                            Program.Settings.UpdateKey = updateManifest.UpdateKey;
+                        else
                         {
-                            string updateFile = Path.GetTempFileName();
-                            using (new AutoReleaser(() => File.Delete(updateFile)))
-                            {
-                                netEngin.Download(updateFile , Urls.DataUpdateDirURL + uu.FileURI);
-                                ApplyUpdate(updateFile);
-                                Program.Settings.DataGeneration = uu.DataPostGeneration;
-                            }
+                            Log.LogEngin.PushFlash(AppText.ERR_UPDATEKEY);
+                            Dbg.Log("Update key mismatch!");
+
+                            Program.DialogManager.PostLog(log + AppText.ERR_UPDATEKEY , true);
+
+                            return false;
                         }
                     }
 
-                    DataUpdated?.Invoke();
+                    //TODO: signaler l'erreur si DataGeneration < manifest.DataGeneration            
+
+                    string dataManifest = Path.GetTempFileName();
+
+                    using (Log.LogEngin.PushMessage("Installation des mises à jour..."))
+                    using (new AutoReleaser(() => File.Delete(dataManifest)))
+                    {
+                        netEngin.Download(dataManifest , Urls.DataManifestURL);
+
+                        var uris = new List<UpdateURI>(UpdateEngin.ReadDataManifest(dataManifest , Program.Settings.DataGeneration));
+
+                        foreach (UpdateURI uu in uris.OrderBy(u => u.DataPreGeneration))
+                        {
+                            if (uu.DataPreGeneration == Program.Settings.DataGeneration)
+                            {
+                                string updateFile = Path.GetTempFileName();
+                                using (new AutoReleaser(() => File.Delete(updateFile)))
+                                {
+                                    netEngin.Download(updateFile , Urls.DataUpdateDirURL + uu.FileURI);
+                                    ApplyUpdate(updateFile);
+                                    Program.Settings.DataGeneration = uu.DataPostGeneration;
+                                }
+                            }
+                        }
+
+                        DataUpdated?.Invoke();
+                    }
+
+                    Program.DialogManager.PostLog(log + "Mises à jour installées. " +
+                        $"Nouvelle version des données: {Program.Settings.DataGeneration}" , false);
+
+                    Assert(Program.Settings.DataGeneration == updateManifest.DataGeneration);
                 }
-
-                Program.DialogManager.PostLog(log + "Mises à jour installées. "+
-                    $"Nouvelle version des données: {Program.Settings.DataGeneration}" , false);
-
-                Assert(Program.Settings.DataGeneration == updateManifest.DataGeneration);
-            }
+                catch (Exception ex)
+                {
+                    Dbg.Log("Data update: " + ex.Message);
+                }
 
             return true;
         }
@@ -112,58 +118,74 @@ namespace DGD.Hub
 
             string tmpFile = Path.GetTempFileName();
             using (new AutoReleaser(() => File.Delete(tmpFile)))
-            {
-                var netEngin = new NetEngin(Program.NetworkSettings);
-                netEngin.Download(tmpFile , Urls.ManifestURL);
-                IUpdateManifest updateManifest = UpdateEngin.ReadUpdateManifest(tmpFile);
-
-                Version curVer = Assembly.GetExecutingAssembly().GetName().Version;
-                Version ver = updateManifest.GetAppVersion(Program.AppArchitecture);
-
-                if (ver == null || curVer.CompareTo(ver) >= 0)
+                try
                 {
-                    Log.LogEngin.PushFlash("Vous disposez déjà de la dernière version de l’application.");
-                    Program.DialogManager.PostLog(logTxt + "Pas de nouvelle mise à jour" , false);
-                    return;
+                    var netEngin = new NetEngin(Program.NetworkSettings);
+                    netEngin.Download(tmpFile , Urls.ManifestURL);
+                    IUpdateManifest updateManifest = UpdateEngin.ReadUpdateManifest(tmpFile);
+
+                    Version curVer = Assembly.GetExecutingAssembly().GetName().Version;
+                    Version ver = updateManifest.GetAppVersion(Program.AppArchitecture);
+
+                    if (ver == null || curVer.CompareTo(ver) >= 0)
+                    {
+                        Log.LogEngin.PushFlash("Vous disposez déjà de la dernière version de l’application.");
+                        Program.DialogManager.PostLog(logTxt + "Pas de nouvelle mise à jour" , false);
+                        return;
+                    }
+
+                    Log.LogEngin.PushFlash($"Une nouvelle version de l'application est disponible ({ver}).");
+                    Program.DialogManager.PostLog(logTxt +
+                        $"Une nouvelle version de l'application est disponible, version: ({ver})" , false);
+
+                    const string setupTxtLog = "L'utilsateur a refuser d'installer la nouvelle version du HUB";
+
+                    if (CanDownlaodAppUpdate?.Invoke() != true)
+                    {
+                        Program.DialogManager.PostLog(setupTxtLog , false);
+                        return;
+                    }
+
+                    Log.LogEngin.PushFlash($"Téléchargement de la mise à jour...");
+
+                    //dl app manifest
+                    netEngin.Download(tmpFile , Urls.AppManifestURL);
+                    Dictionary<AppArchitecture_t , string> upFiles = UpdateEngin.ReadAppManifest(tmpFile);
+                    string fileName = upFiles[Program.AppArchitecture];
+
+                    //dl update file
+                    var url = Urls.AppUpdateDirURL + fileName;
+                    netEngin.Download(tmpFile , url);
+
+                    if (CanRunAppUpdate?.Invoke() != true)
+                    {
+                        Program.DialogManager.PostLog(setupTxtLog , false);
+                        return;
+                    }
+
+                    string tmpDir = Path.GetTempPath();
+                    new FilesBag().Decompress(tmpFile , tmpDir);
+                    System.Diagnostics.Process.Start(Path.Combine(tmpDir , "setup.exe"));
+                    Program.DialogManager.PostLog("Lancement du programme d'installation de la mise à jour du HUB" , false);
+                    System.Windows.Forms.Application.Exit();
                 }
-
-                Log.LogEngin.PushFlash($"Une nouvelle version de l'application est disponible ({ver}).");
-                Program.DialogManager.PostLog(logTxt + 
-                    $"Une nouvelle version de l'application est disponible, version: ({ver})", false);
-
-                const string setupTxtLog = "L'utilsateur a refuser d'installer la nouvelle version du HUB";
-
-                if (CanDownlaodAppUpdate?.Invoke() != true)
+                catch (Exception ex)
                 {
-                    Program.DialogManager.PostLog(setupTxtLog , false);
-                    return;
+                    Dbg.Log("App update: " + ex.Message);
                 }
-
-                Log.LogEngin.PushFlash($"Téléchargement de la mise à jour...");
-
-                //dl app manifest
-                netEngin.Download(tmpFile , Urls.AppManifestURL);
-                Dictionary<AppArchitecture_t , string> upFiles = UpdateEngin.ReadAppManifest(tmpFile);
-                string fileName = upFiles[Program.AppArchitecture];
-
-                //dl update file
-                var url = Urls.AppUpdateDirURL + fileName;
-                netEngin.Download(tmpFile , url);
-
-                if (CanRunAppUpdate?.Invoke() != true)
-                {
-                    Program.DialogManager.PostLog(setupTxtLog , false); 
-                    return;
-                }
-
-                string tmpDir = Path.GetTempPath();
-                new FilesBag().Decompress(tmpFile , tmpDir);
-                System.Diagnostics.Process.Start(Path.Combine(tmpDir , "setup.exe"));
-                Program.DialogManager.PostLog("Lancement du programme d'installation de la mise à jour du HUB" , false);
-                System.Windows.Forms.Application.Exit();
-            }
         }
 
+        public static void Update()
+        {
+            UpdateApp();
+
+            Thread.Sleep(2000); //keep LogBox msg on screen
+
+            Log.LogEngin.PushFlash("Recherche des mises à jour de données...");
+
+            if(UpdateData())
+                Log.LogEngin.PushFlash("Vos données sont à jour.");
+        }
 
         //private;
         static void ApplyAction(IUpdateAction action , DBKeyIndexer ndxer)

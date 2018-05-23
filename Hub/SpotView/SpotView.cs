@@ -68,16 +68,16 @@ namespace DGD.Hub.SpotView
             base.OnLoad(e);
         }
 
-        protected override bool ProcessCmdKey(ref Message msg , Keys keyData)
-        {
-            if (keyData == Keys.Enter && ActiveControl == m_tbSubHeading)
-            {
-                m_tsbSearch.PerformClick();
-                return true;
-            }
+        //protected override bool ProcessCmdKey(ref Message msg , Keys keyData)
+        //{
+        //    if (keyData == Keys.Enter && ActiveControl == m_tbSubHeading)
+        //    {
+        //        m_tsbSearch.PerformClick();
+        //        return true;
+        //    }
 
-            return base.ProcessCmdKey(ref msg , keyData);
-        }
+        //    return base.ProcessCmdKey(ref msg , keyData);
+        //}
 
         //private:
         bool EmptyMode
@@ -166,10 +166,12 @@ namespace DGD.Hub.SpotView
             tablesManager.EndTableProcessing += EndTableProcessing_Handler;
             tablesManager.GetDataProvider(TablesID.COUNTRY).SourceCleared += Countries_SourceCleared;
             tablesManager.GetDataProvider(TablesID.INCOTERM).SourceCleared += Incoterms_SourceCleared;
+            tablesManager.GetDataProvider(TablesID.PRODUCT).SourceCleared += Products_SourceCleared;
 
             AutoUpdater.BeginTableUpdate += BeginTableProcessing_Handler;
             AutoUpdater.EndTableUpdate += EndTableProcessing_Handler;            
         }
+
 
         void UnregisterHandlers()
         {
@@ -179,6 +181,7 @@ namespace DGD.Hub.SpotView
             tablesManager.EndTableProcessing -= EndTableProcessing_Handler;
             tablesManager.GetDataProvider(TablesID.COUNTRY).SourceCleared -= Countries_SourceCleared;
             tablesManager.GetDataProvider(TablesID.INCOTERM).SourceCleared -= Incoterms_SourceCleared;
+            tablesManager.GetDataProvider(TablesID.PRODUCT).SourceCleared -= Products_SourceCleared;
 
             AutoUpdater.BeginTableUpdate -= BeginTableProcessing_Handler;
             AutoUpdater.EndTableUpdate -= EndTableProcessing_Handler;            
@@ -346,6 +349,8 @@ namespace DGD.Hub.SpotView
                 new DataLoader(this).LoadIncotermsAsync();
                 m_cbIncoterm.Enabled = true;
             }
+            else if (tableID == TablesID.PRODUCT)
+                new DataLoader(this).LoadAutoCompleteSourceAsync();
 
             m_tsbSearch.Enabled = true;
         }
@@ -470,6 +475,8 @@ namespace DGD.Hub.SpotView
             m_lvSearchResult.SetColumnHeaderSortIcon(e.Column , sorter.SortDescending ? SortOrder.Descending :
                 SortOrder.Ascending);
         }
+
+        private void Products_SourceCleared() => new DataLoader(this).LoadAutoCompleteSourceAsync();
 
         private void Incoterms_SourceCleared() => new DataLoader(this).LoadIncotermsAsync();
 
