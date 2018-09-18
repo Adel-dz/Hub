@@ -3,7 +3,7 @@ using easyLib;
 
 namespace DGD.Hub.RunOnce
 {
-    sealed class ResetUpdateInfo: IRunOnceAction
+    sealed class ResetUpdateInfo: IRunOnceCommand
     {
         public RunOnceAction_t ActionCode => RunOnceAction_t.ResetUpdateInfo;
 

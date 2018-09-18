@@ -46,16 +46,6 @@ namespace DGD.HubGovernor
         {
             m_ioListener = new TransactionListener();
             m_ioListener.Start();
-
-            try
-            {
-                m_settings.Load();
-            }
-            catch
-            {
-                m_settings.Reset();
-            }
-
         }
 
         public static void Dispose()

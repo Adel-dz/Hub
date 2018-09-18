@@ -10,30 +10,53 @@
         Width="800"
         ResizeMode="NoResize"
         WindowStyle="SingleBorderWindow">
-    <DockPanel LastChildFill="True">
-        <ToolBarTray DockPanel.Dock="Top">
-            <ToolBar>
-                <Button Command="ApplicationCommands.New">
-                    <Image Source="Img/new.png" />
-                </Button>
+    <DockPanel Margin="-1,0,1,0">
+        <ToolBar DockPanel.Dock="Top">
+            <Button Command="ApplicationCommands.New">
+                <Image Source="Img/new.png"
+                       Stretch="None" />
+            </Button>
 
-                <Button Command="ApplicationCommands.Open">
-                    <Image Source="Img/open.png" />
-                </Button>
+            <Button Command="ApplicationCommands.Open">
+                <Image Source="Img/open.png"
+                       Stretch="None" />
+            </Button>
 
-                <Button Command="ApplicationCommands.Save">
-                    <Image Source="Img/save.png" />
-                </Button>
+            <Button Command="ApplicationCommands.Save">
+                <Image Source="Img/save.png"
+                       Stretch="None" />
+            </Button>
 
-                <Separator />
+            <Separator />
 
-                <Button Command="EditingCommands.Delete">
-                    <Image Source="Img/delete.png" />
-                </Button>
-            </ToolBar>
-        </ToolBarTray>
+            <Button Command="EditingCommands.Delete">
+                <Image Source="Img/delete.png"
+                       Stretch="None" />
+            </Button>
+        </ToolBar>
 
-        <StackPanel DockPanel.Dock="Left">
-        </StackPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="446*" />
+                <RowDefinition Height="99*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="135*" />
+                <ColumnDefinition Width="18*" />
+                <ColumnDefinition Width="641*" />
+            </Grid.ColumnDefinitions>
+
+            <ListBox Grid.RowSpan="2"
+                     Background="{x:Static SystemColors.AppWorkspaceBrush}" />
+            <ListBox Grid.Column="2" />
+            
+            <GridSplitter Grid.Column="1"
+                          Grid.RowSpan="2"
+                          VerticalAlignment="Stretch"
+                          HorizontalAlignment="Center"
+                          Width="6"
+                          Background="{x:Static SystemColors.ScrollBarBrush}"
+                          ShowsPreview="True" />
+        </Grid>
     </DockPanel>
 </Window>

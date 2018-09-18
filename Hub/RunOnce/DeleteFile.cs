@@ -3,7 +3,7 @@ using System.IO;
 
 namespace DGD.Hub.RunOnce
 {
-    sealed class DeleteFile: HubCore.RunOnce.DeleteFile, IRunOnceAction
+    sealed class DeleteFile: HubCore.RunOnce.DeleteFile, IRunOnceCommand
     {
         public DeleteFile(string filePath = ""):
             base(filePath)

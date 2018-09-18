@@ -7,13 +7,13 @@ namespace DGD.HubCore.RunOnce
         None,
         DeleteFile,
         ResetClientInfo,
-        ResetUpdateInfo
+        ResetUpdateInfo,
+        ForceDataUpdate,
     }
 
 
-    public interface IRunOnceAction : IStorable
+    public interface IRunOnceAction: IStorable
     {
         RunOnceAction_t ActionCode { get; }
-        void Run();
     }
 }

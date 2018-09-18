@@ -34,14 +34,29 @@ namespace DGD.HubGovernor.Updating
         {
             LoadDataUpdates();
             LoadAppUpdates();
-            RegisterHandlers();
+            
 
-            m_tsbBuildUpdate.Enabled = AppContext.AccessPath.GetDataProvider(InternalTablesID.TRANSACTION).Count > 0;
-            m_tsbUploadDataUpdates.Enabled = AppContext.AccessPath.GetDataProvider(
-                InternalTablesID.INCREMENT).Enumerate().Cast<UpdateIncrement>().Where(inc =>
-                inc.IsDeployed == false).Count() > 0;
-            m_tsbUploadAppUpdates.Enabled = AppContext.AccessPath.GetDataProvider(InternalTablesID.APP_UPDATE).Enumerate().
-                Cast<AppUpdate>().Count(up => up.DeployTime == AppUpdate.NOT_YET) > 0;
+            uint maxDataGen = MaxDataGeneration;
+            uint curDataGen = AppContext.Settings.AppSettings.DataGeneration;
+
+            if (maxDataGen == curDataGen)
+            {
+                RegisterHandlers();
+
+                m_tsbBuildUpdate.Enabled = AppContext.AccessPath.GetDataProvider(InternalTablesID.TRANSACTION).Count > 0;
+                m_tsbUploadDataUpdates.Enabled = AppContext.AccessPath.GetDataProvider(
+                    InternalTablesID.INCREMENT).Enumerate().Cast<UpdateIncrement>().Where(inc =>
+                    inc.IsDeployed == false).Count() > 0;
+                m_tsbUploadAppUpdates.Enabled = AppContext.AccessPath.GetDataProvider(InternalTablesID.APP_UPDATE).Enumerate().
+                    Cast<AppUpdate>().Count(up => up.DeployTime == AppUpdate.NOT_YET) > 0;
+            }
+            else
+            {
+                const string msg = "Une anomalie est détectée au niveau des versions de données. Le mise à jour des données est désactivée.";
+
+                MessageBox.Show(msg , null , MessageBoxButtons.OK , MessageBoxIcon.Error);
+                AppContext.LogManager.LogSysError(msg , true);
+            }
 
             m_sslUpdateKey.Text = $"Clé de mise à jour: {AppContext.Settings.AppSettings.UpdateKey}";
 
@@ -55,6 +70,26 @@ namespace DGD.HubGovernor.Updating
         }
 
         //private:
+        uint MaxDataGeneration
+        {
+            get
+            {
+                IDatumProvider dp = AppContext.AccessPath.GetDataProvider(InternalTablesID.INCREMENT);
+                uint maxVer = 0;
+
+                if (dp.Count > 0)
+                    foreach (UpdateIncrement inc in dp.Enumerate())
+                    {
+                        if (inc.IsDeployed)
+                            maxVer = Math.Max(maxVer , inc.PreDataGeneration + 1);
+                        else
+                            maxVer = Math.Max(maxVer , inc.PreDataGeneration);
+                    }
+
+                return maxVer;
+            }
+        }
+
         void RegisterHandlers()
         {
             AppContext.AccessPath.GetDataProvider(InternalTablesID.TRANSACTION).DatumInserted += Transactions_DatumInserted;
@@ -94,6 +129,12 @@ namespace DGD.HubGovernor.Updating
         void LoadDataUpdates()
         {
             Assert(!InvokeRequired);
+
+
+            //KeyIndexer ndxer = AppContext.AccessPath.GetKeyIndexer(InternalTablesID.INCREMENT);
+            //var dataInc = ndxer.Get(11) as UpdateIncrement;
+            //dataInc.PreDataGeneration = AppContext.Settings.AppSettings.DataGeneration;
+            //ndxer.Source.Replace(ndxer.IndexOf(11) , dataInc);
 
             IDatumProvider dp = AppContext.AccessPath.GetDataProvider(InternalTablesID.INCREMENT);
 

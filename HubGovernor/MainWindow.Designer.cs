@@ -28,46 +28,49 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-            System.Windows.Forms.ToolStripButton m_tsbBackup;
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
+            System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+            System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+            System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
             System.Windows.Forms.ToolStripMenuItem m_miCheckIntegrity;
             System.Windows.Forms.ToolStripButton m_tsbTR;
-            System.Windows.Forms.ToolStripButton m_tsbUpdate;
             System.Windows.Forms.ToolStripButton m_tsbRepository;
+            System.Windows.Forms.ToolStripButton m_tsbUpdate;
+            System.Windows.Forms.ToolStripButton m_tsbSync;
             System.Windows.Forms.ToolStripButton m_tsbClientWindow;
+            System.Windows.Forms.ToolStripButton m_tsbRunOnce;
             System.Windows.Forms.ToolStripButton m_tsbSysLog;
+            System.Windows.Forms.ToolStripButton m_tsbBackup;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             System.Windows.Forms.ToolStripButton m_tsbSettings;
             this.m_toolStrip = new System.Windows.Forms.ToolStrip();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.m_tsbMainMenu = new System.Windows.Forms.ToolStripDropDownButton();
             this.afficherLeJournalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.m_mpAdministration = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.quitterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.m_tsbLogView = new System.Windows.Forms.ToolStripButton();
-            toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            m_tsbBackup = new System.Windows.Forms.ToolStripButton();
+            toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
             m_miCheckIntegrity = new System.Windows.Forms.ToolStripMenuItem();
             m_tsbTR = new System.Windows.Forms.ToolStripButton();
-            m_tsbUpdate = new System.Windows.Forms.ToolStripButton();
             m_tsbRepository = new System.Windows.Forms.ToolStripButton();
+            m_tsbUpdate = new System.Windows.Forms.ToolStripButton();
+            m_tsbSync = new System.Windows.Forms.ToolStripButton();
             m_tsbClientWindow = new System.Windows.Forms.ToolStripButton();
+            m_tsbRunOnce = new System.Windows.Forms.ToolStripButton();
             m_tsbSysLog = new System.Windows.Forms.ToolStripButton();
+            m_tsbBackup = new System.Windows.Forms.ToolStripButton();
             m_tsbSettings = new System.Windows.Forms.ToolStripButton();
             this.m_toolStrip.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // toolStripSeparator3
-            // 
-            toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new System.Drawing.Size(6, 39);
             // 
             // toolStripSeparator2
             // 
@@ -84,83 +87,20 @@
             toolStripSeparator5.Name = "toolStripSeparator5";
             toolStripSeparator5.Size = new System.Drawing.Size(6, 39);
             // 
-            // m_tsbBackup
+            // toolStripSeparator6
             // 
-            m_tsbBackup.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            m_tsbBackup.Image = ((System.Drawing.Image)(resources.GetObject("m_tsbBackup.Image")));
-            m_tsbBackup.ImageTransparentColor = System.Drawing.Color.Magenta;
-            m_tsbBackup.Name = "m_tsbBackup";
-            m_tsbBackup.Size = new System.Drawing.Size(36, 36);
-            m_tsbBackup.Text = "Archiver...";
-            m_tsbBackup.Click += new System.EventHandler(this.Backup_Click);
+            toolStripSeparator6.Name = "toolStripSeparator6";
+            toolStripSeparator6.Size = new System.Drawing.Size(6, 39);
             // 
-            // m_miCheckIntegrity
+            // toolStripSeparator7
             // 
-            m_miCheckIntegrity.Name = "m_miCheckIntegrity";
-            m_miCheckIntegrity.Size = new System.Drawing.Size(231, 22);
-            m_miCheckIntegrity.Text = "Vérifier l’intégrité des tables... ";
-            m_miCheckIntegrity.Click += new System.EventHandler(this.CheckIntegrity_Click);
+            toolStripSeparator7.Name = "toolStripSeparator7";
+            toolStripSeparator7.Size = new System.Drawing.Size(6, 39);
             // 
-            // m_tsbTR
+            // toolStripSeparator8
             // 
-            m_tsbTR.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            m_tsbTR.Image = global::DGD.HubGovernor.Properties.Resources.tr_32;
-            m_tsbTR.ImageTransparentColor = System.Drawing.Color.Magenta;
-            m_tsbTR.Name = "m_tsbTR";
-            m_tsbTR.Size = new System.Drawing.Size(36, 36);
-            m_tsbTR.Text = "Thomson Reuters";
-            m_tsbTR.Click += new System.EventHandler(this.TR_Click);
-            // 
-            // m_tsbUpdate
-            // 
-            m_tsbUpdate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            m_tsbUpdate.Image = global::DGD.HubGovernor.Properties.Resources.deploy_32;
-            m_tsbUpdate.ImageTransparentColor = System.Drawing.Color.Magenta;
-            m_tsbUpdate.Name = "m_tsbUpdate";
-            m_tsbUpdate.Size = new System.Drawing.Size(36, 36);
-            m_tsbUpdate.Text = "MAJ";
-            m_tsbUpdate.Click += new System.EventHandler(this.Update_Click);
-            // 
-            // m_tsbRepository
-            // 
-            m_tsbRepository.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            m_tsbRepository.Image = global::DGD.HubGovernor.Properties.Resources.database_table_32;
-            m_tsbRepository.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            m_tsbRepository.ImageTransparentColor = System.Drawing.Color.Magenta;
-            m_tsbRepository.Name = "m_tsbRepository";
-            m_tsbRepository.Size = new System.Drawing.Size(36, 36);
-            m_tsbRepository.Text = "Tables";
-            m_tsbRepository.Click += new System.EventHandler(this.Repository_Click);
-            // 
-            // m_tsbClientWindow
-            // 
-            m_tsbClientWindow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            m_tsbClientWindow.Image = global::DGD.HubGovernor.Properties.Resources.profil_32;
-            m_tsbClientWindow.ImageTransparentColor = System.Drawing.Color.Magenta;
-            m_tsbClientWindow.Name = "m_tsbClientWindow";
-            m_tsbClientWindow.Size = new System.Drawing.Size(36, 36);
-            m_tsbClientWindow.Text = "Gestionnaire des clients";
-            m_tsbClientWindow.Click += new System.EventHandler(this.ClientWindow_Click);
-            // 
-            // m_tsbSysLog
-            // 
-            m_tsbSysLog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            m_tsbSysLog.Image = global::DGD.HubGovernor.Properties.Resources.syslog_32;
-            m_tsbSysLog.ImageTransparentColor = System.Drawing.Color.Magenta;
-            m_tsbSysLog.Name = "m_tsbSysLog";
-            m_tsbSysLog.Size = new System.Drawing.Size(36, 36);
-            m_tsbSysLog.Text = "Journal des événements système";
-            m_tsbSysLog.Click += new System.EventHandler(this.SysLog_Click);
-            // 
-            // m_tsbSettings
-            // 
-            m_tsbSettings.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            m_tsbSettings.Image = global::DGD.HubGovernor.Properties.Resources.settings_mixer_32;
-            m_tsbSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
-            m_tsbSettings.Name = "m_tsbSettings";
-            m_tsbSettings.Size = new System.Drawing.Size(36, 36);
-            m_tsbSettings.Text = "Paramètres";
-            m_tsbSettings.Click += new System.EventHandler(this.Settings_Click);
+            toolStripSeparator8.Name = "toolStripSeparator8";
+            toolStripSeparator8.Size = new System.Drawing.Size(6, 39);
             // 
             // m_toolStrip
             // 
@@ -168,11 +108,15 @@
             this.m_toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.m_tsbMainMenu,
             m_tsbTR,
-            m_tsbUpdate,
+            toolStripSeparator7,
             m_tsbRepository,
+            toolStripSeparator8,
+            m_tsbUpdate,
+            m_tsbSync,
+            toolStripSeparator6,
             this.toolStripSeparator1,
-            toolStripSeparator3,
             m_tsbClientWindow,
+            m_tsbRunOnce,
             toolStripSeparator2,
             m_tsbSysLog,
             this.m_tsbLogView,
@@ -185,6 +129,12 @@
             this.m_toolStrip.Padding = new System.Windows.Forms.Padding(0);
             this.m_toolStrip.Size = new System.Drawing.Size(509, 39);
             this.m_toolStrip.TabIndex = 0;
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 39);
             // 
             // m_tsbMainMenu
             // 
@@ -216,6 +166,13 @@
             this.m_mpAdministration.Size = new System.Drawing.Size(168, 22);
             this.m_mpAdministration.Text = "Administration";
             // 
+            // m_miCheckIntegrity
+            // 
+            m_miCheckIntegrity.Name = "m_miCheckIntegrity";
+            m_miCheckIntegrity.Size = new System.Drawing.Size(231, 22);
+            m_miCheckIntegrity.Text = "Vérifier l’intégrité des tables... ";
+            m_miCheckIntegrity.Click += new System.EventHandler(this.CheckIntegrity_Click);
+            // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
@@ -227,11 +184,75 @@
             this.quitterToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.quitterToolStripMenuItem.Text = "Quitter";
             // 
-            // toolStripSeparator1
+            // m_tsbTR
             // 
-            this.toolStripSeparator1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 39);
+            m_tsbTR.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbTR.Image = global::DGD.HubGovernor.Properties.Resources.tr_32;
+            m_tsbTR.ImageTransparentColor = System.Drawing.Color.Magenta;
+            m_tsbTR.Name = "m_tsbTR";
+            m_tsbTR.Size = new System.Drawing.Size(36, 36);
+            m_tsbTR.Text = "Thomson Reuters";
+            m_tsbTR.Click += new System.EventHandler(this.TR_Click);
+            // 
+            // m_tsbRepository
+            // 
+            m_tsbRepository.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbRepository.Image = global::DGD.HubGovernor.Properties.Resources.database_table_32;
+            m_tsbRepository.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            m_tsbRepository.ImageTransparentColor = System.Drawing.Color.Magenta;
+            m_tsbRepository.Name = "m_tsbRepository";
+            m_tsbRepository.Size = new System.Drawing.Size(36, 36);
+            m_tsbRepository.Text = "Tables";
+            m_tsbRepository.Click += new System.EventHandler(this.Repository_Click);
+            // 
+            // m_tsbUpdate
+            // 
+            m_tsbUpdate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbUpdate.Image = global::DGD.HubGovernor.Properties.Resources.deploy_32;
+            m_tsbUpdate.ImageTransparentColor = System.Drawing.Color.Magenta;
+            m_tsbUpdate.Name = "m_tsbUpdate";
+            m_tsbUpdate.Size = new System.Drawing.Size(36, 36);
+            m_tsbUpdate.Text = "MAJ";
+            m_tsbUpdate.Click += new System.EventHandler(this.Update_Click);
+            // 
+            // m_tsbSync
+            // 
+            m_tsbSync.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbSync.Image = global::DGD.HubGovernor.Properties.Resources.sync_srv_64;
+            m_tsbSync.ImageTransparentColor = System.Drawing.Color.Magenta;
+            m_tsbSync.Name = "m_tsbSync";
+            m_tsbSync.Size = new System.Drawing.Size(36, 36);
+            m_tsbSync.Text = "Synchroniser le serveur";
+            // 
+            // m_tsbClientWindow
+            // 
+            m_tsbClientWindow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbClientWindow.Image = global::DGD.HubGovernor.Properties.Resources.profil_32;
+            m_tsbClientWindow.ImageTransparentColor = System.Drawing.Color.Magenta;
+            m_tsbClientWindow.Name = "m_tsbClientWindow";
+            m_tsbClientWindow.Size = new System.Drawing.Size(36, 36);
+            m_tsbClientWindow.Text = "Gestionnaire des clients";
+            m_tsbClientWindow.Click += new System.EventHandler(this.ClientWindow_Click);
+            // 
+            // m_tsbRunOnce
+            // 
+            m_tsbRunOnce.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbRunOnce.Image = global::DGD.HubGovernor.Properties.Resources.run_once_64;
+            m_tsbRunOnce.ImageTransparentColor = System.Drawing.Color.Magenta;
+            m_tsbRunOnce.Name = "m_tsbRunOnce";
+            m_tsbRunOnce.Size = new System.Drawing.Size(36, 36);
+            m_tsbRunOnce.Text = "Gestionnaire RunOnce";
+            m_tsbRunOnce.Click += new System.EventHandler(this.RunOnce_Click);
+            // 
+            // m_tsbSysLog
+            // 
+            m_tsbSysLog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbSysLog.Image = global::DGD.HubGovernor.Properties.Resources.syslog_32;
+            m_tsbSysLog.ImageTransparentColor = System.Drawing.Color.Magenta;
+            m_tsbSysLog.Name = "m_tsbSysLog";
+            m_tsbSysLog.Size = new System.Drawing.Size(36, 36);
+            m_tsbSysLog.Text = "Journal des événements système";
+            m_tsbSysLog.Click += new System.EventHandler(this.SysLog_Click);
             // 
             // m_tsbLogView
             // 
@@ -244,6 +265,26 @@
             this.m_tsbLogView.Size = new System.Drawing.Size(36, 36);
             this.m_tsbLogView.Text = "Afficher / Masquer la fenêtre du journal partial";
             this.m_tsbLogView.Click += new System.EventHandler(this.LogView_Click);
+            // 
+            // m_tsbBackup
+            // 
+            m_tsbBackup.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbBackup.Image = ((System.Drawing.Image)(resources.GetObject("m_tsbBackup.Image")));
+            m_tsbBackup.ImageTransparentColor = System.Drawing.Color.Magenta;
+            m_tsbBackup.Name = "m_tsbBackup";
+            m_tsbBackup.Size = new System.Drawing.Size(36, 36);
+            m_tsbBackup.Text = "Archiver...";
+            m_tsbBackup.Click += new System.EventHandler(this.Backup_Click);
+            // 
+            // m_tsbSettings
+            // 
+            m_tsbSettings.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbSettings.Image = global::DGD.HubGovernor.Properties.Resources.settings_mixer_32;
+            m_tsbSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
+            m_tsbSettings.Name = "m_tsbSettings";
+            m_tsbSettings.Size = new System.Drawing.Size(36, 36);
+            m_tsbSettings.Text = "Paramètres";
+            m_tsbSettings.Click += new System.EventHandler(this.Settings_Click);
             // 
             // MainWindow
             // 

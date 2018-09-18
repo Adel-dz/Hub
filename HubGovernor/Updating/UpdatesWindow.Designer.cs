@@ -117,6 +117,7 @@
             // m_tsbUploadDataUpdates
             // 
             this.m_tsbUploadDataUpdates.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.m_tsbUploadDataUpdates.Enabled = false;
             this.m_tsbUploadDataUpdates.Image = global::DGD.HubGovernor.Properties.Resources.upload_16;
             this.m_tsbUploadDataUpdates.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.m_tsbUploadDataUpdates.Name = "m_tsbUploadDataUpdates";

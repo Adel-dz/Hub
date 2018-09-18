@@ -314,6 +314,14 @@
     <Compile Include="RepositoryWindow.Designer.cs">
       <DependentUpon>RepositoryWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="RunOnce\RunOnceManager.cs" />
+    <Compile Include="RunOnce\RunOnceManager.Entry.cs" />
+    <Compile Include="RunOnce\RunOnceWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RunOnce\RunOnceWindow.Designer.cs">
+      <DependentUpon>RunOnceWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Spots\SpotValue.cs" />
     <Compile Include="Spots\SpotValueChecker.cs" />
     <Compile Include="Spots\SpotValueForm.cs">
@@ -533,6 +541,9 @@
     <EmbeddedResource Include="RepositoryWindow.resx">
       <DependentUpon>RepositoryWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="RunOnce\RunOnceWindow.resx">
+      <DependentUpon>RunOnceWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Spots\SpotValueForm.resx">
       <DependentUpon>SpotValueForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -714,6 +725,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Governor_app_ico.ico" />
+    <None Include="Resources\add_actions_16.png" />
+    <None Include="Resources\sync_srv_64.png" />
+    <None Include="Resources\run_once_64.png" />
     <None Include="Resources\show_data_preview_16.png" />
     <None Include="Resources\help_32.png" />
     <None Include="Resources\backup_timer_32.png" />

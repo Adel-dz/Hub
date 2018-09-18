@@ -301,6 +301,23 @@ namespace DGD.Hub.DLG
 
                 m_dialogRunning = true;
 
+                string proxyLog = "";
+
+                if (Program.Settings.EnableProxy)
+                {
+                    if (Program.Settings.AutoDetectProxy)
+                        proxyLog += "Serveur proxy détecté: ";
+                    else
+                        proxyLog += "Serveur proxy configuré: ";
+
+                    proxyLog += Program.Settings.ProxyHost + ':' + Program.Settings.ProxyPort;
+                }
+                else
+                    proxyLog = "Aucun serveur proxy utilisé.";
+
+                PostLog(proxyLog , false);
+
+
                 var appUpdateTask = new Task(AutoUpdater.Update , TaskCreationOptions.LongRunning);
                 appUpdateTask.Start();
             }

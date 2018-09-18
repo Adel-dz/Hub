@@ -12,16 +12,7 @@ namespace DGD.HubGovernor.Opts
     {
         public Settings()
         {
-            try
-            {
-                Load();
-            }
-            catch(Exception ex)
-            {
-                Dbg.Log(ex.Message);
-
-                TextLogger.Warning("Erreur lors du chargement des paramètrs.");
-            }
+            Load();
         }
 
         public AppSettings AppSettings { get; } = new AppSettings();
@@ -44,7 +35,7 @@ namespace DGD.HubGovernor.Opts
                 if (!string.IsNullOrWhiteSpace(user) && !string.IsNullOrWhiteSpace(pass))
                     credantial = new Credential(user , pass);
 
-                if(AppSettings.EnableProxy)
+                if (AppSettings.EnableProxy)
                     proxy = new Proxy(AppSettings.ProxyAddress , AppSettings.ProxyPort);
 
                 return new ConnectionParam(host , credantial , proxy);
@@ -82,30 +73,45 @@ namespace DGD.HubGovernor.Opts
 #if DEBUG
             System.Diagnostics.Debug.Print($"Lecture du ficher {appFilePath}...\n");
 #endif
-
-            using (FileStream fs = File.OpenRead(appFilePath))
-            using (var xs = new XorStream(fs))
-            using (var gzs = new GZipStream(xs , CompressionMode.Decompress))
+            try
             {
-                var br = new BinaryReader(gzs);
-                AppSettings.Load(br);
+                using (FileStream fs = File.OpenRead(appFilePath))
+                using (var xs = new XorStream(fs))
+                using (var gzs = new GZipStream(xs , CompressionMode.Decompress))
+                {
+                    var br = new BinaryReader(gzs);
+
+                    AppSettings.Load(br);
+                }
             }
+            catch (Exception ex)
+            {
+                AppContext.LogManager.LogSysError("Erreur lors du chargement des paramètrs de l'application: " +
+                    ex.Message);
+            }
+            
 
 
             string userFilePath = AppPaths.UserSettingsFilePath;
 #if DEBUG
             System.Diagnostics.Debug.Print($"Lecture du ficher {userFilePath}...\n");
 #endif
-
-            using (FileStream fs = File.OpenRead(userFilePath))
-            using (var xs = new XorStream(fs))
-            using (var gzs = new GZipStream(xs , CompressionMode.Decompress))
+            try
             {
-                var br = new BinaryReader(gzs);
-                UserSettings.Load(br);
+                using (FileStream fs = File.OpenRead(userFilePath))
+                using (var xs = new XorStream(fs))
+                using (var gzs = new GZipStream(xs , CompressionMode.Decompress))
+                {
+                    var br = new BinaryReader(gzs);
+                    UserSettings.Load(br);
+                }
+            }
+            catch (Exception ex)
+            {
+                AppContext.LogManager.LogSysError("Erreur lors du chargement des paramètrs de l'utilisateur: " +
+                    ex.Message);
             }
 
-            
         }
 
         public void Reset()

@@ -127,6 +127,7 @@
     <Compile Include="Net\Proxy.cs" />
     <Compile Include="RunOnce\DeleteFile.cs" />
     <Compile Include="RunOnce\RunOnceAction.cs" />
+    <Compile Include="RunOnce\RunOnceCommand.cs" />
     <Compile Include="Updating\FilesBag.cs" />
     <Compile Include="Names.cs" />
     <Compile Include="Net\Credential.cs" />

@@ -21,6 +21,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_95312D57CFCD4675A0DE205B16446407"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_98EC6C91F064BC14072D861237AE674C"
+        "OwnerKey" = "8:_95312D57CFCD4675A0DE205B16446407"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_98EC6C91F064BC14072D861237AE674C"
         "OwnerKey" = "8:_FB72238B1ABF4B4094406A03994E250F"
         "MsmSig" = "8:_UNDEFINED"
@@ -34,7 +46,19 @@
         "Entry"
         {
         "MsmKey" = "8:_9B20DD8F97D246806D111B64A566049D"
+        "OwnerKey" = "8:_95312D57CFCD4675A0DE205B16446407"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9B20DD8F97D246806D111B64A566049D"
         "OwnerKey" = "8:_FB72238B1ABF4B4094406A03994E250F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_BA81FBC65AFDF2859A3FC494148D6A9B"
+        "OwnerKey" = "8:_95312D57CFCD4675A0DE205B16446407"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -47,6 +71,12 @@
         {
         "MsmKey" = "8:_BA81FBC65AFDF2859A3FC494148D6A9B"
         "OwnerKey" = "8:_E651231A56BE1DA86780C426417375E7"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E651231A56BE1DA86780C426417375E7"
+        "OwnerKey" = "8:_95312D57CFCD4675A0DE205B16446407"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -65,6 +95,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_FB72238B1ABF4B4094406A03994E250F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_95312D57CFCD4675A0DE205B16446407"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -210,7 +246,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.10.6716.20549, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:ezLib, Version=0.10.6722.25185, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_98EC6C91F064BC14072D861237AE674C"
@@ -303,7 +339,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.14.6716.20549, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Hubcore, Version=0.14.6722.25185, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E651231A56BE1DA86780C426417375E7"
@@ -386,15 +422,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Hub Governor"
-        "ProductCode" = "8:{85053CB0-3772-49AA-BAA4-C8E7AD3BBEE2}"
-        "PackageCode" = "8:{1E9C56EA-DD90-4250-898F-7CA6E1D311C8}"
+        "ProductCode" = "8:{4D42A5CC-F21E-43B7-8334-3DBA2FD44FE4}"
+        "PackageCode" = "8:{B8D1DAE2-C5B8-4556-B96E-4CB8CD2A57B5}"
         "UpgradeCode" = "8:{E84052B2-E777-4DC6-AB95-9EB58ECE7A0C}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.10.6716"
+        "ProductVersion" = "8:0.12.6716"
         "Manufacturer" = "8:Douane Algérienne"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -920,6 +956,34 @@
         }
         "ProjectOutput"
         {
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_95312D57CFCD4675A0DE205B16446407"
+            {
+            "SourcePath" = "8:..\\GovDataGuard\\obj\\Release\\GovDataGuard.exe"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_049468C3EAA24AEAAF84E1F06D1C8CC1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{A1105444-2AD4-4763-B5C0-297E0333E40D}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_FB72238B1ABF4B4094406A03994E250F"
             {
             "SourcePath" = "8:..\\HubGovernor\\obj\\Release\\HubGovernor.exe"

@@ -14,13 +14,13 @@ namespace DGD.Hub.RunOnce
     {
         const string SIGNATURE = "HUBRO1";
 
-        readonly List<IRunOnceAction> m_actions = new List<IRunOnceAction>();
-        readonly Dictionary<RunOnceAction_t, Func<IRunOnceAction>> m_actBuilder;
+        readonly List<IRunOnceCommand> m_actions = new List<IRunOnceCommand>();
+        readonly Dictionary<RunOnceAction_t, Func<IRunOnceCommand>> m_actBuilder;
 
 
         public RunOnceManager()
         {
-            m_actBuilder = new Dictionary<RunOnceAction_t , Func<IRunOnceAction>>
+            m_actBuilder = new Dictionary<RunOnceAction_t , Func<IRunOnceCommand>>
             {
                 { RunOnceAction_t.DeleteFile, () => new DeleteFile() },
                 { RunOnceAction_t.ResetClientInfo, () => new ResetClientInfo() },
@@ -33,28 +33,28 @@ namespace DGD.Hub.RunOnce
 
         public bool IsDisposed { get; private set; }
 
-        public void Add(IRunOnceAction action)
+        public void Add(IRunOnceCommand action)
         {
             Dbg.Assert(action != null);
 
             m_actions.Add(action);
         }
 
-        public void Add(IEnumerable<IRunOnceAction> actions)
+        public void Add(IEnumerable<IRunOnceCommand> actions)
         {
             Dbg.Assert(actions != null);
 
             m_actions.AddRange(actions);
         }
 
-        public void AddFirst(IRunOnceAction action)
+        public void AddFirst(IRunOnceCommand action)
         {
             Dbg.Assert(action != null);
 
             m_actions.Insert(0 , action);
         }
 
-        public void AddFirst(IEnumerable<IRunOnceAction> actions)
+        public void AddFirst(IEnumerable<IRunOnceCommand> actions)
         {
             Dbg.Assert(actions != null);
 
@@ -70,7 +70,7 @@ namespace DGD.Hub.RunOnce
                 writer.Write(Signature);
                 writer.Write(m_actions.Count);
 
-                foreach (IRunOnceAction act in m_actions)
+                foreach (IRunOnceCommand act in m_actions)
                 {
                     writer.Write((int)act.ActionCode);
                     act.Write(writer);
@@ -144,7 +144,7 @@ namespace DGD.Hub.RunOnce
                 for(int i = 0; i < actCount;++i)
                 {
                     var code = (RunOnceAction_t)reader.ReadInt();
-                    IRunOnceAction act = m_actBuilder[code]();
+                    IRunOnceCommand act = m_actBuilder[code]();
                     act.Read(reader);
                     m_actions.Add(act);
                 }
