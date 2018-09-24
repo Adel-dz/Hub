@@ -50,16 +50,17 @@
             System.Windows.Forms.Label m_lblLastActivityLabel;
             System.Windows.Forms.Label m_lblCreationTimeLabel;
             System.Windows.Forms.ToolStrip m_toolstrip;
-            System.Windows.Forms.ToolStripButton m_tsbProfiles;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+            System.Windows.Forms.StatusStrip m_statusStrip;
+            System.Windows.Forms.ToolStripButton m_tsbProfiles;
+            System.Windows.Forms.ToolStripButton m_tsbRunOnce;
             System.Windows.Forms.ToolStripButton m_tsbOptions;
             System.Windows.Forms.ToolStripButton m_tsbHelp;
-            System.Windows.Forms.StatusStrip m_statusStrip;
             this.m_tvClients = new System.Windows.Forms.TreeView();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.m_lblHubArchitecture = new System.Windows.Forms.Label();
@@ -76,6 +77,8 @@
             this.m_lblLastActivity = new System.Windows.Forms.Label();
             this.m_lblCreationTime = new System.Windows.Forms.Label();
             this.m_rtbClientLog = new System.Windows.Forms.RichTextBox();
+            this.m_sslClientsCount = new System.Windows.Forms.ToolStripStatusLabel();
+            this.m_sslRunningClientsCount = new System.Windows.Forms.ToolStripStatusLabel();
             this.m_tsbRunningClientsOnly = new System.Windows.Forms.ToolStripButton();
             this.m_btnDeleteClient = new System.Windows.Forms.ToolStripButton();
             this.m_tsbEnableClient = new System.Windows.Forms.ToolStripButton();
@@ -84,8 +87,6 @@
             this.m_tsbReset = new System.Windows.Forms.ToolStripButton();
             this.m_tsbShowActivityHistory = new System.Windows.Forms.ToolStripButton();
             this.m_tsbChat = new System.Windows.Forms.ToolStripButton();
-            this.m_sslClientsCount = new System.Windows.Forms.ToolStripStatusLabel();
-            this.m_sslRunningClientsCount = new System.Windows.Forms.ToolStripStatusLabel();
             m_mainSplitter = new System.Windows.Forms.SplitContainer();
             m_ilSmall = new System.Windows.Forms.ImageList(this.components);
             m_detailSplitter = new System.Windows.Forms.SplitContainer();
@@ -106,16 +107,17 @@
             m_lblLastActivityLabel = new System.Windows.Forms.Label();
             m_lblCreationTimeLabel = new System.Windows.Forms.Label();
             m_toolstrip = new System.Windows.Forms.ToolStrip();
-            m_tsbProfiles = new System.Windows.Forms.ToolStripButton();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            m_statusStrip = new System.Windows.Forms.StatusStrip();
+            m_tsbProfiles = new System.Windows.Forms.ToolStripButton();
+            m_tsbRunOnce = new System.Windows.Forms.ToolStripButton();
             m_tsbOptions = new System.Windows.Forms.ToolStripButton();
             m_tsbHelp = new System.Windows.Forms.ToolStripButton();
-            m_statusStrip = new System.Windows.Forms.StatusStrip();
             ((System.ComponentModel.ISupportInitialize)(m_mainSplitter)).BeginInit();
             m_mainSplitter.Panel1.SuspendLayout();
             m_mainSplitter.Panel2.SuspendLayout();
@@ -633,6 +635,7 @@
             this.m_tsbBanishClient,
             toolStripSeparator3,
             this.m_tsbReset,
+            m_tsbRunOnce,
             toolStripSeparator6,
             this.m_tsbShowActivityHistory,
             toolStripSeparator4,
@@ -645,6 +648,57 @@
             m_toolstrip.Size = new System.Drawing.Size(857, 25);
             m_toolstrip.TabIndex = 1;
             // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator3
+            // 
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator6
+            // 
+            toolStripSeparator6.Name = "toolStripSeparator6";
+            toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator5
+            // 
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
+            // 
+            // m_statusStrip
+            // 
+            m_statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.m_sslClientsCount,
+            this.m_sslRunningClientsCount});
+            m_statusStrip.Location = new System.Drawing.Point(0, 406);
+            m_statusStrip.Name = "m_statusStrip";
+            m_statusStrip.Size = new System.Drawing.Size(857, 22);
+            m_statusStrip.TabIndex = 0;
+            // 
+            // m_sslClientsCount
+            // 
+            this.m_sslClientsCount.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.m_sslClientsCount.Name = "m_sslClientsCount";
+            this.m_sslClientsCount.Size = new System.Drawing.Size(4, 17);
+            // 
+            // m_sslRunningClientsCount
+            // 
+            this.m_sslRunningClientsCount.Name = "m_sslRunningClientsCount";
+            this.m_sslRunningClientsCount.Size = new System.Drawing.Size(0, 17);
+            // 
             // m_tsbProfiles
             // 
             m_tsbProfiles.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -654,11 +708,6 @@
             m_tsbProfiles.Size = new System.Drawing.Size(23, 22);
             m_tsbProfiles.Text = "Profiles";
             m_tsbProfiles.Click += new System.EventHandler(this.Profiles_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
             // m_tsbRunningClientsOnly
             // 
@@ -682,11 +731,6 @@
             this.m_btnDeleteClient.Size = new System.Drawing.Size(23, 22);
             this.m_btnDeleteClient.Text = "Supprimer";
             this.m_btnDeleteClient.Click += new System.EventHandler(this.DeleteClient_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // m_tsbEnableClient
             // 
@@ -721,11 +765,6 @@
             this.m_tsbBanishClient.Text = "Bannir le client";
             this.m_tsbBanishClient.Click += new System.EventHandler(this.BanishClient_Click);
             // 
-            // toolStripSeparator3
-            // 
-            toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
-            // 
             // m_tsbReset
             // 
             this.m_tsbReset.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -737,10 +776,15 @@
             this.m_tsbReset.Text = "Réinitialisation du client";
             this.m_tsbReset.Click += new System.EventHandler(this.Reset_Click);
             // 
-            // toolStripSeparator6
+            // m_tsbRunOnce
             // 
-            toolStripSeparator6.Name = "toolStripSeparator6";
-            toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
+            m_tsbRunOnce.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            m_tsbRunOnce.Image = global::DGD.HubGovernor.Properties.Resources.run_once_16;
+            m_tsbRunOnce.ImageTransparentColor = System.Drawing.Color.Magenta;
+            m_tsbRunOnce.Name = "m_tsbRunOnce";
+            m_tsbRunOnce.Size = new System.Drawing.Size(23, 22);
+            m_tsbRunOnce.Text = "Lancer le gestionnaire RunOnce";
+            m_tsbRunOnce.Click += new System.EventHandler(this.RunOnce_Click);
             // 
             // m_tsbShowActivityHistory
             // 
@@ -752,11 +796,6 @@
             this.m_tsbShowActivityHistory.Text = "Afficher l’historique des activités";
             this.m_tsbShowActivityHistory.Click += new System.EventHandler(this.ShowActivityHistory_Click);
             // 
-            // toolStripSeparator4
-            // 
-            toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
-            // 
             // m_tsbChat
             // 
             this.m_tsbChat.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -766,11 +805,6 @@
             this.m_tsbChat.Name = "m_tsbChat";
             this.m_tsbChat.Size = new System.Drawing.Size(23, 22);
             this.m_tsbChat.Text = "Communiquer avec le client";
-            // 
-            // toolStripSeparator5
-            // 
-            toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
             // 
             // m_tsbOptions
             // 
@@ -792,27 +826,6 @@
             m_tsbHelp.Name = "m_tsbHelp";
             m_tsbHelp.Size = new System.Drawing.Size(23, 22);
             m_tsbHelp.Text = "Aide";
-            // 
-            // m_statusStrip
-            // 
-            m_statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.m_sslClientsCount,
-            this.m_sslRunningClientsCount});
-            m_statusStrip.Location = new System.Drawing.Point(0, 406);
-            m_statusStrip.Name = "m_statusStrip";
-            m_statusStrip.Size = new System.Drawing.Size(857, 22);
-            m_statusStrip.TabIndex = 0;
-            // 
-            // m_sslClientsCount
-            // 
-            this.m_sslClientsCount.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
-            this.m_sslClientsCount.Name = "m_sslClientsCount";
-            this.m_sslClientsCount.Size = new System.Drawing.Size(4, 17);
-            // 
-            // m_sslRunningClientsCount
-            // 
-            this.m_sslRunningClientsCount.Name = "m_sslRunningClientsCount";
-            this.m_sslRunningClientsCount.Size = new System.Drawing.Size(0, 17);
             // 
             // ClientsManagmentWindow
             // 

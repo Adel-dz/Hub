@@ -732,5 +732,11 @@ namespace DGD.HubGovernor.Clients
             task.Start();
             waitDlg.ShowDialog(this);
         }
+
+        private void RunOnce_Click(object sender , EventArgs e)
+        {
+            var wind = new RunOnce.RunOnceWindow();
+            wind.Show(Owner);
+        }
     }
 }

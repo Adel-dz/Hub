@@ -314,6 +314,12 @@
     <Compile Include="RepositoryWindow.Designer.cs">
       <DependentUpon>RepositoryWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="RunOnce\AddActionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RunOnce\AddActionDialog.Designer.cs">
+      <DependentUpon>AddActionDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="RunOnce\RunOnceManager.cs" />
     <Compile Include="RunOnce\RunOnceManager.Entry.cs" />
     <Compile Include="RunOnce\RunOnceWindow.cs">
@@ -541,6 +547,9 @@
     <EmbeddedResource Include="RepositoryWindow.resx">
       <DependentUpon>RepositoryWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="RunOnce\AddActionDialog.resx">
+      <DependentUpon>AddActionDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="RunOnce\RunOnceWindow.resx">
       <DependentUpon>RunOnceWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -725,6 +734,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Governor_app_ico.ico" />
+    <None Include="Resources\run_once_16.png" />
     <None Include="Resources\add_actions_16.png" />
     <None Include="Resources\sync_srv_64.png" />
     <None Include="Resources\run_once_64.png" />

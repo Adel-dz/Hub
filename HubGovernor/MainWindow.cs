@@ -122,11 +122,6 @@ namespace DGD.HubGovernor
         private void Backup_Click(object sender , EventArgs e)
         {
             new Arch.BackupWindow().Show(this);
-        }
-
-        private void RunOnce_Click(object sender , EventArgs e)
-        {
-            new RunOnce.RunOnceWindow().Show(this);
-        }
+        }       
     }
 }
