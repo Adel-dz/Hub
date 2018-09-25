@@ -21,10 +21,12 @@ namespace DGD.HubGovernor.RunOnce
         //private:
         private void AddActions_Click(object sender , EventArgs e)
         {
-            using (var dlg = new AddActionDialog())
-            {
-                dlg.ShowDialog(this);
-            }
+            using (var dlg = new AddActionDialog())            
+                if(dlg.ShowDialog(this) == DialogResult.OK)
+                {
+
+                }
+            
         }
     }
 }

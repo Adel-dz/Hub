@@ -33,10 +33,10 @@
             System.Windows.Forms.GroupBox m_grpActions;
             System.Windows.Forms.Label m_lblActions;
             System.Windows.Forms.Button m_btnCancel;
+            this.m_btnToggleSelection = new System.Windows.Forms.Button();
             this.m_lbClients = new System.Windows.Forms.CheckedListBox();
             this.m_lbActions = new System.Windows.Forms.CheckedListBox();
             this.m_btnAdd = new System.Windows.Forms.Button();
-            this.m_btnToggleSelection = new System.Windows.Forms.Button();
             m_grpClients = new System.Windows.Forms.GroupBox();
             m_lblClients = new System.Windows.Forms.Label();
             m_grpActions = new System.Windows.Forms.GroupBox();
@@ -58,6 +58,16 @@
             m_grpClients.TabStop = false;
             m_grpClients.Text = " Clients ";
             // 
+            // m_btnToggleSelection
+            // 
+            this.m_btnToggleSelection.Location = new System.Drawing.Point(40, 261);
+            this.m_btnToggleSelection.Name = "m_btnToggleSelection";
+            this.m_btnToggleSelection.Size = new System.Drawing.Size(118, 23);
+            this.m_btnToggleSelection.TabIndex = 2;
+            this.m_btnToggleSelection.Text = "Inverser la sélection";
+            this.m_btnToggleSelection.UseVisualStyleBackColor = true;
+            this.m_btnToggleSelection.Click += new System.EventHandler(this.ToggleSelection_Click);
+            // 
             // m_lbClients
             // 
             this.m_lbClients.CheckOnClick = true;
@@ -68,6 +78,7 @@
             this.m_lbClients.Size = new System.Drawing.Size(182, 199);
             this.m_lbClients.Sorted = true;
             this.m_lbClients.TabIndex = 1;
+            this.m_lbClients.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.Clients_ItemCheck);
             // 
             // m_lblClients
             // 
@@ -90,11 +101,13 @@
             // 
             // m_lbActions
             // 
+            this.m_lbActions.CheckOnClick = true;
             this.m_lbActions.FormattingEnabled = true;
             this.m_lbActions.Location = new System.Drawing.Point(10, 56);
             this.m_lbActions.Name = "m_lbActions";
             this.m_lbActions.Size = new System.Drawing.Size(184, 214);
             this.m_lbActions.TabIndex = 1;
+            this.m_lbActions.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.Actions_ItemCheck);
             // 
             // m_lblActions
             // 
@@ -125,15 +138,6 @@
             this.m_btnAdd.TabIndex = 2;
             this.m_btnAdd.Text = "Ajouter";
             this.m_btnAdd.UseVisualStyleBackColor = true;
-            // 
-            // m_btnToggleSelection
-            // 
-            this.m_btnToggleSelection.Location = new System.Drawing.Point(40, 261);
-            this.m_btnToggleSelection.Name = "m_btnToggleSelection";
-            this.m_btnToggleSelection.Size = new System.Drawing.Size(118, 23);
-            this.m_btnToggleSelection.TabIndex = 2;
-            this.m_btnToggleSelection.Text = "Inverser la sélection";
-            this.m_btnToggleSelection.UseVisualStyleBackColor = true;
             // 
             // AddActionDialog
             // 
