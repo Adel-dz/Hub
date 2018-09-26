@@ -321,6 +321,11 @@ namespace DGD.HubGovernor.Clients
 
         public static string ClientStrID(uint clID) => clID.ToString("X");
 
+        public uint PostMessage(uint clID, Message_t msgCode, uint reqID = 0, byte[] data = null)
+        {
+            var msg = new Message()
+        }
+
 
         //private:                        
         void Initialize()

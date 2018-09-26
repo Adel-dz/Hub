@@ -320,6 +320,7 @@
     <Compile Include="RunOnce\AddActionDialog.Designer.cs">
       <DependentUpon>AddActionDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="RunOnce\ClientAction.cs" />
     <Compile Include="RunOnce\RunOnceManager.cs" />
     <Compile Include="RunOnce\RunOnceManager.Entry.cs" />
     <Compile Include="RunOnce\RunOnceWindow.cs">

@@ -31,6 +31,8 @@ namespace DGD.HubGovernor.RunOnce
         readonly List<Entry> m_entries;
         readonly List<PendingMessage> m_sentMessages;
 
+        public event Action<ClientAction> ActionAdded;
+        public event Action<uint , RunOnceAction_t> ActionRemoved;
 
 
         public RunOnceManager(string filePath)
@@ -43,14 +45,32 @@ namespace DGD.HubGovernor.RunOnce
         }
 
 
-        public IEnumerable<Entry> PendingActions { get; }
-
-        public void PostActions(IEnumerable<Entry> entries)
+        public IEnumerable<ClientAction> Actions
         {
-            Assert(entries != null);
+            get
+            {
+                lock (m_entries)
+                    return m_entries.ToList();
+            }
+        }
 
-            foreach (Entry e in entries)
-                AddEntry(e);
+        public void PostActions(IEnumerable<ClientAction> actions)
+        {
+            Assert(actions != null);
+
+            foreach (ClientAction e in actions)
+            {
+                lock (m_entries)
+                    AddEntry(e);
+
+                if(AppContext.ClientsManager.IsClientRunning(e.ClientID))
+                {
+                    lock(m_sentMessages)
+                    {
+
+                    }
+                }
+            }
 
             SaveData();
         }
@@ -70,28 +90,30 @@ namespace DGD.HubGovernor.RunOnce
                 foreach (byte b in sign)
                     if (b != reader.ReadByte())
                         throw new CorruptedFileException(m_dataFilePath);
-                                
+
 
                 int count = reader.ReadInt();
 
                 for (int i = 0; i < count; ++i)
                     m_entries.Add(Entry.LoadEntry(reader));
-                }
             }
         }
 
         void SaveData()
-        { }
-
-        IEnumerable<IRunOnceAction> GetPenddingActions(uint clID)
         {
-            throw null;
+            using (FileStream fs = File.Create(m_dataFilePath))
+            {
+                var writer = new RawDataWriter(fs , Encoding.UTF8);
+
+                writer.Write(FileSignature);
+                writer.Write(m_entries.Count);
+
+                foreach (Entry e in m_entries)
+                    e.Write(writer);
+            }
         }
 
-        void PostMessage(Entry e)
-        { }
-
-        void AddEntry(Entry e)
+        void AddEntry(ClientAction e)
         {
             bool found = false;
 
@@ -99,21 +121,21 @@ namespace DGD.HubGovernor.RunOnce
             {
                 Entry entry = m_entries[i];
 
-                if (entry.ClientID == e.ClientID && entry.Action.ActionCode == e.Action.ActionCode)
+                if (entry.ClientID == e.ClientID && entry.Action == e.Action)
                 {
-                    m_entries[i] = e;
+                    m_entries[i].ChangeCreationTime(e.CreationTime);
                     found = true;
                     break;
                 }
             }
 
 
-            if (!found)
-                m_entries.Add(e);
+            if (found)
+                ActionRemoved?.Invoke(e.ClientID , e.Action);
+            else
+                m_entries.Add(new Entry(e.ClientID , e.Action , e.CreationTime));
 
-
-            if (AppContext.ClientsManager.IsClientRunning(e.ClientID))
-                PostMessage(e);
+            ActionAdded.Invoke(e);
         }
     }
 }

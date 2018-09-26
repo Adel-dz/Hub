@@ -21,6 +21,7 @@ namespace DGD.HubCore.DLG
         Sync,    //in cnx dlg, data = clientid + srvMsgID + clientMsgID in cxn no data in dlg, resp = null in dlg
         Null, //in cnx dlg, no data, no resp,
         Log, //in dlg, data = time + is error + msg, no resp
+        RunOnce, //in dlg, data = runonce action code, resp = null    
     }
 
 

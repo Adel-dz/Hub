@@ -6,22 +6,17 @@ namespace DGD.HubGovernor.RunOnce
 {
     partial class RunOnceManager
     {
-        public sealed class Entry: IStorable
+        sealed class Entry: ClientAction, IStorable
         {
             Entry()
             { }
-            
-            public Entry(uint idClient, RunOnceAction_t action)
-            {
-                ClientID = idClient;
-                Action = action;
-                CreationTime = DateTime.Now;
-            }
+
+            public Entry(uint idClient , RunOnceAction_t action , DateTime tmCreation) :
+                base(idClient , action , tmCreation)
+            { }
 
 
-            public uint ClientID { get; private set; }            
-            public RunOnceAction_t Action { get; private set; }
-            public DateTime CreationTime { get; set; }
+            public void ChangeCreationTime(DateTime tmCreation) => CreationTime = tmCreation;
 
             public void Read(IReader reader)
             {
