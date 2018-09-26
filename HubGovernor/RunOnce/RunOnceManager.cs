@@ -62,20 +62,22 @@ namespace DGD.HubGovernor.RunOnce
 
         void LoadData()
         {
-            //using (FileStream fs = File.OpenRead(m_dataFilePath))
-            //{
-            //    var reader = new RawDataReader(fs , Encoding.UTF8);
-            //    byte[] sign = FileSignature;
+            using (FileStream fs = File.OpenRead(m_dataFilePath))
+            {
+                var reader = new RawDataReader(fs , Encoding.UTF8);
+                byte[] sign = FileSignature;
 
-            //    foreach (byte b in sign)
-            //        if (b != reader.ReadByte())
-            //            throw new CorruptedFileException(m_dataFilePath);
+                foreach (byte b in sign)
+                    if (b != reader.ReadByte())
+                        throw new CorruptedFileException(m_dataFilePath);
+                                
 
-            //    int count = reader.ReadInt();
+                int count = reader.ReadInt();
 
-            //    for (int i = 0; i < count; ++i)
-
-            //}
+                for (int i = 0; i < count; ++i)
+                    m_entries.Add(Entry.LoadEntry(reader));
+                }
+            }
         }
 
         void SaveData()

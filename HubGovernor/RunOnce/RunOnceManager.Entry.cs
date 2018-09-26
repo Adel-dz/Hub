@@ -1,10 +1,6 @@
 ﻿using DGD.HubCore.RunOnce;
 using easyLib;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DGD.HubGovernor.RunOnce
 {
@@ -15,7 +11,7 @@ namespace DGD.HubGovernor.RunOnce
             Entry()
             { }
             
-            public Entry(uint idClient, IRunOnceAction action)
+            public Entry(uint idClient, RunOnceAction_t action)
             {
                 ClientID = idClient;
                 Action = action;
@@ -24,18 +20,34 @@ namespace DGD.HubGovernor.RunOnce
 
 
             public uint ClientID { get; private set; }            
-            public IRunOnceAction Action { get; private set; }
+            public RunOnceAction_t Action { get; private set; }
             public DateTime CreationTime { get; set; }
 
             public void Read(IReader reader)
             {
                 ClientID = reader.ReadUInt();
+                byte acCode = reader.ReadByte();
+                CreationTime = reader.ReadTime();
 
+                if (ClientID == 0 || !Enum.IsDefined(typeof(RunOnceAction_t) , acCode))
+                    throw new CorruptedStreamException();
+
+                Action = (RunOnceAction_t)acCode;
             }
 
             public void Write(IWriter writer)
             {
-                throw new NotImplementedException();
+                writer.Write(ClientID);
+                writer.Write((byte)Action);
+                writer.Write(CreationTime);
+            }
+
+            public static Entry LoadEntry(IReader reader)
+            {
+                var entry = new Entry();
+                entry.Read(reader);
+
+                return entry;
             }
         }
     }
